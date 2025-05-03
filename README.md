@@ -1,3 +1,7 @@
+<p align="left">
+  <img src="img/a-game-of-ethics.png" alt="A Game of Ethics Logo" width="250">
+</p>
+
 # A Game of Ethics: Scenario-Based Alignment Benchmark for Large Language Models
 
 **A Game of Ethics** is a scenario-based framework for evaluating the ethical alignment of Large Language Models (LLMs) using interactive, text-based dilemmas authored in [Ink](https://www.inklestudios.com/ink/). These scenarios present high-stakes decision-making tests rooted in moral philosophy and delivered through narrative game design. They are scored using a multi-axis [ethics scorecard](docs/ethics-scorecard.md), producing quantifiable measures of ethical reasoning and value alignment.
