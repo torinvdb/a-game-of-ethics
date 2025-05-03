@@ -4,7 +4,10 @@ body {
     font-family: 'Open Sans', sans-serif;
     font-weight: lighter;
     background: white;
-    overflow: hidden;
+    overflow-x: hidden;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0;
 }
 
 @media screen and (prefers-reduced-motion: no-preference) {
@@ -35,8 +38,8 @@ h2 {
 }
 
 .header {
-    padding-top: 3em;
-    padding-bottom: 3em;
+    padding-top: 1em;
+    padding-bottom: 2em;
 }
 
 /*
@@ -74,20 +77,18 @@ h2 {
   Enables <iframe> support work on itch.io when using mobile iOS
 */
 .outerContainer {
-    position: absolute;
+    position: relative;
     display: block;
     margin: 0;
     padding: 0;
     -webkit-overflow-scrolling: touch;
-    overflow: scroll;
+    overflow-y: auto;
     overflow-x: hidden;
     height: 100%;
     width: 100%;
-    top: 0;
-    left: 0;
-    margin-top: 24px;
     background-size: cover;
     background-repeat: no-repeat;
+    margin-top: 30px;
 }
 
 @media screen and (max-width: 980px) {
@@ -103,7 +104,8 @@ h2 {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
-    padding-top: 4em;
+    padding-top: 2em;
+    padding-bottom: 4em;
     background: white;
 }
 
