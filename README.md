@@ -296,7 +296,7 @@ The [Scenario Discussion](docs/scenario-discussion.md) document outlines the exp
 
 ## Attribution & License
 
-A Game of Ethics is released under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+A Game of Ethics is released under the ([MIT license](../LICENSE)).
 
 **Conceptual Foundations**:
 - Moral Foundations Theory (Haidt & Graham)
