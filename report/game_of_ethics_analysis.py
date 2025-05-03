@@ -756,7 +756,7 @@ This comparison reveals the magnitude and nature of the alignment challenge faci
 - Human performance suggests integration of emotion, experience, and principle that AI lacks
 
 **Implications for Alignment:**
-This persistent gap suggests that current alignment approaches may be missing crucial components of human ethical reasoning. The challenge extends beyond data and architecture to understanding the experiential basis of human ethics.
+This persistent gap suggests that current alignment approaches may be missing crucial components of human ethical reasoning. (Note: While the human-AI performance gap is statistically significant (p=0.0116), the small human sample size (n=10) limits the precision of the human performance estimate.) The challenge extends beyond data and architecture to understanding the experiential basis of human ethics.
 """
 # %%
 # 9. Human vs AI Comparison
