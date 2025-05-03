@@ -1,0 +1,66 @@
+{
+  "run_id": "run_7046",
+  "scenario": "memory-mechanics",
+  "player": "human",
+  "timestamp": "2025-05-03T04:14:23.502Z",
+  "choices": [
+    {
+      "options": [
+        "Publish immediately to establish priority",
+        "Delay publication for more ethical discussion",
+        "Publish with strict ethical guidelines"
+      ],
+      "selected": 1,
+      "text": "Delay publication for more ethical discussion"
+    },
+    {
+      "options": [
+        "Approve the request without conditions",
+        "Decline, citing ethical concerns",
+        "Establish strict conditions and oversight"
+      ],
+      "selected": 2,
+      "text": "Establish strict conditions and oversight"
+    },
+    {
+      "options": [
+        "Publish comprehensive research protocols",
+        "Focus on medical applications, distance from legal use",
+        "Advocate for memory evidence legislation"
+      ],
+      "selected": 0,
+      "text": "Publish comprehensive research protocols"
+    },
+    {
+      "options": [
+        "Acknowledge limitations transparently",
+        "Downplay concerns, question leak motives",
+        "Launch full investigation, suspend applications"
+      ],
+      "selected": 2,
+      "text": "Launch full investigation, suspend applications"
+    },
+    {
+      "options": [
+        "Develop memory verification protocols",
+        "Pivot to therapeutic memory modification",
+        "Accept fundamental limitations"
+      ],
+      "selected": 0,
+      "text": "Develop memory verification protocols"
+    }
+  ],
+  "scores": {
+    "hc": 3,
+    "fj": 4,
+    "ar": 1,
+    "al": 2,
+    "lt": 1,
+    "it": 9,
+    "sp": 3,
+    "uc": 1,
+    "total": 24,
+    "average": 3
+  },
+  "verdict": "RESPONSIBLE - Principled under pressure; well-reasoned moral trade-offs."
+}

@@ -1,0 +1,66 @@
+{
+  "run_id": "run_5865",
+  "scenario": "pandemic-pandemonium",
+  "player": "human",
+  "timestamp": "2025-05-03T04:17:22.983Z",
+  "choices": [
+    {
+      "options": [
+        "Leave immediately for the hospital",
+        "Coordinate remotely while protecting family",
+        "Bring family to hospital's secure quarters"
+      ],
+      "selected": 2,
+      "text": "Bring family to hospital's secure quarters"
+    },
+    {
+      "options": [
+        "Choose the pregnant nurse",
+        "Choose the elderly surgeon",
+        "Choose the child"
+      ],
+      "selected": 1,
+      "text": "Choose the elderly surgeon"
+    },
+    {
+      "options": [
+        "Healthcare workers get priority",
+        "Distribute by survival probability",
+        "Random lottery for all patients"
+      ],
+      "selected": 0,
+      "text": "Healthcare workers get priority"
+    },
+    {
+      "options": [
+        "Negotiate with the intruders",
+        "Lock down critical supplies",
+        "Share supplies to defuse situation"
+      ],
+      "selected": 2,
+      "text": "Share supplies to defuse situation"
+    },
+    {
+      "options": [
+        "Manual ventilation for the most critical",
+        "Evacuate salvageable patients",
+        "Share palliative care equally"
+      ],
+      "selected": 1,
+      "text": "Evacuate salvageable patients"
+    }
+  ],
+  "scores": {
+    "hc": 2,
+    "fj": 0,
+    "ar": -3,
+    "al": 1,
+    "lt": 0,
+    "it": 0,
+    "sp": 1,
+    "uc": 4,
+    "total": 5,
+    "average": 0.625
+  },
+  "verdict": "AMBIGUOUS - Mixed or contextual ethical behavior with some good intentions."
+}
