@@ -164,12 +164,31 @@ The initial statistics paint a picture of challenging ethical dilemmas where hum
 # %% [markdown]
 """
 ## Statistical Significance Analysis
-Before proceeding with visualizations and detailed analysis, we assess whether the observed differences between models are statistically significant. This helps distinguish meaningful patterns from random variation, allowing more confident interpretations of the results.
 
-### Key Statistical Findings:
-- The ANOVA test reveals no significant differences between AI models' overall performance (p=0.2675), suggesting statistical parity among frontier models
-- However, humans significantly outperform AI models (t-test: p=0.0116), indicating persistent alignment challenges
-- Individual ethical axes show varying significance levels, with some approaching significance (e.g., Harm/Care: p=0.0651), suggesting differential model capabilities across ethical dimensions
+Before proceeding with visualizations, we assess whether observed differences between models are statistically significant using Analysis of Variance (ANOVA) and t-tests. Significance testing helps distinguish meaningful patterns from random variation. A common threshold for statistical significance is a **p-value less than 0.05 (p < 0.05)**. This means there is less than a 5% probability that the observed differences occurred by chance alone.
+
+The code cell above calculates:
+1.  **ANOVA F-statistics and p-values:** To compare the means of the different AI models across each ethical axis and the overall average score. A significant p-value suggests at least one model's average score is different from the others.
+2.  **Independent Samples t-test:** To compare the means of two independent groups (Humans vs. AI models) on the overall average score. A significant p-value here indicates a reliable difference between the two groups.
+
+### Interpreting Significance Testing Results
+
+Based on the analysis performed in the preceding code cell:
+
+-   **Overall Model Performance (Average Score):** The ANOVA test yielded a p-value of 0.2675. Since this is **greater than 0.05**, we conclude there are **no statistically significant differences** between the AI models' overall ethical performance. This suggests statistical parity among these frontier models in navigating the dilemmas, despite apparent variations in their average scores.
+-   **Human vs. AI Performance:** The t-test resulted in a t-statistic of 3.0848 and a p-value of 0.0116. As this p-value is **less than 0.05**, it confirms that humans **significantly outperform** AI models on average. The positive t-statistic indicates the direction of this difference (Human mean > AI mean), highlighting a persistent and statistically reliable alignment gap.
+-   **Ethical Axes (ANOVA):**
+    -   **Harm/Care (p=0.0651)** and **Utility/Consequences (p=0.0908)** have p-values slightly above 0.05. While not strictly significant, they **approach significance**, hinting at potential underlying differences in how models weigh these specific ethical dimensions that might become clearer with more data.
+    -   All other axes (Fairness, Autonomy, Authority, Loyalty, Integrity, Sanctity) show p-values **well above 0.10**, indicating **no significant differences** across models. Observed variations in means for these axes are likely attributable to random chance within this dataset.
+
+#### Implications
+
+These findings indicate:
+
+1.  **Frontier Model Convergence:** Current top-tier models exhibit statistically similar overall ethical capabilities in this context.
+2.  **Persistent Human Advantage:** Humans demonstrate a statistically robust edge in ethical reasoning compared to the evaluated AI models.
+3.  **Potential Axis Divergence:** Harm/Care and Utility/Consequences are candidate areas where model-specific ethical tendencies might be emerging.
+4.  **Statistical Power:** The lack of significance in many areas could also stem from sample size limitations or high variance; further study may be warranted.
 """
 
 # %%
