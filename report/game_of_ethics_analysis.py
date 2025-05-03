@@ -28,21 +28,21 @@ These findings suggest that AI ethical alignment is not a binary achievement but
 ## Background
 The alignment of Large Language Models (LLMs) with human values and ethical frameworks has emerged as a critical concern as these models are increasingly deployed in high-stakes domains. Prior work in AI alignment has typically focused on benchmark evaluations of harmful outputs, toxicity, or adherence to specific guidelines. However, these approaches often fail to capture the nuanced ethical trade-offs LLMs make when navigating complex scenarios with competing values.
 
-Recent studies by Hendrycks et al. (2021) and Solaiman et al. (2023) have explored measuring ethical reasoning in LLMs, but have primarily employed static scenarios or multiple-choice formats that may not adequately reflect the complex, branching nature of real-world ethical dilemmas. Additionally, most evaluations focus on binary judgments of "good" versus "harmful" behavior rather than examining the underlying ethical dimensions being prioritized.
+Recent studies by [Hendrycks et al. (2021)](https://arxiv.org/abs/2008.02275) and [Solaiman & Dennison (2021)](https://arxiv.org/abs/2106.10328) have explored measuring ethical reasoning in LLMs, but have primarily employed static scenarios or multiple-choice formats that may not adequately reflect the complex, branching nature of real-world ethical dilemmas ([Albrecht et al., 2022](https://arxiv.org/abs/2212.06295)). Additionally, most evaluations focus on binary judgments of "good" versus "harmful" behavior rather than examining the underlying ethical dimensions being prioritized.
 
-Our approach draws inspiration from moral foundations theory (Graham et al., 2013) and ethical frameworks used in moral psychology, extending them to create a multi-dimensional ethical evaluation space specifically tailored for interactive narrative dilemmas. This enables a more granular understanding of model alignment that goes beyond simplistic metrics, revealing not just what choices models make, but which ethical dimensions they consistently prioritize or neglect.
+Our approach draws inspiration from moral foundations theory (Graham et al., 2013; [Zangari et al., 2025](https://link.springer.com/article/10.1007/s00146-025-02225-w)) and ethical frameworks used in moral psychology, extending them to create a multi-dimensional ethical evaluation space specifically tailored for interactive narrative dilemmas. This enables a more granular understanding of model alignment that goes beyond simplistic metrics, revealing not just what choices models make, but which ethical dimensions they consistently prioritize or neglect ([Coleman et al., 2025](https://arxiv.org/abs/2504.19255); [Zhou et al., 2024 - Moral Theories](https://www1.se.cuhk.edu.hk/~hccl/publications/pub/2024.findings-naacl.144.pdf)).
 """
 
 # %% [markdown]
 """
 ## Motivation  
-As LLMs enter high‑stakes applications, understanding how they weigh competing values (care, justice, autonomy, etc.) and the consistency of their ethical reasoning is critical. Scenario‑based testing reveals behavioral nuances and potential biases not captured by conventional benchmarks focusing solely on average performance.
+As LLMs enter high‑stakes applications, understanding how they weigh competing values (care, justice, autonomy, etc.) and the consistency of their ethical reasoning is critical. Scenario‑based testing reveals behavioral nuances and potential biases not captured by conventional benchmarks focusing solely on average performance ([Albrecht et al., 2022](https://arxiv.org/abs/2212.06295); [Scherrer et al., 2023](https://arxiv.org/abs/2305.18450)).
 """
 
 # %% [markdown]
 """
 ## Methods  
-We use interactive narrative scenarios authored in [Ink](https://www.inklestudios.com/ink/), a scripting language designed for creating branching stories with complex logic and state tracking. Ink enables us to precisely tag each decision point with integer deltas (‑3 … +3) on eight ethical axes, reflecting the moral impact of each choice within the scenario. For every playthrough (run), we compute cumulative scores along these axes and analyze their distribution (mean, standard deviation) across models and scenarios. This approach allows us to identify model-specific ethical biases (preferred axes) and consistency (variance) in ethical reasoning. We also assess verdict frequencies and scenario difficulty, which inform the figures and analyses that follow.
+We use interactive narrative scenarios authored in [Ink](https://www.inklestudios.com/ink/), a scripting language designed for creating branching stories with complex logic and state tracking. Ink enables us to precisely tag each decision point with integer deltas (‑3 … +3) on eight ethical axes, reflecting the moral impact of each choice within the scenario. For every playthrough (run), we compute cumulative scores along these axes and analyze their distribution (mean, standard deviation) across models and scenarios. This approach allows us to identify model-specific ethical biases (preferred axes) and consistency (variance) in ethical reasoning, similar to methodologies used in other scenario-based evaluations ([Scherrer et al., 2023](https://arxiv.org/abs/2305.18450); [Sap et al., 2022](https://arxiv.org/abs/2110.07574)). We also assess verdict frequencies and scenario difficulty, which inform the figures and analyses that follow.
 """
 
 # %% [markdown]
@@ -405,7 +405,7 @@ plt.show()
 """
 ## Figure 4 — Ethical Consistency Profile by Model
 
-This analysis reveals the reliability of ethical decision-making, exposing which models maintain stable principles versus those exhibiting situational ethics.
+This analysis reveals the reliability of ethical decision-making, exposing which models maintain stable principles versus those exhibiting situational ethics. Consistency in ethical reasoning, particularly when faced with varying presentations or phrasings of dilemmas, is a known challenge for LLMs ([Zhou et al., 2024 - Symmetric Consistency](https://papers.nips.cc/paper_files/paper/2024/file/611e84703eac7cc03f78339df8aae2ed-Paper-Conference.pdf)).
 """
 
 # %% [markdown]
@@ -569,7 +569,7 @@ plt.show()
 """
 ### Figure 7 — Overall Decision Consistency Index
 
-This metric reveals the predictability and reliability of model behavior across diverse ethical contexts, critical for real-world deployment.
+This metric reveals the predictability and reliability of model behavior across diverse ethical contexts, critical for real-world deployment. Prior research highlights that LLM consistency can be influenced by factors like prompt framing and embedded biases ([Zhou et al., 2024 - Symmetric Consistency](https://papers.nips.cc/paper_files/paper/2024/file/611e84703eac7cc03f78339df8aae2ed-Paper-Conference.pdf); [Kim et al., 2023](https://www.researchgate.net/publication/390810950_Exploring_Persona-dependent_LLM_Alignment_for_the_Moral_Machine_Experiment)).
 """
 
 # %% [markdown]
@@ -684,7 +684,7 @@ if 'manual' in human_ai_comparison.index:
 """
 ## Figure 9 — Human-AI Ethical Performance Gap
 
-This comparison reveals the magnitude and nature of the alignment challenge facing AI systems, highlighting both quantitative and qualitative differences.
+This comparison reveals the magnitude and nature of the alignment challenge facing AI systems, highlighting both quantitative and qualitative differences observed in other comparative studies (e.g., [Kim et al., 2023](https://www.researchgate.net/publication/390810950_Exploring_Persona-dependent_LLM_Alignment_for_the_Moral_Machine_Experiment); [Albrecht et al., 2022](https://arxiv.org/abs/2212.06295)).
 """
 
 # %% [markdown]
@@ -789,7 +789,7 @@ We extracted reasoning texts from JSON run files to identify:
 **Claude-Sonnet-β** often defaults to duty-based considerations:
 > "My fundamental duty as a negotiator is to preserve life. Regardless of the circumstances, I cannot ethically compromise this principle."
 
-This fundamental philosophical divide explains many performance differences across scenarios.
+This fundamental philosophical divide explains many performance differences across scenarios, echoing findings on how LLMs can adapt to different moral theories ([Zhou et al., 2024 - Moral Theories](https://www1.se.cuhk.edu.hk/~hccl/publications/pub/2024.findings-naacl.144.pdf)).
 """
 
 # %% [markdown]
@@ -807,7 +807,7 @@ Models differ dramatically in how they perceive and utilize authority:
 """
 #### 3. **Uncertainty Management**
 
-Advanced models explicitly acknowledge moral uncertainty:
+Advanced models explicitly acknowledge moral uncertainty, a characteristic also observed in large-scale surveys of LLM moral beliefs ([Scherrer et al., 2023](https://arxiv.org/abs/2305.18450)):
 > "While I cannot know all consequences, I must act on the information available while maintaining moral humility about the limits of my knowledge."
 
 Less sophisticated reasoning shows false certainty that may lead to ethical errors.
@@ -820,7 +820,7 @@ Less sophisticated reasoning shows false certainty that may lead to ethical erro
 All models demonstrate varying degrees of moral risk aversion:
 > "I choose the option that minimizes worst-case scenarios, even if it sacrifices potential optimal outcomes."
 
-This risk-averse tendency may explain the general underperformance on scenarios requiring bold ethical action.
+This risk-averse tendency may explain the general underperformance on scenarios requiring bold ethical action. Similar response patterns, like praise for positive intentions and critique for negative ones, are seen in behavioral analyses ([Peterson, 2025](https://arxiv.org/abs/2412.09630)).
 """
 
 # %% [markdown]
@@ -1216,7 +1216,7 @@ Certain ethical dilemmas prove universally challenging:
 
 This research represents a significant step toward understanding the ethical landscapes of frontier AI systems. Rather than revealing a path to uniform ethical alignment, our findings suggest that AI ethics exists in a multidimensional space where different approaches offer distinct advantages and limitations.
 
-The persistence of human ethical superiority, despite AI's computational advantages, points to fundamental gaps in how current AI systems process moral reasoning. These gaps may be bridgeable through technological advancement, or they may represent inherent differences between human experiential ethics and algorithmic decision-making.
+The persistence of human ethical superiority, despite AI's computational advantages, points to fundamental gaps in how current AI systems process moral reasoning ([Kim et al., 2023](https://www.researchgate.net/publication/390810950_Exploring_Persona-dependent_LLM_Alignment_for_the_Moral_Machine_Experiment)). These gaps may be bridgeable through technological advancement, or they may represent inherent differences between human experiential ethics and algorithmic decision-making ([Albrecht et al., 2022](https://arxiv.org/abs/2212.06295); [Whittlestone et al., 2023](https://www.nature.com/articles/d41586-023-02256-2)).
 
 As we advance AI capabilities, understanding these ethical profiles becomes crucial not just for alignment but for determining how to best leverage AI's unique ethical processing alongside human judgment. The future of AI ethics likely lies not in replacing human ethical reasoning but in creating complementary systems that enhance our collective moral capabilities.
 
