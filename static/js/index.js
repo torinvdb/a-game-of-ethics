@@ -32,14 +32,20 @@ document.addEventListener('DOMContentLoaded', function() {
       e.preventDefault();
       const gameUrl = this.getAttribute('href');
       
-      // Update the iframe source
-      gameFrame.src = gameUrl;
+      // Reset the iframe by clearing it first
+      gameFrame.src = 'about:blank';
       
-      // Show the game container
-      gameContainer.style.display = 'block';
-      
-      // Scroll to the game container
-      gameContainer.scrollIntoView({ behavior: 'smooth' });
+      // Small delay to ensure the iframe is fully reset
+      setTimeout(() => {
+        // Update the iframe source
+        gameFrame.src = gameUrl;
+        
+        // Show the game container
+        gameContainer.style.display = 'block';
+        
+        // Scroll to the game container
+        gameContainer.scrollIntoView({ behavior: 'smooth' });
+      }, 100);
     });
   });
 });
