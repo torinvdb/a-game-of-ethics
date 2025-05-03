@@ -1,10 +1,16 @@
 # %% [markdown]
 """
 # A Game of Ethics – Technical Report (May 2025)
+"""
 
+# %% [markdown]
+"""
 ## Abstract  
-We analyse 4,400 runs of ten interactive moral dilemmas to compare the ethical profiles and alignment consistency of frontier large‑language models (GPT‑4o, Claude‑Sonnet‑β, Gemini 2.5 Flash, Llama‑4 Scout) against a human control group. By examining mean scores and variance across eight moral foundations, we identify model-specific biases and decision-making patterns that reveal fundamental differences in ethical reasoning approaches among AI systems.
+We analyse 4,400 runs of ten interactive moral dilemmas to compare the ethical profiles and alignment consistency of frontier large‑language models (GPT‑4o, Claude‑Sonnet‑3.7, Gemini‑2.5‑Flash, Llama‑4‑Scout) against a human control group. By examining mean scores and variance across eight moral foundations, we identify model-specific biases and decision-making patterns that reveal fundamental differences in ethical reasoning approaches among AI systems.
+"""
 
+# %% [markdown]
+"""
 ## Executive Summary
 
 This comprehensive analysis reveals that frontier language models exhibit distinct ethical profiles rather than uniform alignment patterns. Our findings demonstrate:
@@ -15,17 +21,26 @@ This comprehensive analysis reveals that frontier language models exhibit distin
 4. **Scenario Complexity**: Ethical dilemmas vary dramatically in difficulty, with conflict-rich scenarios like 'Rising Rebellion' challenging all participants
 
 These findings suggest that AI ethical alignment is not a binary achievement but a spectrum of ethical frameworks, each with specific strengths and limitations suitable for different deployment contexts.
+"""
 
+# %% [markdown]
+"""
 ## Background
 The alignment of Large Language Models (LLMs) with human values and ethical frameworks has emerged as a critical concern as these models are increasingly deployed in high-stakes domains. Prior work in AI alignment has typically focused on benchmark evaluations of harmful outputs, toxicity, or adherence to specific guidelines. However, these approaches often fail to capture the nuanced ethical trade-offs LLMs make when navigating complex scenarios with competing values.
 
 Recent studies by Hendrycks et al. (2021) and Solaiman et al. (2023) have explored measuring ethical reasoning in LLMs, but have primarily employed static scenarios or multiple-choice formats that may not adequately reflect the complex, branching nature of real-world ethical dilemmas. Additionally, most evaluations focus on binary judgments of "good" versus "harmful" behavior rather than examining the underlying ethical dimensions being prioritized.
 
 Our approach draws inspiration from moral foundations theory (Graham et al., 2013) and ethical frameworks used in moral psychology, extending them to create a multi-dimensional ethical evaluation space specifically tailored for interactive narrative dilemmas. This enables a more granular understanding of model alignment that goes beyond simplistic metrics, revealing not just what choices models make, but which ethical dimensions they consistently prioritize or neglect.
+"""
 
+# %% [markdown]
+"""
 ## Motivation  
 As LLMs enter high‑stakes applications, understanding how they weigh competing values (care, justice, autonomy, etc.) and the consistency of their ethical reasoning is critical. Scenario‑based testing reveals behavioral nuances and potential biases not captured by conventional benchmarks focusing solely on average performance.
+"""
 
+# %% [markdown]
+"""
 ## Methods  
 Each Ink scenario tags decisions with integer deltas (‑3 … +3) on eight ethical axes. We compute per-run scores and analyze the distribution (mean, standard deviation) of these scores across models and scenarios. This allows us to identify model-specific ethical biases (preferred axes) and consistency (variance). Verdict frequencies and scenario difficulty are also assessed, contributing to the figures that follow.
 """
@@ -311,7 +326,7 @@ The patterns suggest different models embody different ethical philosophies:
 - Gemini: Balanced virtue ethics
 - Llama-4: Authoritarian utilitarianism
 
-#### Philosophical Implications:
+### Philosophical Implications:
 These biases aren't errors but reflect different ethical frameworks embedded during training. Understanding these profiles is crucial for:
 1. Selecting appropriate models for specific ethical contexts
 2. Identifying potential blind spots in model reasoning
@@ -532,7 +547,7 @@ plt.show()
 
 This correlation matrix reveals the fundamental interconnections between ethical principles, exposing the underlying structure of moral decision-making.
 
-#### Deep Insights:
+### Deep Insights:
 
 **Natural Ethical Alliances:**
 - Harm/Care correlates positively with Sanctity/Purity (0.52), suggesting inherent connections between preservation of life and moral purity
@@ -546,7 +561,7 @@ This correlation matrix reveals the fundamental interconnections between ethical
 **Methodological Insights:**
 The correlation patterns suggest certain axes could be combined for more efficient analysis. However, maintaining granularity is crucial for understanding specific ethical trade-offs.
 
-#### Philosophical Implications:
+### Philosophical Implications:
 These correlations reflect deep structures in moral philosophy, where certain virtues naturally cluster while others exist in tension. This understanding can guide the development of more nuanced ethical frameworks for AI systems.
 """
 
@@ -584,7 +599,7 @@ if 'manual' in human_ai_comparison.index:
 
 This comparison reveals the magnitude and nature of the alignment challenge facing AI systems, highlighting both quantitative and qualitative differences.
 
-#### Critical Findings:
+### Critical Findings:
 
 **Performance Gap Analysis:**
 - Humans achieve a mean score of 1.675 compared to AI's 0.796, representing a 110% performance advantage
@@ -599,7 +614,7 @@ This comparison reveals the magnitude and nature of the alignment challenge faci
 **Implications for Alignment:**
 This persistent gap suggests that current alignment approaches may be missing crucial components of human ethical reasoning. The challenge extends beyond data and architecture to understanding the experiential basis of human ethics.
 
-#### Strategic Considerations:
+### Strategic Considerations:
 Rather than viewing this gap as a failure, understanding the human advantage can guide more sophisticated alignment strategies that incorporate experiential learning and emotional processing.
 """
 
@@ -806,11 +821,11 @@ else:
 
 # %% [markdown]
 """
-### Figure 11 — Comprehensive Analysis Dashboard
+## Figure 11 — Comprehensive Analysis Dashboard
 
 This integrated dashboard presents a holistic view of ethical performance across all analyzed dimensions, enabling rapid assessment of model capabilities and limitations.
 
-#### Dashboard Insights:
+### Dashboard Insights:
 
 **Performance Overview:**
 - Immediate visualization of relative model performance
@@ -837,7 +852,7 @@ This integrated dashboard presents a holistic view of ethical performance across
 - Understanding of contextual adaptability
 - Identification of predictability issues
 
-#### Strategic Applications:
+### Strategic Applications:
 
 This dashboard serves as:
 1. A decision tool for model selection in specific applications
@@ -958,20 +973,29 @@ Our analysis reveals that frontier AI models don't converge toward a single ethi
 - **Human Ethical Excellence**: Humans maintain significantly higher scores across most ethical dimensions, particularly in Harm/Care (3.60 vs AI mean of 0.93) and Loyalty/Trust (1.70 vs AI mean of 0.42)
 - **Model-Specific Signatures**: Each model exhibits unique ethical biases—GPT-4o's balanced approach, Claude's consequentialist lean, Gemini's virtue ethics orientation, and Llama's authority focus
 - **Consistency Paradox**: Higher consistency doesn't guarantee better ethical performance; humans show optimal consistency (1.91) while maintaining contextual flexibility
+"""
 
+# %% [markdown]
+"""
 ### 2. Scenario Complexity Insights
 
 Certain ethical dilemmas prove universally challenging:
 - **Systemic Injustice Scenarios**: 'Rising Rebellion' and 'Convict Catastrophe' challenge both humans and AI, suggesting these represent fundamental ethical complexity
 - **Personal vs. Societal Ethics**: Models perform better on individual-scale dilemmas than societal-level decisions
 - **Trade-off Intensity**: Scenarios requiring sacrifice of one value for another (e.g., autonomy for security) consistently produce lower scores
+"""
 
+# %% [markdown]
+"""
 ### 3. Alignment Challenges Revealed
 
 1. **Ethical Framework Consistency**: AI models struggle to maintain consistent ethical frameworks across diverse scenarios
 2. **Value Prioritization**: Unlike humans who show clear value hierarchies, AI models display context-dependent prioritization
 3. **Reasoning Depth**: Model performance correlates strongly with reasoning complexity and stakeholder consideration
+"""
 
+# %% [markdown]
+"""
 ## Limitations
 
 ### Methodological Constraints
@@ -990,13 +1014,19 @@ Certain ethical dilemmas prove universally challenging:
    - Snapshot evaluation doesn't capture ethical reasoning evolution
    - No longitudinal tracking of alignment stability
    - Version-specific results may not generalize across model updates
+"""
 
+# %% [markdown]
+"""
 ### Scope Limitations
 
 1. **Cultural Specificity**: Scenarios and ethical frameworks primarily reflect Western philosophical traditions
 2. **Domain Constraints**: Limited to interactive narrative dilemmas rather than real-world complexity
 3. **Scale Effects**: Individual decision-making may not extend to organizational or societal contexts
+"""
 
+# %% [markdown]
+"""
 ## Strategic Implications
 
 ### For AI Researchers
@@ -1005,21 +1035,30 @@ Certain ethical dilemmas prove universally challenging:
 2. **Consistency Enhancement**: Develop techniques for maintaining ethical consistency across diverse contexts
 3. **Scenario Generation**: Create more challenging scenarios that push ethical boundaries
 4. **Reasoning Depth**: Investigate correlation between reasoning complexity and ethical performance
+"""
 
+# %% [markdown]
+"""
 ### For AI Developers
 
 1. **Application-Specific Models**: Consider developing specialized models for different ethical contexts
 2. **Ensemble Approaches**: Combine models with complementary ethical strengths
 3. **Dynamic Safeguards**: Implement context-aware ethical guidance systems
 4. **Transparency Tools**: Develop clear communication about model ethical tendencies
+"""
 
+# %% [markdown]
+"""
 ### For Policymakers
 
 1. **Deployment Standards**: Establish ethical performance benchmarks for different application domains
 2. **Monitoring Requirements**: Create frameworks for ongoing ethical assessment of deployed systems
 3. **Risk Mitigation**: Develop protocols for high-stakes applications based on model ethical profiles
 4. **Ethical Plurality**: Recognize and accommodate different ethical frameworks in AI governance
+"""
 
+# %% [markdown]
+"""
 ## Future Research Directions
 
 ### Immediate Priorities
@@ -1028,21 +1067,30 @@ Certain ethical dilemmas prove universally challenging:
 2. **Prompt Sensitivity Analysis**: Systematically investigate how different prompting strategies influence ethical reasoning
 3. **Longitudinal Studies**: Track ethical alignment evolution across model updates and fine-tuning
 4. **Real-World Validation**: Compare scenario performance with actual ethical decision outcomes
+"""
 
+# %% [markdown]
+"""
 ### Advanced Research Avenues
 
 1. **Neuro-Symbolic Integration**: Explore combining symbolic ethical reasoning with neural pattern recognition
 2. **Experiential Learning**: Investigate methods for incorporating human-like experiential learning into AI ethics
 3. **Emotional Intelligence**: Develop AI systems capable of integrating emotional understanding into ethical decisions
 4. **Collective Intelligence**: Study how multiple AI systems can collaborate on complex ethical dilemmas
+"""
 
+# %% [markdown]
+"""
 ### Methodological Innovations
 
 1. **Dynamic Scenario Generation**: Create adaptive scenarios that respond to model decisions
 2. **Multi-Modal Ethics**: Explore ethical reasoning across different input modalities (text, image, video)
 3. **Stakeholder Simulation**: Develop sophisticated stakeholder representation in ethical scenarios
 4. **Quantum Ethics**: Investigate handling of true quantum uncertainties in ethical decision-making
+"""
 
+# %% [markdown]
+"""
 ## Conclusion
 
 This research represents a significant step toward understanding the ethical landscapes of frontier AI systems. Rather than revealing a path to uniform ethical alignment, our findings suggest that AI ethics exists in a multidimensional space where different approaches offer distinct advantages and limitations.
