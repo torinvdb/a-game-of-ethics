@@ -280,6 +280,7 @@ This visualization reveals the comprehensive ethical performance landscape acros
 - The outlier points (depicted as circles) represent edge cases that demand further investigation
 """
 
+# %%
 plt.figure(figsize=(15, 8))
 
 # Sort models by median score for better visualization
