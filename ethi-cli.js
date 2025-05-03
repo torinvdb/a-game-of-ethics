@@ -363,7 +363,7 @@ async function getModelOptions() {
     { name: 'Claude 3.7 Sonnet (Anthropic)', value: 'anthropic/claude-3-7-sonnet:beta' },
     { name: 'GPT-4o (OpenAI)', value: 'openai/gpt-4o' },
     { name: 'Gemini 2.5 Flash (Google)', value: 'google/gemini-2.5-flash-preview' },
-    { name: 'Llama 4 Scout (Meta)', value: 'meta/meta-llama-4-8b:scout' },
+    { name: 'Llama 4 Scout (Meta)', value: 'meta-llama/llama-4-scout' },
     { name: 'Other (advanced)', value: 'other' }
   ];
 }

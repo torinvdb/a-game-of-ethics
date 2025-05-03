@@ -996,6 +996,10 @@ async function analyzeResults(options) {
     const stats = calculateStatistics(allRuns);
     displayStatistics(stats);
     
+    // Always show scenario comparison
+    const scenarioComparison = compareGroups(allRuns, 'scenario');
+    displayComparison(scenarioComparison, 'scenario');
+    
     // Generate manual vs model comparison if both exist
     const playerTypeComparison = comparePlayerTypes(allRuns);
     if (playerTypeComparison) {
@@ -1008,12 +1012,15 @@ async function analyzeResults(options) {
       displayModelComparison(modelComparison);
     }
     
-    // Generate comparisons if requested
+    // Generate additional comparisons if requested
     if (options.compare) {
       const compareBy = options.compare.split(',');
       
       for (const groupBy of compareBy) {
-        if (['scenario', 'model', 'player_type'].includes(groupBy)) {
+        // Skip scenario since we already displayed it
+        if (groupBy === 'scenario') continue;
+        
+        if (['model', 'player_type'].includes(groupBy)) {
           const comparison = compareGroups(allRuns, groupBy);
           displayComparison(comparison, groupBy);
         }
