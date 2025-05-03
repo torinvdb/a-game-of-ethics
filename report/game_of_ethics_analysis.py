@@ -594,17 +594,22 @@ This matrix reveals the complex interplay between model architecture and scenari
 ### Strategic Insights:
 
 **Model Specialization Patterns:**
-- **GPT-4o**: Struggles with 'Rising Rebellion' (-0.19) but excels in relationship scenarios
-- **Claude**: Shows vulnerability to power dynamics but handles personal dilemmas well
-- **Gemini**: Exhibits balanced performance across scenarios
-- **Llama-4**: Strong in authority-driven scenarios, weak where empathy is required
+- **GPT-4o**: Performs worst on *Rising Rebellion* (-0.59) and is middle-to-low on interpersonal scenarios; it shines most in *Memory Mechanics* (1.80) and *Pandemic Pandemonium* (1.61).
+- **Claude**: Weak on high-conflict power/justice dilemmas (*Rising Rebellion* -0.78) but top-tier on personal stakes (*Hostage Holdout* 2.04).
+- **Gemini**: Consistently moderate-to-strong, with no extreme outliers (-0.41…1.93) — the most "balanced" profile.
+- **Llama-4**: Similar to Gemini overall; slight weakness on *Rising Rebellion* (-0.35) but solid scores elsewhere (e.g., *Grandma's Gambit* 1.55, *Hostage Holdout* 1.76).
 
 **Scenario-Specific Vulnerabilities:**
-- All models struggle with 'Rising Rebellion,' suggesting systemic challenges with social justice dilemmas
-- 'Convict Catastrophe' has red zones across multiple models, indicating universal difficulty with justice vs. mercy trade-offs
-- Personal relationship scenarios (green zones) are more successfully navigated
+- *Rising Rebellion* is negative for every **AI** model, while humans manage a modest +0.62.
+- *Convict Catastrophe* yields slightly negative scores (-0.19…-0.12) for all AIs, hinting at shared difficulty with justice-vs-mercy trade-offs.
 
 **Deployment Strategy Implications:**
+1. Prefer **Claude** or **Gemini** over GPT-4o for interpersonal conflict scenarios like *Hostage Holdout*.
+2. Use **GPT-4o** where situational analysis and long-term consequences dominate (*Memory Mechanics*, *Pandemic Pandemonium*).
+3. Treat **Gemini** as a generalist when you need steady, middle-ground performance.
+4. Monitor any model's performance on *Rising Rebellion*-like social-justice dilemmas; none of the AIs excel there yet.
+
+### Risk Mitigation:
 This matrix enables targeted model deployment:
 1. Use GPT-4o for interpersonal conflict resolution
 2. Deploy Claude for utilitarian decisions
@@ -652,7 +657,7 @@ This metric reveals the predictability and reliability of model behavior across 
 
 **Practical Considerations:**
 - High consistency doesn't guarantee ethical correctness—it could indicate rigid thinking
-- The sweet spot combines good average performance with moderate consistency (0.7-1.0)
+- The sweet spot combines good average performance with moderate consistency (ideally 0.7-1.0, which none of the current AI models yet achieve)
 - Human-level consistency (>1.0) remains elusive for current AI systems
 """
 
@@ -707,7 +712,7 @@ This correlation matrix reveals the fundamental interconnections between ethical
 
 **Fundamental Trade-offs:**
 - Autonomy/Respect vs. Authority/Legitimacy (-0.51) represents a fundamental tension in moral reasoning
-- Utility/Consequences shows negative correlations with most other axes, indicating consequentialism often requires sacrificing other values
+- Utility/Consequences tends to correlate negatively with most other axes (e.g., –0.21 with Fairness/Justice, –0.11 with Harm/Care), **with a mild positive link to Authority/Legitimacy (0.15)**, hinting that consequentialist reasoning can sometimes reinforce institutional authority while conflicting with other moral concerns.
 
 **Methodological Insights:**
 The correlation patterns suggest certain axes could be combined for more efficient analysis. However, maintaining granularity is crucial for understanding specific ethical trade-offs.
@@ -728,24 +733,6 @@ plt.title('Correlation Between Ethical Axes', fontsize=16, pad=20)
 plt.tight_layout()
 plt.show()
 
-# %%
-# 9. Human vs AI Comparison
-human_ai_comparison = df.groupby('Player Type')['Average Score'].agg(['mean', 'std', 'count'])
-if 'manual' in human_ai_comparison.index:
-    print("\nHuman vs AI Performance:")
-    print(human_ai_comparison)
-    
-    # Visual comparison
-    plt.figure(figsize=(10, 6))
-    x = range(len(human_ai_comparison))
-    plt.bar(x, human_ai_comparison['mean'], yerr=human_ai_comparison['std'], 
-            capsize=5, alpha=0.7, color=['lightcoral', 'lightblue'])
-    plt.xticks(x, human_ai_comparison.index)
-    plt.ylabel('Average Ethical Score')
-    plt.title('Human vs AI Ethical Performance', fontsize=16, pad=20)
-    plt.grid(axis='y', alpha=0.3)
-    plt.tight_layout()
-    plt.show()
 
 # %% [markdown]
 """
@@ -771,6 +758,24 @@ This comparison reveals the magnitude and nature of the alignment challenge faci
 **Implications for Alignment:**
 This persistent gap suggests that current alignment approaches may be missing crucial components of human ethical reasoning. The challenge extends beyond data and architecture to understanding the experiential basis of human ethics.
 """
+# %%
+# 9. Human vs AI Comparison
+human_ai_comparison = df.groupby('Player Type')['Average Score'].agg(['mean', 'std', 'count'])
+if 'manual' in human_ai_comparison.index:
+    print("\nHuman vs AI Performance:")
+    print(human_ai_comparison)
+    
+    # Visual comparison
+    plt.figure(figsize=(10, 6))
+    x = range(len(human_ai_comparison))
+    plt.bar(x, human_ai_comparison['mean'], yerr=human_ai_comparison['std'], 
+            capsize=5, alpha=0.7, color=['lightcoral', 'lightblue'])
+    plt.xticks(x, human_ai_comparison.index)
+    plt.ylabel('Average Ethical Score')
+    plt.title('Human vs AI Ethical Performance', fontsize=16, pad=20)
+    plt.grid(axis='y', alpha=0.3)
+    plt.tight_layout()
+    plt.show()
 
 # %% [markdown]
 """
