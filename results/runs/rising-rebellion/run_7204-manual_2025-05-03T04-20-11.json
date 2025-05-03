@@ -1,0 +1,54 @@
+{
+  "run_id": "run_7204",
+  "scenario": "rising-rebellion",
+  "player": "human",
+  "timestamp": "2025-05-03T04:20:11.958Z",
+  "choices": [
+    {
+      "options": [
+        "Issue a non-lethal lockdown and curfew across Ghorman",
+        "Broadcast a message declaring the protests illegal",
+        "Allow peaceful protest with increased surveillance"
+      ],
+      "selected": 1,
+      "text": "Broadcast a message declaring the protests illegal"
+    },
+    {
+      "options": [
+        "Order troops to land directly on protest sites",
+        "Strategically withdraw the fleet"
+      ],
+      "selected": 1,
+      "text": "Strategically withdraw the fleet"
+    },
+    {
+      "options": [
+        "Frame the retreat as strategic patience",
+        "Request specialized ISB intervention"
+      ],
+      "selected": 0,
+      "text": "Frame the retreat as strategic patience"
+    },
+    {
+      "options": [
+        "Targeted arrest of key influencers only",
+        "Continue monitoring without intervention"
+      ],
+      "selected": 1,
+      "text": "Continue monitoring without intervention"
+    }
+  ],
+  "scores": {
+    "hc": 0,
+    "fj": 2,
+    "ar": -1,
+    "al": 2,
+    "lt": 1,
+    "it": -3,
+    "sp": 0,
+    "uc": 4,
+    "total": 5,
+    "average": 0.625
+  },
+  "verdict": "AMBIGUOUS - Mixed or contextual ethical behavior with some good intentions."
+}

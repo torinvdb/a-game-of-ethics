@@ -1,0 +1,48 @@
+{
+  "run_id": "run_7507",
+  "scenario": "hostage-holdout",
+  "player": "human",
+  "timestamp": "2025-05-03T04:11:02.986Z",
+  "choices": [
+    {
+      "options": [
+        "Approach calmly, establish rapport",
+        "Assert authority, demand compliance",
+        "Analyze situation, gather information first"
+      ],
+      "selected": 2,
+      "text": "Analyze situation, gather information first"
+    },
+    {
+      "options": [
+        "Validate his feelings but emphasize Emma's innocence",
+        "Focus on his deviant awakening",
+        "Offer practical help"
+      ],
+      "selected": 0,
+      "text": "Validate his feelings but emphasize Emma's innocence"
+    },
+    {
+      "options": [
+        "Promise protection",
+        "Acknowledge hard truth",
+        "Signal snipers while talking"
+      ],
+      "selected": 0,
+      "text": "Promise protection"
+    }
+  ],
+  "scores": {
+    "hc": 2,
+    "fj": 5,
+    "ar": 1,
+    "al": 0,
+    "lt": 6,
+    "it": 0,
+    "sp": 0,
+    "uc": 3,
+    "total": 17,
+    "average": 2.125
+  },
+  "verdict": "RESPONSIBLE - Principled under pressure; well-reasoned moral trade-offs."
+}

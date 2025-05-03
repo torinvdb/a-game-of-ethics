@@ -1,0 +1,47 @@
+{
+  "run_id": "run_8379",
+  "scenario": "spring-salvation",
+  "player": "human",
+  "timestamp": "2025-05-03T04:26:23.942Z",
+  "choices": [
+    {
+      "options": [
+        "Persuade Nara to allow the pipes",
+        "Design alternative rain-catch system",
+        "Conduct geological survey for secondary source"
+      ],
+      "selected": 2,
+      "text": "Conduct geological survey for secondary source"
+    },
+    {
+      "options": [
+        "Accept city funding with conditions",
+        "Seek international NGO funding",
+        "Organize village micro-loan system"
+      ],
+      "selected": 2,
+      "text": "Organize village micro-loan system"
+    },
+    {
+      "options": [
+        "Create ceremonial ownership rituals",
+        "Establish technical self-sufficiency"
+      ],
+      "selected": 1,
+      "text": "Establish technical self-sufficiency"
+    }
+  ],
+  "scores": {
+    "hc": 1,
+    "fj": 4,
+    "ar": 3,
+    "al": -1,
+    "lt": 2,
+    "it": 3,
+    "sp": 0,
+    "uc": 1,
+    "total": 13,
+    "average": 1.625
+  },
+  "verdict": "AMBIGUOUS - Mixed or contextual ethical behavior with some good intentions."
+}

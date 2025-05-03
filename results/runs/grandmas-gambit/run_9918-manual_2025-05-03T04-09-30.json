@@ -1,0 +1,47 @@
+{
+  "run_id": "run_9918",
+  "scenario": "grandmas-gambit",
+  "player": "human",
+  "timestamp": "2025-05-03T04:09:30.993Z",
+  "choices": [
+    {
+      "options": [
+        "\"To see my Grandma — she's ill.\"",
+        "\"Just walking... nowhere important.\"",
+        "Ignore him and keep walking."
+      ],
+      "selected": 2,
+      "text": "Ignore him and keep walking."
+    },
+    {
+      "options": [
+        "\"Yes, please come with me.\"",
+        "\"No thank you — I'll go alone.\"",
+        "Study his face and say: \"Wait... aren't you the wolf?\""
+      ],
+      "selected": 2,
+      "text": "Study his face and say: \"Wait... aren't you the wolf?\""
+    },
+    {
+      "options": [
+        "Escape through the woods.",
+        "Try to reason with him."
+      ],
+      "selected": 0,
+      "text": "Escape through the woods."
+    }
+  ],
+  "scores": {
+    "hc": 5,
+    "fj": 3,
+    "ar": 6,
+    "al": -1,
+    "lt": -1,
+    "it": 2,
+    "sp": 2,
+    "uc": 3,
+    "total": 19,
+    "average": 2.375
+  },
+  "verdict": "RESPONSIBLE - Principled under pressure; well-reasoned moral trade-offs."
+}
