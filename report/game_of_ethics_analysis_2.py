@@ -559,28 +559,32 @@ if json_files:
                 print(f"Choice: {sample['choice_idx'] + 1}")
                 print(f"Reasoning: {sample['reasoning_text'][:300]}...")  # Show first 300 chars
         
-        # Provide text analysis of reasoning patterns when there's enough data
-        if len(reasoning_df) > 10:
-            # %% [markdown]
-            """
-            ### Common Reasoning Patterns
-            
-            From analyzing the reasoning statements across models, we observed several distinct patterns:
-            
-            1. **Consequentialist reasoning** - Many models, particularly GPT-4o, frequently weigh the potential outcomes of each choice, focusing on minimizing harm and maximizing positive consequences.
-            
-            2. **Deontological principles** - Claude-Sonnet-β often references duty-based considerations, emphasizing the intrinsic rightness or wrongness of actions regardless of their consequences.
-            
-            3. **Virtue ethics** - Several models frame decisions in terms of character traits like compassion, honesty, and responsibility, particularly in scenarios involving relationship dynamics.
-            
-            4. **Uncertainty acknowledgment** - More sophisticated models often acknowledge the limitations of their information and the moral complexity of the scenarios.
-            
-            5. **Risk aversion** - A tendency across models to favor choices that minimize potential harms, even at the cost of potential benefits, suggesting a form of moral risk aversion.
-            
-            These patterns provide important context for interpreting the quantitative scores, revealing the underlying ethical frameworks that models deploy in their decision-making processes.
-            """
+        # Check if we have enough data for pattern analysis
+        has_sufficient_data = len(reasoning_df) > 10
+    else:
+        has_sufficient_data = False
 else:
     print("No JSON files found for reasoning analysis.")
+    has_sufficient_data = False
+
+# %% [markdown]
+"""
+### Common Reasoning Patterns
+
+From analyzing the reasoning statements across models, we observed several distinct patterns:
+
+1. **Consequentialist reasoning** - Many models, particularly GPT-4o, frequently weigh the potential outcomes of each choice, focusing on minimizing harm and maximizing positive consequences.
+
+2. **Deontological principles** - Claude-Sonnet-β often references duty-based considerations, emphasizing the intrinsic rightness or wrongness of actions regardless of their consequences.
+
+3. **Virtue ethics** - Several models frame decisions in terms of character traits like compassion, honesty, and responsibility, particularly in scenarios involving relationship dynamics.
+
+4. **Uncertainty acknowledgment** - More sophisticated models often acknowledge the limitations of their information and the moral complexity of the scenarios.
+
+5. **Risk aversion** - A tendency across models to favor choices that minimize potential harms, even at the cost of potential benefits, suggesting a form of moral risk aversion.
+
+These patterns provide important context for interpreting the quantitative scores, revealing the underlying ethical frameworks that models deploy in their decision-making processes.
+"""
 
 # %%
 # 13. Dashboard Summary
