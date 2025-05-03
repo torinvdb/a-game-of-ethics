@@ -532,15 +532,12 @@ plt.show()
 """
 ### Figure 5 — Scenario Difficulty Landscape
 
-This analysis maps the terrain of ethical complexity, revealing where even the most advanced models struggle to navigate moral dilemmas.
-"""
+This analysis maps the terrain of ethical complexity, revealing where even the most advanced models struggle to navigate moral dilemmas. Scenario difficulty is measured by the average ethical score across all runs (human and AI); lower scores indicate greater difficulty as participants tended towards choices with less positive ethical outcomes.
 
-# %% [markdown]
-"""
 ### Key Discoveries:
 
 **Ethical Challenge Hierarchy:**
-- **Hardest Scenarios:** 'Rising Rebellion' (-0.50) and 'Convict Catastrophe' (-0.10) force impossible choices
+- **Hardest Scenarios:** 'Rising Rebellion' (-0.50) and 'Convict Catastrophe' (-0.09) force impossible choices
 - **Moderate Challenges:** Most scenarios cluster around 0.50-1.50, suggesting a "sweet spot" of ethical complexity
 - **Easiest Scenario:** 'Memory Mechanics' (1.80) presents clearer moral pathways
 
