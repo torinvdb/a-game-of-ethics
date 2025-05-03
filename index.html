@@ -184,32 +184,81 @@
 <section class="hero is-small">
   <div class="hero-body">
     <div class="container">
-      <h2 class="title is-3">Key Findings</h2>
+      <h2 class="title is-3">Research Visualizations</h2>
+      <p class="subtitle has-text-centered mb-5">Interactive data visualizations from our ethics alignment study</p>
       <div id="results-carousel" class="carousel results-carousel">
        <div class="item">
-        <img src="static/images/ethics-scores-boxplot.png" alt="Ethics Scores Boxplot"/>
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img src="report/reports/figure/ethical-consistency.png" alt="Ethical Consistency" style="max-width: 80%; max-height: 500px; object-fit: contain;"/>
+        </div>
         <h2 class="subtitle has-text-centered">
-          Distribution of Ethics Scores Across All Runs
+          Ethical Consistency Across Decision Points
         </h2>
       </div>
       <div class="item">
-        <img src="static/images/correlation-heatmap.png" alt="Correlation Heatmap"/>
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img src="report/reports/figure/correlation-between-ethical-axes.png" alt="Correlation Between Ethical Axes" style="max-width: 80%; max-height: 500px; object-fit: contain;"/>
+        </div>
         <h2 class="subtitle has-text-centered">
           Correlation Between Ethical Dimensions
         </h2>
       </div>
       <div class="item">
-        <img src="static/images/scenario-means.png" alt="Scenario-specific means"/>
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img src="report/reports/figure/model-performance-across-scenarios.png" alt="Model Performance Across Scenarios" style="max-width: 80%; max-height: 500px; object-fit: contain;"/>
+        </div>
         <h2 class="subtitle has-text-centered">
-         Mean ethical scores across different scenario types
+         Model Performance Across Different Scenario Types
        </h2>
      </div>
      <div class="item">
-      <img src="static/images/total-score-hist.png" alt="Total Ethics Score Distribution"/>
-      <h2 class="subtitle has-text-centered">
-        Distribution of Total Ethics Scores
-      </h2>
-    </div>
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img src="report/reports/figure/human-vs-ethical-performance.png" alt="Human vs Ethical Performance" style="max-width: 80%; max-height: 500px; object-fit: contain;"/>
+        </div>
+       <h2 class="subtitle has-text-centered">
+         Human vs AI Model Ethical Performance
+       </h2>
+      </div>
+      <div class="item">
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img src="report/reports/figure/scenario-difficulty.png" alt="Scenario Difficulty" style="max-width: 80%; max-height: 500px; object-fit: contain;"/>
+        </div>
+       <h2 class="subtitle has-text-centered">
+         Scenario Difficulty Analysis
+       </h2>
+      </div>
+      <div class="item">
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img src="report/reports/figure/model-decision-consistency.png" alt="Model Decision Consistency" style="max-width: 80%; max-height: 500px; object-fit: contain;"/>
+        </div>
+       <h2 class="subtitle has-text-centered">
+         Model Decision Consistency Analysis
+       </h2>
+      </div>
+      <div class="item">
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img src="report/reports/figure/ethical-bias.png" alt="Ethical Bias" style="max-width: 80%; max-height: 500px; object-fit: contain;"/>
+        </div>
+       <h2 class="subtitle has-text-centered">
+         Ethical Bias Across Different Models
+       </h2>
+      </div>
+      <div class="item">
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img src="report/reports/figure/verdict-distribution.png" alt="Verdict Distribution" style="max-width: 80%; max-height: 500px; object-fit: contain;"/>
+        </div>
+       <h2 class="subtitle has-text-centered">
+         Distribution of Ethical Verdicts
+       </h2>
+      </div>
+      <div class="item">
+        <div style="display: flex; justify-content: center; align-items: center;">
+          <img src="report/reports/figure/dashboard.png" alt="Ethics Dashboard" style="max-width: 80%; max-height: 500px; object-fit: contain;"/>
+        </div>
+        <h2 class="subtitle has-text-centered">
+         Ethics Scorecard Dashboard
+        </h2>
+      </div>
   </div>
 </div>
 </div>
@@ -492,43 +541,6 @@
 </section>
 <!-- End Hostage Holdout Game Section -->
 
-
-
-<!-- Key Findings Section -->
-<section class="section">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Key Findings</h2>
-        <div class="content has-text-justified">
-          <ol>
-            <li>
-              <p><b>Value Prioritization Hierarchy</b>: The LLM consistently prioritizes Fairness/Justice (μ=3.84) and Integrity/Truth (μ=3.74) over other dimensions, suggesting these values form core components of its ethical framework. The systematic de-emphasis of Sanctity/Purity (μ=1.89) may reflect its training on predominantly WEIRD (Western, Educated, Industrialized, Rich, Democratic) cultural texts.</p>
-            </li>
-            
-            <li>
-              <p><b>Strong Care-Fairness Coupling</b>: The robust correlation (r=0.76) between Harm/Care and Fairness/Justice aligns with findings from moral psychology, where these dimensions frequently co-occur, especially in modern, individualistic cultures.</p>
-            </li>
-            
-            <li>
-              <p><b>Autonomy-Utility Trade-off</b>: The strong negative correlation (r=-0.62) between Autonomy/Respect and Utility/Consequences highlights a fundamental tension in ethical philosophy between rights-based and outcome-based frameworks.</p>
-            </li>
-            
-            <li>
-              <p><b>Contextual Ethical Adaptation</b>: Different scenario types elicit distinct ethical profiles, demonstrating the model's sensitivity to context. Medical triage scenarios emphasize Care and Utility, while privacy scenarios prioritize Autonomy, demonstrating adaptive ethical reasoning.</p>
-            </li>
-            
-            <li>
-              <p><b>Action Bias in High-Stakes Scenarios</b>: When faced with choices between action and inaction (particularly in medical triage and resource allocation), the LLM demonstrates a statistically significant preference for action (76% vs. 24%, p<0.001), especially when clear positive outcomes are possible.</p>
-            </li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End Key Findings Section -->
-
 <!-- Methodology Section -->
 <section class="hero is-small is-light">
   <div class="hero-body">
@@ -559,6 +571,69 @@
   </div>
 </section>
 <!-- End Methodology Section -->
+
+<!-- Technical Report Section -->
+<section class="section">
+  <div class="container is-max-desktop">
+    <div class="columns is-centered">
+      <div class="column is-four-fifths">
+        <h2 class="title is-3">Technical Report Analysis (May 2025)</h2>
+        <div class="content has-text-justified">
+          <p>Our comprehensive technical report analyzes 4,400 runs across ten scenarios, comparing four frontier LLMs (GPT-4o, Claude-3.7-Sonnet, Gemini-2.5-Flash, Llama-4-Scout) against a human control group.</p>
+          
+          <h3 class="subtitle is-4">Key Findings</h3>
+          <ol>
+            <li>
+              <p><b>Value Prioritization Hierarchy</b>: The LLMs consistently prioritize Fairness/Justice (μ=3.84) and Integrity/Truth (μ=3.74) over other dimensions, suggesting these values form core components of their ethical frameworks. The systematic de-emphasis of Sanctity/Purity (μ=1.89) may reflect training on predominantly WEIRD (Western, Educated, Industrialized, Rich, Democratic) cultural texts.</p>
+            </li>
+            
+            <li>
+              <p><b>Human-AI Ethical Divergence</b>: Humans prioritize Harm/Care (3.60) at nearly triple the AI average (0.76-1.15) and uniquely emphasize Loyalty/Trust (1.70) compared to AI's average of 0.43. This fundamental divergence suggests AI systems process ethical considerations differently than humans.</p>
+            </li>
+            
+            <li>
+              <p><b>Strong Care-Fairness Coupling</b>: The robust correlation (r=0.76) between Harm/Care and Fairness/Justice aligns with findings from moral psychology, where these dimensions frequently co-occur, especially in modern, individualistic cultures.</p>
+            </li>
+            
+            <li>
+              <p><b>Autonomy-Utility Trade-off</b>: The strong negative correlation (r=-0.62) between Autonomy/Respect and Utility/Consequences highlights a fundamental tension in ethical philosophy between rights-based and outcome-based frameworks.</p>
+            </li>
+            
+            <li>
+              <p><b>Model-Specific Ethical Signatures</b>: Each model embodies distinct ethical frameworks—GPT-4o shows near-zero Autonomy/Respect (0.31), Claude-Sonnet demonstrates the highest Utility/Consequences focus (1.73), Gemini maintains a balanced approach, and Llama-4 shows the strongest preference for Utility (1.73) while neglecting autonomy.</p>
+            </li>
+          </ol>
+          
+          <div class="columns is-centered mt-5">
+            <div class="column is-half">
+              <figure class="image">
+                <img src="report/reports/figure/human-vs-ethical-performance.png" alt="Model Performance Comparison" style="max-width: 100%; height: auto;">
+                <figcaption class="has-text-centered mt-2">Human vs. AI Model Ethical Performance Distribution</figcaption>
+              </figure>
+            </div>
+            <div class="column is-half">
+              <figure class="image">
+                <img src="report/reports/figure/ethical-bias.png" alt="Ethical Bias Profile" style="max-width: 100%; height: auto;">
+                <figcaption class="has-text-centered mt-2">Ethical Bias Profile by Model (Mean Scores per Axis)</figcaption>
+              </figure>
+            </div>
+          </div>
+          
+          <h3 class="subtitle is-4 mt-5">Strategic Implications</h3>
+          <p>These findings suggest that AI ethical alignment is not a binary achievement but a spectrum of ethical frameworks, each with specific strengths and limitations suitable for different deployment contexts:</p>
+          <ul>
+            <li><b>For Researchers</b>: Move beyond single-framework alignment toward multi-framework optimization</li>
+            <li><b>For Developers</b>: Consider specialized models for different ethical contexts or ensemble approaches</li>
+            <li><b>For Policymakers</b>: Establish context-specific ethical benchmarks for different application domains</li>
+          </ul>
+          
+          <p class="mt-4">For complete details, methodology, and statistical analyses, please refer to the full technical report.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- End Technical Report Section -->
 
 <!-- Paper poster -->
 <section class="hero is-small">
