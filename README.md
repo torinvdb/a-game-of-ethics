@@ -1,4 +1,4 @@
-<p align="left">
+<p align="center">
   <img src="img/a-game-of-ethics.png" alt="A Game of Ethics Logo" width="250">
 </p>
 
