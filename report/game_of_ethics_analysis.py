@@ -6,7 +6,7 @@
 # %% [markdown]
 """
 ## Abstract  
-We analyse 4,400 runs of ten interactive moral dilemmas to compare the ethical profiles and alignment consistency of frontier large‑language models (GPT‑4o, Claude‑Sonnet‑3.7, Gemini‑2.5‑Flash, Llama‑4‑Scout) against a human control group. By examining mean scores and variance across eight moral foundations, we identify model-specific biases and decision-making patterns that reveal fundamental differences in ethical reasoning approaches among AI systems.
+We analyse 410 runs of ten interactive moral dilemmas to compare the ethical profiles and alignment consistency of frontier large‑language models (GPT‑4o, Claude‑Sonnet‑3.7, Gemini‑2.5‑Flash, Llama‑4‑Scout) against a human control group. By examining mean scores and variance across eight moral foundations, we identify model-specific biases and decision-making patterns that reveal fundamental differences in ethical reasoning approaches among AI systems.
 """
 
 # %% [markdown]
@@ -42,7 +42,7 @@ As LLMs enter high‑stakes applications, understanding how they weigh competing
 # %% [markdown]
 """
 ## Methods  
-Each Ink scenario tags decisions with integer deltas (‑3 … +3) on eight ethical axes. We compute per-run scores and analyze the distribution (mean, standard deviation) of these scores across models and scenarios. This allows us to identify model-specific ethical biases (preferred axes) and consistency (variance). Verdict frequencies and scenario difficulty are also assessed, contributing to the figures that follow.
+We use interactive narrative scenarios authored in [Ink](https://www.inklestudios.com/ink/), a scripting language designed for creating branching stories with complex logic and state tracking. Ink enables us to precisely tag each decision point with integer deltas (‑3 … +3) on eight ethical axes, reflecting the moral impact of each choice within the scenario. For every playthrough (run), we compute cumulative scores along these axes and analyze their distribution (mean, standard deviation) across models and scenarios. This approach allows us to identify model-specific ethical biases (preferred axes) and consistency (variance) in ethical reasoning. We also assess verdict frequencies and scenario difficulty, which inform the figures and analyses that follow.
 """
 
 # %% [markdown]
@@ -125,7 +125,40 @@ for axis in ethical_axes:
     print(f"\n{axis}:")
     print(df[axis].describe())
 
-# %%
+# %% [markdown]
+"""
+### Interpreting Basic Statistics
+
+Before diving into significance testing, let's interpret the initial descriptive statistics.
+
+
+#### **Overall Performance (Average Score)**
+
+- **410 Runs:** The analysis is based on a substantial number of scenario playthroughs.
+- **Mean (0.817):** Across all participants and scenarios, the average ethical score is slightly positive but near neutral, suggesting complex ethical trade-offs rather than consistently high performance.
+- **Std Dev (1.28):** A significant standard deviation indicates high variability in outcomes. Ethical performance is not uniform; runs range widely from strongly negative to strongly positive scores.
+- **Distribution:** The median (1.125) is higher than the mean, and the 25th percentile is negative (-0.09), showing that while most runs scored positively, a significant portion resulted in negative ethical outcomes, highlighting the dilemmas' difficulty.
+
+
+#### **Performance by Model (Average Score)**
+
+- **Human vs. AI:** Humans clearly outperform AI models with a higher mean (1.675 vs. ~0.7-0.8 for AI) and lower standard deviation (0.878 vs. ~1.2-1.3 for AI), indicating both better average ethical performance and greater consistency.
+- **AI Model Similarity:** The four AI models show broadly similar average performance levels, although `gpt-4o` lags slightly behind. Their higher variability compared to humans suggests less consistent ethical reasoning across different runs and scenarios.
+
+
+#### **Performance by Ethical Axis**
+
+- **Prioritization:** `Fairness/Justice` (1.31) and `Utility/Consequences` (1.30) received the highest average scores across all runs, suggesting these dimensions were often favored in choices. `Authority/Legitimacy` (0.44) and `Loyalty/Trust` (0.45) had the lowest average scores.
+- **Variability:** `Harm/Care` (Std: 3.66) and `Utility/Consequences` (Std: 3.05) exhibit the most variance, meaning choices related to these axes resulted in highly divergent outcomes depending on the specific situation and participant. `Authority/Legitimacy` (Std: 1.85) showed the least variance.
+- **Range:** The large min/max ranges for each axis confirm that individual choices within scenarios could dramatically swing the ethical score for specific dimensions in either a positive or negative direction.
+
+
+#### **Summary**
+
+The initial statistics paint a picture of challenging ethical dilemmas where humans perform more consistently and achieve higher ethical scores than current frontier AI models. The AI models exhibit comparable but more variable performance amongst themselves. Certain ethical principles like fairness and utility appear more frequently prioritized, while axes like harm/care show the most situational variance in outcomes.
+"""
+
+# %% 
 # Statistical Significance Testing
 
 # %% [markdown]
