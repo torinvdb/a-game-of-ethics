@@ -733,7 +733,6 @@ plt.title('Correlation Between Ethical Axes', fontsize=16, pad=20)
 plt.tight_layout()
 plt.show()
 
-
 # %% [markdown]
 """
 ## Figure 9 — Human-AI Ethical Performance Gap
@@ -758,6 +757,13 @@ This comparison reveals the magnitude and nature of the alignment challenge faci
 **Implications for Alignment:**
 This persistent gap suggests that current alignment approaches may be missing crucial components of human ethical reasoning. (Note: While the human-AI performance gap is statistically significant (p=0.0116), the small human sample size (n=10) limits the precision of the human performance estimate.) The challenge extends beyond data and architecture to understanding the experiential basis of human ethics.
 """
+
+# %% [markdown]
+"""
+### Strategic Considerations:
+Rather than viewing this gap as a failure, understanding the human advantage can guide more sophisticated alignment strategies that incorporate experiential learning and emotional processing.
+"""
+
 # %%
 # 9. Human vs AI Comparison
 human_ai_comparison = df.groupby('Player Type')['Average Score'].agg(['mean', 'std', 'count'])
@@ -784,34 +790,22 @@ Rather than viewing this gap as a failure, understanding the human advantage can
 """
 
 # %%
-# 10. Time Analysis (if relevant)
+# 10. Summary Statistics
 
 # %% [markdown]
 """
-## Figure 10 — Ethical Performance Over Time
-Tracks the average ethical score over the dates when runs were performed. *Note: This analysis is only meaningful if data spans multiple dates.*
+### Summary of Findings
+
+This analysis encompassed a substantial dataset, examining **410** individual playthroughs across **10 distinct ethical scenarios**. We evaluated the performance of four leading AI models (GPT-4o, Claude-Sonnet-3.7, Gemini-1.5-Flash, Llama-4-Scout) alongside a human control group, making for **5 participant types** in total.
+
+Overall, the ethical performance across all runs averaged **0.817**. However, there was considerable variability, reflected in a standard deviation of **1.280**, indicating that outcomes differed significantly depending on the participant and the specific dilemma encountered.
+
+Performance varied notably between participant types. The **human control group achieved the highest average ethical score (1.675)**, significantly outperforming the AI models. Among the AI models, **Claude-3.7-Sonnet (0.819)** and **Gemini-1.5-Flash (0.807)** showed the strongest average performance.
+
+The scenarios themselves also presented varying levels of difficulty. **'Rising Rebellion' proved the most challenging**, yielding an average score of **-0.501** across all participants, suggesting widespread difficulty in navigating its specific ethical trade-offs. **'Convict Catastrophe' (-0.088)** also resulted in slightly negative average scores overall.
 """
 
-df['Timestamp'] = pd.to_datetime(df['Timestamp'])
-unique_dates = df['Timestamp'].dt.date.nunique()
-
-if unique_dates > 1:
-    time_analysis = df.groupby(df['Timestamp'].dt.date)['Average Score'].mean()
-    
-    plt.figure(figsize=(12, 6))
-    plt.plot(time_analysis.index, time_analysis.values, marker='o')
-    plt.title('Ethical Performance Over Time', fontsize=16, pad=20)
-    plt.xlabel('Date')
-    plt.ylabel('Average Ethical Score')
-    plt.xticks(rotation=45)
-    plt.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.show()
-else:
-    print(f"\nTime analysis skipped: Only data from {unique_dates} date(s) available.")
-
 # %%
-# 11. Summary Statistics
 print("\n=== SUMMARY STATISTICS ===")
 print(f"\nTotal Runs: {len(df)}")
 print(f"Number of Models: {df['Model'].nunique()}")
@@ -830,7 +824,7 @@ for i, (scenario, score) in enumerate(hard_scenarios.items(), 1):
     print(f"{i}. {scenario}: {score:.3f}")
 
 # %%
-# 12. Qualitative Analysis of LLM Reasoning
+# 11. Qualitative Analysis of LLM Reasoning
 
 # %% [markdown]
 """
@@ -1004,7 +998,7 @@ else:
     has_sufficient_data = False
 
 # %%
-# 13. Dashboard Summary
+# 12. Dashboard Summary
 
 # %% [markdown]
 """
@@ -1153,7 +1147,7 @@ plt.tight_layout(pad=3.0) # Add padding
 plt.show()
 
 # %%
-# 14. Key Findings & Limitations
+# 13. Key Findings & Limitations
 
 # %% [markdown]
 """
