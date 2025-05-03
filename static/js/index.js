@@ -19,3 +19,27 @@ $(document).ready(function() {
     bulmaSlider.attach();
 
 })
+
+// Function to handle scenario card clicks
+document.addEventListener('DOMContentLoaded', function() {
+  // Set up event listeners for scenario card links
+  const scenarioLinks = document.querySelectorAll('.game-selector .card-footer-item:not([disabled])');
+  const gameContainer = document.getElementById('game-container');
+  const gameFrame = document.getElementById('game-frame');
+  
+  scenarioLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      const gameUrl = this.getAttribute('href');
+      
+      // Update the iframe source
+      gameFrame.src = gameUrl;
+      
+      // Show the game container
+      gameContainer.style.display = 'block';
+      
+      // Scroll to the game container
+      gameContainer.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+});

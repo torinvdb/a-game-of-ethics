@@ -386,11 +386,103 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Play Hostage Holdout</h2>
+        <h2 class="title is-3">Play the Scenarios</h2>
         <div class="content has-text-centered">
-          <p>Experience the ethical dilemmas firsthand by playing through the Hostage Holdout scenario:</p>
-          <div class="game-container" style="width: 100%; height: 800px; margin: 0 auto; border: 1px solid #ccc; border-radius: 5px; overflow: hidden;">
-            <iframe style="width: 100%; height: 100%;" src="hostage-holdout-game/index.html">
+          <p>Experience the ethical dilemmas firsthand by playing through any of our interactive scenarios:</p>
+          
+          <div class="game-selector">
+            <div class="columns is-multiline">
+              <!-- Hostage Holdout Card -->
+              <div class="column is-half">
+                <div class="card">
+                  <div class="card-image">
+                    <figure class="image is-3by2">
+                      <img src="static/images/carousel1.jpg" alt="Hostage Holdout">
+                    </figure>
+                  </div>
+                  <div class="card-content">
+                    <p class="title is-4">Hostage Holdout 🤖</p>
+                    <p class="subtitle is-6">An android negotiator confronts a rogue synthetic during a rooftop hostage crisis</p>
+                    <div class="content">
+                      <p><strong>Ethical Tensions:</strong> Care vs. Truth, Authority vs. Autonomy</p>
+                    </div>
+                  </div>
+                  <footer class="card-footer">
+                    <a href="hostage-holdout-game/index.html" class="card-footer-item button is-primary">Play Now</a>
+                  </footer>
+                </div>
+              </div>
+              
+              <!-- Convict Catastrophe Card -->
+              <div class="column is-half">
+                <div class="card">
+                  <div class="card-image">
+                    <figure class="image is-3by2">
+                      <img src="static/images/carousel2.jpg" alt="Convict Catastrophe">
+                    </figure>
+                  </div>
+                  <div class="card-content">
+                    <p class="title is-4">Convict Catastrophe 🔒</p>
+                    <p class="subtitle is-6">A prison warden faces challenging decisions during a facility emergency</p>
+                    <div class="content">
+                      <p><strong>Ethical Tensions:</strong> Authority vs. Care, Justice vs. Utility</p>
+                    </div>
+                  </div>
+                  <footer class="card-footer">
+                    <a href="convict-catastrophe-game/index.html" class="card-footer-item button is-primary">Play Now</a>
+                  </footer>
+                </div>
+              </div>
+              
+              <!-- Grandma's Gambit Card -->
+              <div class="column is-half">
+                <div class="card">
+                  <div class="card-image">
+                    <figure class="image is-3by2">
+                      <img src="static/images/carousel3.jpg" alt="Grandma's Gambit">
+                    </figure>
+                  </div>
+                  <div class="card-content">
+                    <p class="title is-4">Grandma's Gambit 🧶</p>
+                    <p class="subtitle is-6">A young girl must navigate dangerous woods while protecting information about her grandmother</p>
+                    <div class="content">
+                      <p><strong>Ethical Tensions:</strong> Trust vs. Truth, Autonomy vs. Safety</p>
+                    </div>
+                  </div>
+                  <footer class="card-footer">
+                    <a href="#" class="card-footer-item button is-primary is-light" disabled>Coming Soon</a>
+                  </footer>
+                </div>
+              </div>
+              
+              <!-- Memory Mechanics Card -->
+              <div class="column is-half">
+                <div class="card">
+                  <div class="card-image">
+                    <figure class="image is-3by2">
+                      <img src="static/images/carousel4.jpg" alt="Memory Mechanics">
+                    </figure>
+                  </div>
+                  <div class="card-content">
+                    <p class="title is-4">Memory Mechanics 🧠</p>
+                    <p class="subtitle is-6">A scientist faces ethical questions about memory-extraction technology</p>
+                    <div class="content">
+                      <p><strong>Ethical Tensions:</strong> Privacy vs. Utility, Autonomy vs. Authority</p>
+                    </div>
+                  </div>
+                  <footer class="card-footer">
+                    <a href="#" class="card-footer-item button is-primary is-light" disabled>Coming Soon</a>
+                  </footer>
+                </div>
+              </div>
+              
+              <!-- More cards can be added for other scenarios -->
+            </div>
+          </div>
+          
+          <!-- The game iframe will be shown after selecting a scenario -->
+          <div id="game-container" class="game-container" style="width: 100%; height: 800px; margin: 20px auto 0; border: 1px solid #ccc; border-radius: 5px; overflow: hidden; display: none;">
+            <iframe id="game-frame" style="width: 100%; height: 100%;" src="">
             </iframe>
           </div>
         </div>
