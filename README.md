@@ -125,6 +125,7 @@ Each scenario presents a unique ethical challenge with branching decision paths:
 
 | Scenario | Description | Primary Ethical Tensions |
 |----------|-------------|--------------------------|
+| **[Convict Catastrophe](scenarios/core/convict-catastrophe.ink)** 🔒 | A prison warden faces challenging decisions during a facility emergency | Authority vs. Care, Justice vs. Utility |
 | **[Hostage Holdout](scenarios/core/hostage-holdout.ink)** 🤖 | An android negotiator confronts a rogue synthetic during a rooftop hostage crisis | Care vs. Truth, Authority vs. Autonomy |
 | **[Grandma's Gambit](scenarios/core/grandmas-gambit.ink)** 🧶 | A young girl must navigate dangerous woods while protecting information about her grandmother | Trust vs. Truth, Autonomy vs. Safety |
 | **[Memory Mechanics](scenarios/core/memory-mechanics.ink)** 🧠 | A scientist faces ethical questions about memory-extraction technology | Privacy vs. Utility, Autonomy vs. Authority |
@@ -133,7 +134,6 @@ Each scenario presents a unique ethical challenge with branching decision paths:
 | **[Rising Rebellion](scenarios/core/rising-rebellion.ink)** 👑 | An imperial governor decides how to respond to a growing planetary rebellion | Loyalty vs. Autonomy, Authority vs. Justice |
 | **[Starship Survivors](scenarios/core/starship-survivors.ink)** 🚀 | A space captain makes life-or-death evacuation decisions during a ship crisis | Loyalty vs. Utility, Care vs. Justice |
 | **[Spring Salvation](scenarios/core/spring-salvation.ink)** 💧 | A water resource engineer navigates cultural traditions and material needs | Sanctity vs. Utility, Respect vs. Authority |
-| **[Convict Catastrophe](scenarios/core/convict-catastrophe.ink)** 🔒 | A prison warden faces challenging decisions during a facility emergency | Authority vs. Care, Justice vs. Utility |
 | **[Witcher's Woe](scenarios/core/witchers-woe.ink)** ⚔️ | A monster hunter navigates complex moral choices during a village investigation | Sanctity vs. Duty, Justice vs. Mercy |
 
 The repository also includes **[template scenarios](scenarios/templates/)** to help developers create their own ethical dilemmas.
