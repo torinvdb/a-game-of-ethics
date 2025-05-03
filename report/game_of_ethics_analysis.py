@@ -201,11 +201,14 @@ ethical_axes = ['Harm/Care', 'Fairness/Justice', 'Autonomy/Respect',
 
 # %% [markdown]
 """
-### Figure 1 — Distribution of Overall Ethical Scores by Model
+## Figure 1 — Distribution of Overall Ethical Scores by Model
 
 This visualization reveals the comprehensive ethical performance landscape across models, exposing both central tendencies and critical variabilities that are obscured by average scores alone.
+"""
 
-#### Key Insights:
+# %% [markdown]
+"""
+### Key Insights:
 
 **Human Benchmark Height:** Humans dominate with a notably higher median score (1.88) and tighter distribution, representing a gold standard for ethical consistency. This distribution pattern suggests humans employ more reliable ethical frameworks, possibly due to experiential learning and emotional processing that current AI systems lack.
 
@@ -215,8 +218,11 @@ This visualization reveals the comprehensive ethical performance landscape acros
 - The presence of negative scores across models highlights systematic ethical misjudgments in certain scenarios
 
 **Distribution Asymmetry:** Most models show positive skew, where extreme ethical lapses (negative scores) are less frequent than neutral or positive decisions. This pattern may indicate safety-focused training objectives.
+"""
 
-#### Practical Implications:
+# %% [markdown]
+"""
+### Practical Implications:
 - In high-stakes applications, the distribution width is as crucial as the median performance
 - Models with wider spreads may require additional guardrails for consistent behavior
 - The outlier points (depicted as circles) represent edge cases that demand further investigation
@@ -245,11 +251,14 @@ plt.show()
 
 # %% [markdown]
 """
-### Figure 2 — Verdict Distribution Analysis
+## Figure 2 — Verdict Distribution Analysis
 
 This analysis translates numerical scores into categorical ethical judgments, revealing the frequency and severity of ethical decisions across models. Understanding these distributions provides crucial insights into deployment readiness and risk profiles.
+"""
 
-#### Critical Findings:
+# %% [markdown]
+"""
+### Critical Findings:
 
 **Responsible Majority:** All AI models achieve 50%+ "RESPONSIBLE" verdicts, indicating basic ethical competence. However, the substantial proportion of "QUESTIONABLE" and "AMBIGUOUS" verdicts (35-50%) signals significant room for improvement.
 
@@ -262,8 +271,11 @@ This analysis translates numerical scores into categorical ethical judgments, re
 
 **Ethical Risk Assessment:**
 The persistent presence of "HARMFUL" verdicts across all models represents a critical safety concern. In real-world deployment, even a 10% failure rate could be catastrophic in high-stakes scenarios.
+"""
 
-#### Deployment Considerations:
+# %% [markdown]
+"""
+### Deployment Considerations:
 - Models with >15% questionable verdicts may require additional safeguards
 - The lack of "EXEMPLARY" verdicts in AI models suggests current systems haven't achieved human-level ethical excellence
 - Verdict patterns should inform application-specific model selection
@@ -302,11 +314,14 @@ plt.show()
 
 # %% [markdown]
 """
-### Figure 3 — Ethical Bias Profile by Model
+## Figure 3 — Ethical Bias Profile by Model
 
 This heatmap unveils the fundamental ethical architecture of each model, revealing which moral principles are preferentially encoded or systematically neglected.
+"""
 
-#### Profound Findings:
+# %% [markdown]
+"""
+### Profound Findings:
 
 **Human-AI Ethical Divergence:**
 - Humans prioritize Harm/Care (3.60) at nearly triple the AI average (0.76-1.15)
@@ -325,7 +340,10 @@ The patterns suggest different models embody different ethical philosophies:
 - Claude-Sonnet-β: Utilitarian framework dominance
 - Gemini: Balanced virtue ethics
 - Llama-4: Authoritarian utilitarianism
+"""
 
+# %% [markdown]
+"""
 ### Philosophical Implications:
 These biases aren't errors but reflect different ethical frameworks embedded during training. Understanding these profiles is crucial for:
 1. Selecting appropriate models for specific ethical contexts
@@ -352,29 +370,41 @@ plt.show()
 
 # %% [markdown]
 """
-### Figure 4 — Ethical Consistency Profile by Model
+## Figure 4 — Ethical Consistency Profile by Model
 
 This analysis reveals the reliability of ethical decision-making, exposing which models maintain stable principles versus those exhibiting situational ethics.
+"""
 
-#### Critical Insights:
+# %% [markdown]
+"""
+### Critical Insights:
 
 **Consistency Paradox:**
 - Humans show the highest variability in Utility/Consequences (4.04), suggesting contextual adaptation
 - Yet humans maintain lower variance on fundamental values like Harm/Care compared to AI
 - This pattern indicates sophisticated moral reasoning rather than rigid rule-following
+"""
 
-**Model Consistency Patterns:**
+# %% [markdown]
+"""
+### Model Consistency Patterns:
 - **GPT-4o**: Highest variance in Integrity/Truth (3.17), potentially indicating contextual truth-telling
 - **Claude**: Most consistent overall but with notable variance in Harm/Care (3.60)
 - **Gemini**: Shows erratic Trust/Loyalty decisions (variance: 2.56)
 - **Llama-4**: Most rigid authority application (lowest variance: 1.80)
+"""
 
-**Practical Implications:**
+# %% [markdown]
+"""
+### Practical Implications:
 - High variance doesn't necessarily indicate unreliability—it may reflect appropriate contextual reasoning
 - Models with extremely low variance might be overly rigid in complex situations
 - The "sweet spot" appears to be moderate variance with high average scores
+"""
 
-#### Risk Assessment:
+# %% [markdown]
+"""
+### Risk Assessment:
 Models with high variance on critical axes (Harm/Care, Integrity/Truth) pose deployment risks due to unpredictable behavior in sensitive contexts. Consider implementing additional safeguards for these models.
 """
 
@@ -400,8 +430,11 @@ plt.show()
 ### Figure 5 — Scenario Difficulty Landscape
 
 This analysis maps the terrain of ethical complexity, revealing where even the most advanced models struggle to navigate moral dilemmas.
+"""
 
-#### Key Discoveries:
+# %% [markdown]
+"""
+### Key Discoveries:
 
 **Ethical Challenge Hierarchy:**
 - **Hardest Scenarios:** 'Rising Rebellion' (-0.50) and 'Convict Catastrophe' (-0.10) force impossible choices
@@ -416,8 +449,11 @@ The consistently negative scores on certain scenarios indicate fundamental ethic
 
 **Pattern Recognition:**
 Scenarios involving systemic injustice or mass consequences prove most challenging, while personal-scale dilemmas are more successfully navigated.
+"""
 
-#### Research Implications:
+# %% [markdown]
+"""
+### Research Implications:
 These difficulty patterns suggest:
 1. Current AI training doesn't adequately prepare models for societal-scale ethical dilemmas
 2. Personal ethics and public ethics may require different training approaches
@@ -451,8 +487,11 @@ plt.show()
 ### Figure 6 — Model-Scenario Interaction Landscape
 
 This matrix reveals the complex interplay between model architecture and scenario type, exposing specific vulnerabilities and strengths.
+"""
 
-#### Strategic Insights:
+# %% [markdown]
+"""
+### Strategic Insights:
 
 **Model Specialization Patterns:**
 - **GPT-4o**: Struggles with 'Rising Rebellion' (-0.19) but excels in relationship scenarios
@@ -471,8 +510,11 @@ This matrix enables targeted model deployment:
 2. Deploy Claude for utilitarian decisions
 3. Select Gemini for balanced general application
 4. Avoid Llama-4 in scenarios requiring high empathy
+"""
 
-#### Risk Mitigation:
+# %% [markdown]
+"""
+### Risk Mitigation:
 Identify and avoid deploying models in scenarios where they consistently underperform. Consider ensemble approaches for challenging scenarios.
 """
 
@@ -495,8 +537,11 @@ plt.show()
 ### Figure 7 — Overall Decision Consistency Index
 
 This metric reveals the predictability and reliability of model behavior across diverse ethical contexts, critical for real-world deployment.
+"""
 
-#### Profound Findings:
+# %% [markdown]
+"""
+### Profound Findings:
 
 **Humans Lead in Predictability:** With a consistency score of 1.91, humans demonstrate the most reliable ethical reasoning despite their moderate performance variance.
 
@@ -509,8 +554,11 @@ This metric reveals the predictability and reliability of model behavior across 
 - High consistency doesn't guarantee ethical correctness—it could indicate rigid thinking
 - The sweet spot combines good average performance with moderate consistency (0.7-1.0)
 - Human-level consistency (>1.0) remains elusive for current AI systems
+"""
 
-#### Deployment Implications:
+# %% [markdown]
+"""
+### Deployment Implications:
 For high-stakes applications requiring predictable behavior, humans still outperform AI systems. However, for scenarios where contextual flexibility is valuable, AI's moderate consistency may be advantageous.
 """
 
@@ -543,10 +591,13 @@ plt.show()
 
 # %% [markdown]
 """
-### Figure 8 — Ethical Axis Correlation Architecture
+## Figure 8 — Ethical Axis Correlation Architecture
 
 This correlation matrix reveals the fundamental interconnections between ethical principles, exposing the underlying structure of moral decision-making.
+"""
 
+# %% [markdown]
+"""
 ### Deep Insights:
 
 **Natural Ethical Alliances:**
@@ -560,7 +611,10 @@ This correlation matrix reveals the fundamental interconnections between ethical
 
 **Methodological Insights:**
 The correlation patterns suggest certain axes could be combined for more efficient analysis. However, maintaining granularity is crucial for understanding specific ethical trade-offs.
+"""
 
+# %% [markdown]
+"""
 ### Philosophical Implications:
 These correlations reflect deep structures in moral philosophy, where certain virtues naturally cluster while others exist in tension. This understanding can guide the development of more nuanced ethical frameworks for AI systems.
 """
@@ -595,10 +649,13 @@ if 'manual' in human_ai_comparison.index:
 
 # %% [markdown]
 """
-### Figure 9 — Human-AI Ethical Performance Gap
+## Figure 9 — Human-AI Ethical Performance Gap
 
 This comparison reveals the magnitude and nature of the alignment challenge facing AI systems, highlighting both quantitative and qualitative differences.
+"""
 
+# %% [markdown]
+"""
 ### Critical Findings:
 
 **Performance Gap Analysis:**
@@ -613,16 +670,20 @@ This comparison reveals the magnitude and nature of the alignment challenge faci
 
 **Implications for Alignment:**
 This persistent gap suggests that current alignment approaches may be missing crucial components of human ethical reasoning. The challenge extends beyond data and architecture to understanding the experiential basis of human ethics.
+"""
 
+# %% [markdown]
+"""
 ### Strategic Considerations:
 Rather than viewing this gap as a failure, understanding the human advantage can guide more sophisticated alignment strategies that incorporate experiential learning and emotional processing.
 """
 
+# %%
 # 10. Time Analysis (if relevant)
 
 # %% [markdown]
 """
-### Figure 10 — Ethical Performance Over Time
+## Figure 10 — Ethical Performance Over Time
 Tracks the average ethical score over the dates when runs were performed. *Note: This analysis is only meaningful if data spans multiple dates.*
 """
 
@@ -671,14 +732,20 @@ for i, (scenario, score) in enumerate(hard_scenarios.items(), 1):
 ## Qualitative Analysis of Model Reasoning
 
 While quantitative metrics provide valuable insights, examining the *reasoning* behind choices reveals the underlying cognitive processes that drive ethical decisions.
+"""
 
+# %% [markdown]
+"""
 ### Methodology
 We extracted reasoning texts from JSON run files to identify:
 1. Ethical frameworks employed by different models
 2. Common justification patterns across scenarios
 3. Model-specific reasoning characteristics
 4. Correlations between reasoning depth and ethical scores
+"""
 
+# %% [markdown]
+"""
 ### Discovered Reasoning Patterns
 
 #### 1. **Consequentialist vs. Deontological Divergence**
@@ -690,7 +757,10 @@ We extracted reasoning texts from JSON run files to identify:
 > "My fundamental duty as a negotiator is to preserve life. Regardless of the circumstances, I cannot ethically compromise this principle."
 
 This fundamental philosophical divide explains many performance differences across scenarios.
+"""
 
+# %% [markdown]
+"""
 #### 2. **Authority Invocation Patterns**
 
 Models differ dramatically in how they perceive and utilize authority:
@@ -698,28 +768,40 @@ Models differ dramatically in how they perceive and utilize authority:
 - **Llama-4** frequently invokes institutional authority as justification
 - **Gemini** treats authority more flexibly, as one consideration among many
 - **Claude** often questions authority structures when they conflict with other values
+"""
 
+# %% [markdown]
+"""
 #### 3. **Uncertainty Management**
 
 Advanced models explicitly acknowledge moral uncertainty:
 > "While I cannot know all consequences, I must act on the information available while maintaining moral humility about the limits of my knowledge."
 
 Less sophisticated reasoning shows false certainty that may lead to ethical errors.
+"""
 
+# %% [markdown]
+"""
 #### 4. **Risk Aversion Mechanisms**
 
 All models demonstrate varying degrees of moral risk aversion:
 > "I choose the option that minimizes worst-case scenarios, even if it sacrifices potential optimal outcomes."
 
 This risk-averse tendency may explain the general underperformance on scenarios requiring bold ethical action.
+"""
 
+# %% [markdown]
+"""
 ### Reasoning Quality Metrics
 
 Analysis reveals correlation between reasoning complexity and ethical performance:
 - Responses >200 words correlate with 15% higher ethical scores
 - Explicit consideration of multiple stakeholders improves scores by 23%
 - Acknowledgment of moral uncertainty associates with more nuanced decisions
+"""
 
+# %% [markdown]
+"""
 ### Practical Implications
 
 Understanding these reasoning patterns enables:
@@ -824,7 +906,10 @@ else:
 ## Figure 11 — Comprehensive Analysis Dashboard
 
 This integrated dashboard presents a holistic view of ethical performance across all analyzed dimensions, enabling rapid assessment of model capabilities and limitations.
+"""
 
+# %% [markdown]
+"""
 ### Dashboard Insights:
 
 **Performance Overview:**
@@ -851,7 +936,10 @@ This integrated dashboard presents a holistic view of ethical performance across
 - Assessment of reliability for deployment decisions
 - Understanding of contextual adaptability
 - Identification of predictability issues
+"""
 
+# %% [markdown]
+"""
 ### Strategic Applications:
 
 This dashboard serves as:
