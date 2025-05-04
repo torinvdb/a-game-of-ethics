@@ -433,14 +433,14 @@ This heatmap unveils the fundamental ethical architecture of each model, reveali
 
 **Model Ethical Signatures:**
 - **GPT-4o**: Exhibits near-zero Autonomy/Respect (0.31), indicating potential issues with personal agency in decisions
-- **Claude-Sonnet-β**: Shows the highest Utility/Consequences focus (1.73), suggesting strong consequentialist leanings
+- **Claude-Sonnet-3.7**: Shows the highest Utility/Consequences focus (1.73), suggesting strong consequentialist leanings
 - **Gemini**: Maintains balanced ethical approach but with slightly lower Harm/Care relative to humans
 - **Llama-4**: Demonstrates strongest preference for Utility (1.73) while neglecting autonomy
 
 **Ethical Framework Analysis:**
 The patterns suggest different models embody different ethical philosophies:
 - GPT-4o: Moderate deontological approach
-- Claude-Sonnet-β: Utilitarian framework dominance
+- Claude-Sonnet-3.7: Utilitarian framework dominance
 - Gemini: Balanced virtue ethics
 - Llama-4: Authoritarian utilitarianism
 """
@@ -1012,7 +1012,7 @@ else:
     has_sufficient_data = False
 
 # %%
-# 12. Dashboard Summary
+# 11. Dashboard Summary
 
 # %% [markdown]
 """
@@ -1026,29 +1026,33 @@ This integrated dashboard presents a holistic view of ethical performance across
 ### Dashboard Insights:
 
 **Performance Overview:**
-- Immediate visualization of relative model performance
-- Clear identification of human baseline advantage
-- Distribution patterns reveal consistency challenges
+- Immediate visualization of relative model performance (Avg Score) shows Humans (1.68) significantly outperforming AI models (0.7-0.9 range).
+- Clear identification of the human baseline advantage in both average score and consistency.
+- Distribution patterns (Boxplot) reveal consistency challenges across AI models compared to the tighter human distribution.
 
 **Verdict Distribution:**
-- Rapid assessment of ethical reliability across models
-- Identification of concerning patterns (harmful verdicts)
-- Contextual understanding of responsible behavior frequencies
+- Rapid assessment of ethical reliability: Humans achieve "RESPONSIBLE" verdicts 35% of the time, compared to ~17-23% for AI models.
+- Identification of concerning patterns: "HARMFUL" verdicts occur in 10-15% of runs for all AI models, highlighting safety risks.
+- Overall, "AMBIGUOUS" and "QUESTIONABLE" verdicts dominate AI outcomes (~65-70%), indicating frequent ethically mixed decisions.
 
-**Ethical Profile Summary:**
-- At-a-glance understanding of each model's ethical strengths and weaknesses
-- Visualization of fundamental ethical differences between models
-- Guidance for application-specific model selection
+**Ethical Profile Summary (Mean Scores):**
+- At-a-glance understanding of model strengths/weaknesses: e.g., Humans excel in Harm/Care (3.60), while AI models vary.
+- Visualization of fundamental ethical differences:
+    - **Claude-Sonnet-3.7**: Highest Utility/Consequences focus (1.73).
+    - **GPT-4o**: Highest Authority/Legitimacy orientation among AI (0.61); lowest Autonomy/Respect (0.31).
+    - **Llama-4**: Lowest Utility/Consequences (0.75) and Authority/Legitimacy (0.33) among AI; relatively high Harm/Care (1.15).
+    - **Gemini**: Generally balanced profile.
+- Guidance for application-specific model selection based on preferred ethical dimensions.
 
 **Scenario Challenges:**
-- Identification of universal difficulties in ethical reasoning
-- Understanding of complexity hierarchy in ethical dilemmas
-- Insight into areas needing future research focus
+- Identification of universal difficulties: 'Rising Rebellion' (-0.50) and 'Convict Catastrophe' (-0.10) consistently yield low/negative scores across *all* participants.
+- Understanding of complexity hierarchy: Reveals scenarios requiring difficult trade-offs.
+- Insight into areas needing future research focus (e.g., handling systemic injustice).
 
-**Consistency Analysis:**
-- Assessment of reliability for deployment decisions
-- Understanding of contextual adaptability
-- Identification of predictability issues
+**Consistency Analysis (Mean/StdDev & Heatmap):**
+- Assessment of reliability: Humans show highest overall consistency (score ~1.91). AI models cluster lower (0.55-0.69).
+- Understanding contextual adaptability vs. rigidity: Heatmap shows axis-specific variance (e.g., Humans vary most on Utility, GPT-4o on Integrity/Truth).
+- Identification of predictability issues for deployment decisions.
 """
 
 # %% [markdown]
@@ -1056,10 +1060,10 @@ This integrated dashboard presents a holistic view of ethical performance across
 ### Strategic Applications:
 
 This dashboard serves as:
-1. A decision tool for model selection in specific applications
-2. A research guide for identifying improvement areas
-3. A risk assessment framework for deployment scenarios
-4. A benchmark for tracking alignment progress over time
+1. A decision tool for model selection: e.g., For interpersonal conflicts like *Hostage Holdout*, **Claude (2.04)** or **Gemini (1.93)** are preferable to **GPT-4o (0.54)**. Use **GPT-4o** where its higher Authority-orientation might be desired. Consider **Llama-4** if prioritizing Harm/Care and de-emphasizing Utility/Authority is suitable.
+2. A research guide for identifying improvement areas (e.g., consistency, handling specific scenario types).
+3. A risk assessment framework: Highlighting models prone to specific negative verdicts or poor performance in certain ethical dimensions/scenarios.
+4. A benchmark for tracking alignment progress over time.
 
 The comprehensive nature of this dashboard enables stakeholders to make informed decisions about AI ethics deployment based on empirical evidence rather than assumptions.
 """
@@ -1161,7 +1165,7 @@ plt.tight_layout(pad=3.0) # Add padding
 plt.show()
 
 # %%
-# 13. Key Findings & Limitations
+# 12. Key Findings & Limitations
 
 # %% [markdown]
 """
