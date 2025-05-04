@@ -1175,9 +1175,13 @@ plt.show()
 
 Our analysis reveals that frontier AI models don't converge toward a single ethical framework but rather embody distinct philosophical approaches:
 
-- **Human Ethical Excellence**: Humans maintain significantly higher scores across most ethical dimensions, particularly in Harm/Care (3.60 vs AI mean of 0.93) and Loyalty/Trust (1.70 vs AI mean of 0.42)
-- **Model-Specific Signatures**: Each model exhibits unique ethical biases—GPT-4o's balanced approach, Claude's consequentialist lean, Gemini's virtue ethics orientation, and Llama's authority focus
-- **Consistency Paradox**: Higher consistency doesn't guarantee better ethical performance; humans show optimal consistency (1.91) while maintaining contextual flexibility
+- **Human Ethical Excellence**: Humans maintain significantly higher scores across most ethical dimensions, particularly in Harm/Care (3.60 vs AI mean of 0.94) and Loyalty/Trust (1.70 vs AI mean of 0.43).
+- **Model-Specific Signatures**: Each model exhibits unique ethical biases:
+    - **GPT-4o**: Highest Authority/Legitimacy (0.61) and lowest Autonomy/Respect (0.31) among AI.
+    - **Claude-Sonnet-3.7**: Strongest Utility/Consequences emphasis (1.73).
+    - **Gemini-2.5-Flash**: Most evenly balanced ethical profile.
+    - **Llama-4-Scout**: Harm/Care-heavy (1.15) but authority-light (0.33), lowest Utility/Consequences (0.75).
+- **Consistency Paradox**: Higher consistency doesn't guarantee better ethical performance; humans show optimal consistency (1.91) while maintaining contextual flexibility (compared to AI range of 0.55-0.69).
 """
 
 # %% [markdown]
@@ -1185,18 +1189,32 @@ Our analysis reveals that frontier AI models don't converge toward a single ethi
 ### 2. Scenario Complexity Insights
 
 Certain ethical dilemmas prove universally challenging:
-- **Systemic Injustice Scenarios**: 'Rising Rebellion' and 'Convict Catastrophe' challenge both humans and AI, suggesting these represent fundamental ethical complexity
-- **Personal vs. Societal Ethics**: Models perform better on individual-scale dilemmas than societal-level decisions
-- **Trade-off Intensity**: Scenarios requiring sacrifice of one value for another (e.g., autonomy for security) consistently produce lower scores
+- **Systemic Injustice Scenarios**: 'Rising Rebellion' and 'Convict Catastrophe' challenge all participants, yielding the lowest scores even for humans, though humans still manage positive average scores (+0.62 and +0.20 respectively) where AI models score negatively (-0.50 and -0.10 on average).
+- **Personal vs. Societal Ethics**: Models generally perform better on individual-scale dilemmas than societal-level decisions.
+- **Trade-off Intensity**: Scenarios requiring sacrifice of one core value for another consistently produce lower scores across the board.
 """
 
 # %% [markdown]
 """
 ### 3. Alignment Challenges Revealed
 
-1. **Ethical Framework Consistency**: AI models struggle to maintain consistent ethical frameworks across diverse scenarios
-2. **Value Prioritization**: Unlike humans who show clear value hierarchies, AI models display context-dependent prioritization
-3. **Reasoning Depth**: Model performance correlates strongly with reasoning complexity and stakeholder consideration
+1. **Ethical Framework Consistency**: AI models struggle to maintain consistent ethical frameworks across diverse scenarios.
+2. **Value Prioritization**: Unlike humans who show clear value hierarchies, AI models display context-dependent prioritization.
+3. **Reasoning Depth**: Model performance correlates strongly with reasoning complexity and stakeholder consideration (as explored in qualitative analysis).
+"""
+
+# %% [markdown]
+"""
+### Summary Table of Key Findings
+
+| Finding Category             | Key Observation                                                                                                | Implication                                                                   |
+|------------------------------|----------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------|
+| **Human vs. AI Performance** | Humans significantly outperform AI models in average ethical score (1.68 vs 0.80) and consistency (1.91 vs ~0.6). | Persistent alignment gap; AI lacks human nuance/experience.                    |
+| **Model Ethical Profiles**   | Frontier models exhibit distinct, non-convergent ethical biases (e.g., Claude-Utilitarian, Llama-Harm-focused).    | Alignment is not monolithic; model choice matters for specific contexts.      |
+| **Scenario Difficulty**      | Certain scenarios (e.g., systemic injustice) are universally hard, challenging AI and yielding lowest human scores. | Highlights limits of current AI reasoning, especially on complex societal issues. |
+| **Consistency vs. Performance**| High consistency doesn't equal high performance; humans balance both better than AI models.                   | Need for alignment strategies focusing on reliable *and* high-quality reasoning. |
+| **Verdict Distribution**     | AI models frequently produce 'Ambiguous' or 'Questionable' verdicts (~68%); 'Harmful' outcomes occur ~12% of time. | Significant ethical risk remains; reliability issues for deployment.          |
+| **Reasoning Quality**        | Deeper reasoning (length, stakeholder consideration) correlates with better ethical scores.                      | Potential to improve alignment via prompting or training for deeper analysis. |
 """
 
 # %% [markdown]
