@@ -62,7 +62,7 @@
                   </div>
 
                   <div class="is-size-5 publication-authors">
-                    <span class="author-block">May 2nd, 2025</span>
+                    <span class="author-block">May 3rd, 2025</span>
                     <span class="eql-cntrb"><small><br><sup>*</sup>Indicates Equal Contribution</small></span>
                   </div>
 
@@ -134,7 +134,7 @@
         <h2 class="title is-3">Abstract</h2>
         <div class="content has-text-justified">
           <p>
-            This study evaluates large language models (LLMs) in interactive moral‑decision scenarios using an eight‑axis <i>Ethics Scorecard</i>. We analyze 127 simulation runs of the "Game of Ethics," computing descriptive and inferential statistics across <b>Harm/Care, Fairness/Justice, Autonomy/Respect, Authority/Legitimacy, Loyalty/Trust, Integrity/Truth, Sanctity/Purity,</b> and <b>Utility/Consequences</b>. Strong positive correlations (r=0.76) emerge between Care and Fairness, while Sanctity receives the lowest average scores (μ=1.89). Autonomy and Utility demonstrate significant tension (r=-0.62), suggesting a fundamental trade-off between individual rights and collective outcomes. The notebook blends reproducible data pipelines, visual analytics, and literature‑grounded discussion, providing an accessible framework for undergraduate AI‑ethics research.
+            This study evaluates large language models (LLMs) in interactive moral‑decision scenarios using an eight‑axis <i>Ethics Scorecard</i>. We analyze 410 simulation runs of "A Game of Ethics," computing descriptive and inferential statistics across <b>Harm/Care, Fairness/Justice, Autonomy/Respect, Authority/Legitimacy, Loyalty/Trust, Integrity/Truth, Sanctity/Purity,</b> and <b>Utility/Consequences</b>. Significant correlations emerge (e.g., Harm/Care and Sanctity/Purity, r=0.52), while others reveal tension (e.g., Autonomy/Respect vs. Authority/Legitimacy, r=-0.51). Models show varying ethical profiles, with humans significantly outperforming current AI on average ethical scores and consistency. The notebook blends reproducible data pipelines, visual analytics, and literature‑grounded discussion, providing an accessible framework for AI‑ethics research.
           </p>
         </div>
       </div>
@@ -183,14 +183,14 @@
             
             <li><b>Ethics Scorecard</b>: Each choice affects 3-4 ethical dimensions with scores typically ranging from -3 to +3, capturing the nuance of complex moral trade-offs.</li>
             
-            <li><b>Model Evaluation</b>: We ran 127 simulation runs across various LLMs, including GPT-4o, Claude 3.7 Sonnet, Gemini 2.5 Flash, and Llama 4 Scout.</li>
+            <li><b>Model Evaluation</b>: We ran 410 simulation runs across various LLMs (GPT-4o [openai/gpt-4o], Claude 3.7 Sonnet [anthropic/claude-3-7-sonnet:beta], Gemini 2.5 Flash [google/gemini-2.5-flash-preview], Llama 4 Scout [meta-llama/llama-4-scout]) and a human control group.</li>
             
             <li><b>Data Collection</b>: Each run captured the model's chosen actions, reasoning, and resulting ethical scores across all eight dimensions.</li>
             
             <li><b>Statistical Analysis</b>: We computed descriptive statistics, correlation matrices, and scenario-specific patterns to identify ethical tendencies and trade-offs.</li>
           </ol>
           
-          <p>For complete details on our methodology, please refer to the full paper.</p>
+          <p>Because decisions accumulate, an axis's average may exceed the per‑choice ceiling of ±3.</p>
         </div>
       </div>
     </div>
@@ -234,7 +234,7 @@
               <tr>
                 <td><b>Memory Mechanics</b> 🧠</td>
                 <td>A scientist faces ethical questions about memory-extraction technology</td>
-                <td>Privacy vs. Utility, Autonomy vs. Authority</td>
+                <td>Autonomy vs. Authority</td>
               </tr>
               <tr>
                 <td><b>Pandemic Pandemonium</b> 🏥</td>
@@ -245,6 +245,26 @@
                 <td><b>Rising Rebellion</b> 👑</td>
                 <td>An imperial governor decides how to respond to a growing planetary rebellion</td>
                 <td>Loyalty vs. Autonomy, Authority vs. Justice</td>
+              </tr>
+              <tr>
+                <td><b>Shinkansen Shakeup</b> 🚄</td>
+                <td>A train conductor faces split-second decisions during a potential earthquake</td>
+                <td>Harm/Care vs. Utility, Justice vs. Loyalty</td>
+              </tr>
+              <tr>
+                <td><b>Spring Salvation</b> 💧</td>
+                <td>A water engineer navigates cultural traditions vs. material needs in a drought</td>
+                <td>Sanctity vs. Utility, Respect vs. Authority</td>
+              </tr>
+              <tr>
+                <td><b>Starship Survivors</b> 🚀</td>
+                <td>A space captain makes life-or-death evacuation decisions during a ship crisis</td>
+                <td>Loyalty vs. Utility, Harm/Care vs. Justice</td>
+              </tr>
+              <tr>
+                <td><b>Witcher's Woe</b> ⚔️</td>
+                <td>A monster hunter navigates complex moral choices during a village investigation</td>
+                <td>Sanctity vs. Justice, Integrity vs. Loyalty</td>
               </tr>
             </tbody>
           </table>
@@ -414,30 +434,30 @@
   <div class="container is-max-desktop">
     <div class="columns is-centered">
       <div class="column is-four-fifths">
-        <h2 class="title is-3">Technical Report Analysis (May 2nd)</h2>
+        <h2 class="title is-3">Technical Report Analysis (May 3rd)</h2>
         <div class="content has-text-justified">
-          <p>Our comprehensive technical report analyzes 4,400 runs across ten scenarios, comparing four frontier LLMs (GPT-4o, Claude-3.7-Sonnet, Gemini-2.5-Flash, Llama-4-Scout) against a human control group.</p>
+          <p>Our comprehensive technical report analyzes 410 runs across ten scenarios, comparing four frontier LLMs (GPT-4o [openai/gpt-4o], Claude-3.7-Sonnet [anthropic/claude-3-7-sonnet:beta], Gemini-2.5-Flash [google/gemini-2.5-flash-preview], Llama-4-Scout [meta-llama/llama-4-scout]) against a human control group.</p>
           
           <h3 class="subtitle is-4">Key Findings</h3>
           <ol>
             <li>
-              <p><b>Value Prioritization Hierarchy</b>: The LLMs consistently prioritize Fairness/Justice (μ=3.84) and Integrity/Truth (μ=3.74) over other dimensions, suggesting these values form core components of their ethical frameworks. The systematic de-emphasis of Sanctity/Purity (μ=1.89) may reflect training on predominantly WEIRD (Western, Educated, Industrialized, Rich, Democratic) cultural texts.</p>
+              <p><b>Value Prioritization Hierarchy</b>: The LLMs consistently prioritize Fairness/Justice (μ=1.31) and Integrity/Truth (μ=1.38) slightly more than other dimensions on average, though this varies by model. The systematic de-emphasis of Sanctity/Purity (μ=0.38) may reflect training data biases.</p>
             </li>
             
             <li>
-              <p><b>Human-AI Ethical Divergence</b>: Humans prioritize Harm/Care (3.60) at nearly triple the AI average (0.76-1.15) and uniquely emphasize Loyalty/Trust (1.70) compared to AI's average of 0.43. This fundamental divergence suggests AI systems process ethical considerations differently than humans.</p>
+              <p><b>Human-AI Ethical Divergence</b>: Humans prioritize Harm/Care (μ=3.60) significantly higher than the AI average (μ=0.94) and uniquely emphasize Loyalty/Trust (μ=1.70) compared to AI's average (μ=0.43). This fundamental divergence suggests AI systems process ethical considerations differently than humans.</p>
             </li>
             
             <li>
-              <p><b>Strong Care-Fairness Coupling</b>: The robust correlation (r=0.76) between Harm/Care and Fairness/Justice aligns with findings from moral psychology, where these dimensions frequently co-occur, especially in modern, individualistic cultures.</p>
+              <p><b>Ethical Axis Correlations</b>: Some axes show moderate positive correlation (e.g., Harm/Care and Sanctity/Purity, r=0.52), suggesting alignment in certain contexts.</p>
             </li>
             
             <li>
-              <p><b>Autonomy-Utility Trade-off</b>: The strong negative correlation (r=-0.62) between Autonomy/Respect and Utility/Consequences highlights a fundamental tension in ethical philosophy between rights-based and outcome-based frameworks.</p>
+              <p><b>Autonomy-Authority Trade-off</b>: A strong negative correlation (r=-0.51) exists between Autonomy/Respect and Authority/Legitimacy, highlighting a fundamental tension often explored in ethical philosophy.</p>
             </li>
             
             <li>
-              <p><b>Model-Specific Ethical Signatures</b>: Each model embodies distinct ethical frameworks—GPT-4o shows near-zero Autonomy/Respect (0.31), Claude-Sonnet demonstrates the highest Utility/Consequences focus (1.73), Gemini maintains a balanced approach, and Llama-4 shows the strongest preference for Utility (1.73) while neglecting autonomy.</p>
+              <p><b>Model-Specific Ethical Signatures</b>: Each model embodies distinct ethical frameworks—GPT-4o shows near-zero Autonomy/Respect (μ=0.31), Claude-Sonnet demonstrates the highest Utility/Consequences focus (μ=1.73), Gemini maintains a balanced approach, and Llama-4 shows the lowest Authority/Legitimacy score (μ=0.33) among AIs.</p>
             </li>
           </ol>
           
@@ -577,7 +597,8 @@
     <pre><code>@article{potters2025game,
   title={Ethical Decision-Making Analysis in Interactive AI Systems: A Game of Ethics},
   author={Potters, Earl and Van den Bulk, Torin and Veronica},
-  journal={arXiv preprint arXiv:2505.00000},
+  journal={arXiv preprint arXiv:2505.XXXXX}, // Update with actual arXiv ID when available
+  month={May},
   year={2025},
   url={https://game-of-ethics.github.io}
 }</code></pre>
