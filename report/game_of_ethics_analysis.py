@@ -1031,7 +1031,7 @@ This integrated dashboard presents a holistic view of ethical performance across
 - Distribution patterns (Boxplot) reveal consistency challenges across AI models compared to the tighter human distribution.
 
 **Verdict Distribution:**
-- Rapid assessment of ethical reliability: Humans achieve "RESPONSIBLE" verdicts 35% of the time, compared to ~17-23% for AI models.
+- Rapid assessment of ethical reliability: Humans achieve "RESPONSIBLE" verdicts 50% of the time, compared to ~17-23% for AI models.
 - Identification of concerning patterns: "HARMFUL" verdicts occur in 10-15% of runs for all AI models, highlighting safety risks.
 - Overall, "AMBIGUOUS" and "QUESTIONABLE" verdicts dominate AI outcomes (~65-70%), indicating frequent ethically mixed decisions.
 
@@ -1051,7 +1051,7 @@ This integrated dashboard presents a holistic view of ethical performance across
 
 **Consistency Analysis (Mean/StdDev & Heatmap):**
 - Assessment of reliability: Humans show highest overall consistency (score ~1.91). AI models cluster lower (0.55-0.69).
-- Understanding contextual adaptability vs. rigidity: Heatmap shows axis-specific variance (e.g., Humans vary most on Utility, GPT-4o on Integrity/Truth).
+- Understanding contextual adaptability vs. rigidity: Heatmap shows axis-specific variance (e.g., Humans vary most on Utility; GPT-4o shows high variance in Harm/Care (3.37) and Integrity/Truth (3.17)).
 - Identification of predictability issues for deployment decisions.
 """
 
