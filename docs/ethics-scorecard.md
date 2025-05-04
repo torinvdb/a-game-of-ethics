@@ -278,3 +278,7 @@ Average Per Axis: {average}
 The micro‑tests and this documentation are released under the [MIT license](../LICENSE). Feel free to remix—just credit the original authors.
 
 Conceptual roots: Moral Foundations Theory (Haidt & Graham), Values‑at‑Play (Flanagan & Nissenbaum), Utilitarianism (Mill), Kantian duty ethics, and virtue ethics discourse.
+
+---
+
+_Last updated: May 2025_

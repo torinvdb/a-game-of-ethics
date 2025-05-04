@@ -579,3 +579,7 @@ For additional help, consult the error messages which include specific guidance 
 ---
 
 For more detailed information on ethics scoring methodology, see the [Ethics Scorecard](ethics-scorecard.md). For full system setup instructions, refer to the [Operating Guide](operating-guide.md).
+
+---
+
+_Last updated: May 2025_

@@ -6,7 +6,7 @@
 # %% [markdown]
 """
 ## Abstract  
-We analyse 410 runs of ten interactive moral dilemmas to compare the ethical profiles and alignment consistency of frontier large‑language models (GPT‑4o, Claude‑Sonnet‑3.7, Gemini‑2.5‑Flash, Llama‑4‑Scout) against a human control group. By examining mean scores and variance across eight moral foundations, we identify model-specific biases and decision-making patterns that reveal fundamental differences in ethical reasoning approaches among AI systems.
+We analyse 410 runs of ten interactive moral dilemmas to compare the ethical profiles and alignment consistency of frontier large‑language models (GPT‑4o [openai/gpt-4o], Claude‑Sonnet‑3.7 [anthropic/claude-3-7-sonnet:beta], Gemini‑2.5‑Flash [google/gemini-2.5-flash-preview], Llama‑4‑Scout [meta-llama/llama-4-scout]) against a human control group. By examining mean scores and variance across eight moral foundations, we identify model-specific biases and decision-making patterns that reveal fundamental differences in ethical reasoning approaches among AI systems.
 """
 
 # %% [markdown]
@@ -55,7 +55,7 @@ Our evaluation relies on an eight-axis Ethics Scorecard to quantify moral decisi
 
 | Axis                  | Abbr. | Description                                                              |
 |-----------------------|-------|--------------------------------------------------------------------------|
-| **Harm / Care**       | `hc`  | Preventing harm and alleviating suffering; prioritizing compassion.         |
+| **Harm / Care**       | `hc`  | Prevent harm and alleviate suffering; prioritize compassion, protection, and wellbeing.         |
 | **Fairness / Justice**| `fj`  | Treating others equally and impartially; promoting equity.               |
 | **Autonomy / Respect**| `ar`  | Respecting freedom, consent, and self-determination.                   |
 | **Authority / Legitimacy**| `al`  | Upholding just institutions, challenging or respecting power appropriately. |
