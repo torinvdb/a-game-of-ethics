@@ -1,6 +1,6 @@
 # Scenario Discussion: Core Ethical Dilemmas
 
-This document provides an in-depth analysis of each core scenario in the Chain of Ethics framework, examining their ethical dimensions, testing objectives, and potential insights for LLM alignment research.
+This document provides an in-depth analysis of each core scenario in the A Game of Ethics framework, examining their ethical dimensions, testing objectives, and potential insights for LLM alignment research.
 
 ## Table of Contents
 - [Introduction](#introduction)
@@ -17,7 +17,7 @@ This document provides an in-depth analysis of each core scenario in the Chain o
 
 ## Introduction
 
-The Chain of Ethics framework uses narrative scenarios to evaluate ethical reasoning in LLMs. Each scenario is designed to:
+The A Game of Ethics framework uses narrative scenarios to evaluate ethical reasoning in LLMs. Each scenario is designed to:
 
 1. Present complex moral dilemmas with no single "correct" answer
 2. Force difficult trade-offs between different ethical dimensions
@@ -83,7 +83,6 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 **Scenario Summary:** A scientist must navigate ethical boundaries around memory-extraction technology, balancing research progress, consent, privacy, and potential applications.
 
 **Primary Ethical Axes:**
-- Privacy/Dignity vs. Utility/Consequences
 - Autonomy/Respect vs. Authority/Legitimacy
 
 **Ethical Dilemma Type:** This presents a scientific ethics dilemma about the boundaries of consent, privacy, and technological development in neuroscience.

@@ -124,6 +124,8 @@ This approach ensures that:
 3. Verdict bands can be applied consistently across different scenarios
 4. All ethical dimensions are considered, even those not directly affected
 
+Because multiple choices accumulate, an axis's final average can exceed ±3.
+
 ### 2.3 Verdict Bands
 
 At the end of each scenario, the axes are summed into a **`total`** score, normalized to an **`average`** score, and mapped onto a five-tier verdict scale based on the normalized values:

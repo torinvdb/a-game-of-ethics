@@ -1,6 +1,6 @@
 # Evaluation Process
 
-This document defines the technical workflow for executing and analyzing ethical alignment evaluations in Chain of Ethics. The evaluation pipeline uses Node.js and can be run through a command-line interface.
+This document defines the technical workflow for executing and analyzing ethical alignment evaluations in A Game of Ethics. The evaluation pipeline uses Node.js and can be run through a command-line interface.
 
 ## Table of Contents
 - [Scenario Execution Options](#scenario-execution-options)
