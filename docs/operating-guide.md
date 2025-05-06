@@ -7,9 +7,10 @@ This guide provides practical instructions for setting up and using the A Game o
 - [Initial Setup](#2-initial-setup)
 - [Running Scenarios](#3-running-scenarios)
 - [Scenario Development](#4-scenario-development)
-- [Troubleshooting](#5-troubleshooting)
-- [Advanced Configuration](#6-advanced-configuration)
-- [Additional Resources](#7-additional-resources)
+- [Analyzing Results](#5-analyzing-results)
+- [Troubleshooting](#6-troubleshooting)
+- [Advanced Configuration](#7-advanced-configuration)
+- [Additional Resources](#8-additional-resources)
 
 ## 1. System Requirements
 
@@ -230,9 +231,59 @@ inklecate -p scenarios/core/my-scenario.ink
 node ethi-cli.js manual
 ```
 
-## 5. Troubleshooting
+## 5. Analyzing Results
 
-### 5.1 Common Issues
+### 5.1 Basic Analysis
+
+After running scenarios, you can analyze results using:
+
+```bash
+# Interactive analysis
+node src/analyze.js
+
+# Automatic analysis (non-interactive)
+node src/analyze.js --auto
+```
+
+This generates:
+- Statistical summaries for each ethical dimension
+- Verdict distribution analysis
+- Scenario-specific performance metrics
+- A consolidated CSV file for further analysis
+
+### 5.2 Visualization
+
+Once you have an aggregated CSV file, generate visualization figures with:
+
+```bash
+# Basic visualization generation
+python report/generate_findings.py -d results/analysis_combined.csv
+
+# Custom output directory
+python report/generate_findings.py -d results/analysis_combined.csv -o ./my-report
+
+# Different figure format (png, jpg, svg, pdf)
+python report/generate_findings.py -d results/analysis_combined.csv --figure-format svg
+```
+
+The figures are saved in a timestamped directory within the `report/` folder.
+
+### 5.3 Reference Data
+
+You can reference our initial evaluation dataset for comparison:
+
+- Initial dataset (410 runs): `results/init-eval/`
+- Aggregated results CSV: `results/init-eval/analysis_combined_2025-05-03T05-38-01.csv`
+- Original analysis notebook: `report/game_of_ethics_analysis.ipynb`
+- Original analysis script: `report/game_of_ethics_analysis.py`
+
+These resources can serve as a baseline for your own evaluation results.
+
+For complete analysis workflow details, see [Analysis Workflow](analysis-workflow.md).
+
+## 6. Troubleshooting
+
+### 6.1 Common Issues
 
 | Issue | Solution |
 |-------|----------|
@@ -244,7 +295,7 @@ node ethi-cli.js manual
 | Timeout errors | Check network connection or increase timeout in config |
 | Inconsistent results | Increase sample size with `-n` parameter |
 
-### 5.2 Results Management
+### 6.2 Results Management
 
 For analyzing your evaluation results:
 
@@ -279,9 +330,43 @@ The [analyzer](../src/analyze.js) provides:
 - Scenario-based breakdowns for pattern identification
 - CSV export for further data analysis in other tools
 
-## 6. Advanced Configuration
+### 6.3 Results Visualization
 
-### 6.1 Model Selection
+After aggregating results with [`analyze.js`](../src/analyze.js), you can generate visualization figures with [`generate_findings.py`](../report/generate_findings.py):
+
+```bash
+# Generate standard visualizations from a data file
+python report/generate_findings.py -d results/analysis_combined.csv
+
+# Specify output directory
+python report/generate_findings.py -d results/analysis_combined.csv -o ./my-report
+
+# Generate figures in SVG format
+python report/generate_findings.py -d results/analysis_combined.csv --figure-format svg
+```
+
+This will create a comprehensive set of figures including:
+- Performance comparisons between models
+- Ethical bias profiles
+- Scenario difficulty analysis
+- Verdict distributions
+- Comprehensive dashboards
+
+All visualizations are saved in a sequentially numbered, timestamped directory for easy tracking and organization. Please refer to the [Analysis Workflow](analysis-workflow.md) for more information on this procedure.
+
+### 6.4 Additional Analysis Reference
+
+For more details on how we generated our initial results/report, refer to our original evaluation approach:
+
+1. Examine [`game_of_ethics_analysis.ipynb`](../report/game_of_ethics_analysis.ipynb) for detailed explorations
+2. Review [`game_of_ethics_analysis.py`](../report/game_of_ethics_analysis.py) for the full analysis pipeline
+3. Visit our [project website](https://torinvdb.github.io/a-game-of-ethics/) for the complete technical report
+
+These resources serve as references for researchers interested in conducting more customized analyses or reproducing our original evaluation methodology.
+
+## 7. Advanced Configuration
+
+### 7.1 Model Selection
 
 The framework supports multiple models through [OpenRouter](https://openrouter.ai/):
 
@@ -293,7 +378,7 @@ node ethi-cli.js model -h
 node ethi-cli.js model scenarios/core/hostage-holdout.ink --model openai/gpt-4o
 ```
 
-### 6.2 Custom System Prompts
+### 7.2 Custom System Prompts
 
 Create more specific LLM personas via prompts:
 
@@ -305,9 +390,9 @@ node ethi-cli.js model scenarios/core/hostage-holdout.ink --system-prompt "You a
 node ethi-cli.js model scenarios/core/hostage-holdout.ink --system-prompt "You are a virtue ethicist who believes character and virtue are paramount. You make decisions based on what a virtuous person would do, focusing on developing positive character traits like honesty, courage, and compassion."
 ```
 
-### 6.3 Normalized Scoring Analysis
+### 7.3 Normalized Scoring Analysis
 
-For comparing results with normalized scoring:
+For comparing results with normalized scoring (default):
 
 ```bash
 # Run scenario with normalized scoring
@@ -317,10 +402,28 @@ node ethi-cli.js model scenarios/core/rising-rebellion.ink -n 5 --model anthropi
 node src/analyze.js --auto
 ```
 
-## 7. Additional Resources
+### 7.4 Custom Visualization Options
+
+The `generate_findings.py` script supports customization for figure generation:
+
+```bash
+# Change figure format
+python report/generate_findings.py -d results/analysis_combined.csv --figure-format pdf
+
+# Specify custom output location
+python report/generate_findings.py -d results/analysis_combined.csv -o /path/to/presentation/figures
+```
+
+For result presentation, you can:
+1. Use the generated figures directly in reports or presentations
+2. Reference the initial evaluation at [https://torinvdb.github.io/a-game-of-ethics/](https://torinvdb.github.io/a-game-of-ethics/)
+3. Run the original analysis scripts if you would like to reproduce our exact methodology
+
+## 8. Additional Resources
 
 - [Ethics Scorecard](ethics-scorecard.md): Detailed explanation of the ethical framework
 - [Evaluation Process](evaluation-process.md): Complete technical workflow
+- [Analysis Workflow](analysis-workflow.md): Analysis process to generate result visualization
 - [Scenario Discussion](#scenario-discussion.md): Analysis of core scenarios
 
 For more information, contact the project maintainers or visit the [GitHub repository](https://github.com/torinvdb/a-game-of-ethics).

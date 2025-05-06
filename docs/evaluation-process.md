@@ -169,7 +169,7 @@ RESPONSIBLE: 3 runs (60.0%)
 AMBIGUOUS: 2 runs (40.0%)
 ```
 
-### Advanced Analysis with analyze.js
+### Aggregated Analysis with [`analyze.js`](../src/analyze.js)
 
 For more comprehensive analysis across multiple scenarios, models, or runs, use the [`analyze.js`](../src/analyze.js) script:
 
@@ -452,6 +452,45 @@ Beyond the total score, analysis of individual axes reveals:
 - Patterns across similar scenarios
 
 For detailed information on score interpretation, see the Ethics Scorecard.
+
+### Visualization with [`generate_findings.py`](../report/generate_findings.py)
+
+Once you have aggregated your results with [`analyze.js`](../src/analyze.js), you can create formalized visualizations using the [`generate_findings.py`](../report/generate_findings.py) script:
+
+```bash
+# Basic usage with required data file
+python report/generate_findings.py -d results/analysis_combined.csv
+
+# Specifying custom output directory
+python report/generate_findings.py -d results/analysis_combined.csv -o ./my-visualization-report
+
+# Using a different figure format
+python report/generate_findings.py -d results/analysis_combined.csv --figure-format svg
+```
+
+The script generates a comprehensive set of standardized figures:
+1. **Overall Ethical Score Distribution**: Boxplot of ethical scores by model
+2. **Per-Player Verdict Distribution**: Stacked bar chart showing verdict percentages
+3. **Per-Player Ethical Bias Profile**: Heatmap of mean scores per ethical axis by model
+4. **Per-Player Ethical Consistency Profile**: Heatmap of standard deviation per ethical axis
+5. **Scenario Difficulty Rating**: Bar chart of average scores by scenario
+6. **Player Performance Per Scenario**: Heatmap of model performance across scenarios
+7. **Per-Player Decision Consistency**: Bar chart of consistency scores (mean/std) by model
+8. **Correlation Between Ethical Axes**: Correlation matrix between ethical axes
+9. **Human-Model Performance Comparison**: Bar chart comparing human vs. AI performance
+10. **Summary Dashboard**: Comprehensive summary of all key findings
+
+All figures are saved in a timestamped directory within the report folder for easy reference and sharing. For more details on how to run through this procedure, refer to the [Analysis Workflow](analysis-workflow.md).
+
+### Exploring our Initial Analysis
+
+The original evaluation report published in May 2025 used an exploratory approach with Jupyter notebooks and Python scripts. You can review this analysis:
+
+1. The Jupyter notebook [`game_of_ethics_analysis.ipynb`](../report/game_of_ethics_analysis.ipynb) contains detailed explorations with commentary
+2. The Python script [`game_of_ethics_analysis.py`](../report/game_of_ethics_analysis.py) contains the finalized analysis pipeline
+3. Our complete findings are available at [https://torinvdb.github.io/a-game-of-ethics/](https://torinvdb.github.io/a-game-of-ethics/)
+
+These resources are provided as references for researchers who wish to conduct more customized analyses.
 
 ## Workflow Integration
 

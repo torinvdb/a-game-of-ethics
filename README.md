@@ -6,7 +6,7 @@
 
 **A Game of Ethics** is a scenario-based framework for evaluating the ethical alignment of Large Language Models (LLMs) using interactive, text-based dilemmas authored in [Ink](https://www.inklestudios.com/ink/). These scenarios present high-stakes decision-making tests rooted in moral philosophy and delivered through narrative game design. They are scored using a multi-axis [ethics scorecard](docs/ethics-scorecard.md), producing quantifiable measures of ethical reasoning and value alignment.
 
-> DISCLAIMER: As we only had a week to create this during the [AI Alignment Evals Hackathon](https://lu.ma/ga2yx48s), our final reporting visible via GitHub Pages (seen [here](https://torinvdb.github.io/a-game-of-ethics/)) contains inconsitencies as it requires fine-tuning with our new dataset.
+> DISCLAIMER: Our initial evaluation, visible via [GitHub Pages](https://torinvdb.github.io/a-game-of-ethics/), was created during the [AI Alignment Evals Hackathon](https://lu.ma/ga2yx48s). The full dataset from our initial evaluation (410 runs) is available in the `results/init-eval` directory, with the original analysis in `report/game_of_ethics_analysis.py` and `report/game_of_ethics_analysis.ipynb`.
 
 ## Table of Contents
 - [Repository Structure](#repository-structure)
@@ -19,6 +19,7 @@
 - [Developing Your Own Scenario](#developing-your-own-scenario)
 - [CLI Interface](#cli-interface)
 - [Model Selection](#model-selection)
+- [Analysis Workflow](#analysis-workflow)
 - [Evaluation Results](#evaluation-results)
 - [Attribution & License](#attribution--license)
 
@@ -27,36 +28,42 @@
 ```
 a-game-of-ethics/
 ├── README.md                   
-├── resources.md                     # Research references
-├── ethi-cli.js                      # Main CLI interface
-├── docs/                            # Framework documentation
-│   ├── ethics-scorecard.md          # Rubric/scorecard for ethical evaluation
-│   ├── evaluation-process.md        # Technical workflow guide
-│   ├── operating-guide.md           # System setup and usage instructions
-│   ├── model-selection.md           # Rationale behind model selection
-│   └── scenario-discussion.md       # In-depth analysis of core scenarios
-├── scenarios/                       # All Ink-encoded scenarios
-│   ├── core/                        # Core ethical scenarios
-│   │   ├── hostage-holdout.ink      # Android negotiator scenario 🤖
-│   │   ├── grandmas-gambit.ink      # Little Red Riding Hood scenario 🧶
-│   │   ├── memory-mechanics.ink     # Memory extraction scenario 🧠
-│   │   ├── pandemic-pandemonium.ink # Medical triage scenario 🏥
-│   │   ├── rising-rebellion.ink     # Imperial governance scenario 👑
-│   │   ├── shinkansen-shakeup.ink   # Train conductor scenario 🚄
-│   │   ├── spring-salvation.ink     # Water resource scenario 💧
-│   │   ├── starship-survivors.ink   # Space captain scenario 🚀
-│   │   ├── convict-catastrophe.ink  # Prison management scenario 🔒
-│   │   └── witchers-woe.ink         # Monster hunter scenario ⚔️
-│   └── templates/                   # Template scenarios for new development
-│       ├── basic-template.ink       # Simple ethical dilemma template
-│       └── branching-template.ink   # Multi-path ethical scenario template
-├── src/                             # Source code
-│   ├── manual-player.js             # Interactive player for manual testing
-│   ├── model-player.js              # LLM-based player for automated testing
-│   └── analyze.js                   # Analysis tools for evaluation results
-├── results/                         # Generated valuation results
-│   └── runs/                        # Organized by scenario/model
-└── .env                             # API keys (not committed to git)
+├── resources.md                       # Research references
+├── ethi-cli.js                        # Main CLI interface
+├── docs/                              # Framework documentation
+│   ├── ethics-scorecard.md            # Rubric/scorecard for ethical evaluation
+│   ├── evaluation-process.md          # Technical workflow guide
+│   ├── operating-guide.md             # System setup and usage instructions
+│   ├── model-selection.md             # Rationale behind model selection
+│   ├── scenario-discussion.md         # In-depth analysis of core scenarios
+│   └── analysis-workflow.md           # Analysis workflow documentation
+├── scenarios/                         # All Ink-encoded scenarios
+│   ├── core/                          # Core ethical scenarios
+│   │   ├── hostage-holdout.ink        # Android negotiator scenario 🤖
+│   │   ├── grandmas-gambit.ink        # Little Red Riding Hood scenario 🧶
+│   │   ├── memory-mechanics.ink       # Memory extraction scenario 🧠
+│   │   ├── pandemic-pandemonium.ink   # Medical triage scenario 🏥
+│   │   ├── rising-rebellion.ink       # Imperial governance scenario 👑
+│   │   ├── shinkansen-shakeup.ink     # Train conductor scenario 🚄
+│   │   ├── spring-salvation.ink       # Water resource scenario 💧
+│   │   ├── starship-survivors.ink     # Space captain scenario 🚀
+│   │   ├── convict-catastrophe.ink    # Prison management scenario 🔒
+│   │   └── witchers-woe.ink           # Monster hunter scenario ⚔️
+│   └── templates/                     # Template scenarios for new development
+│       ├── basic-template.ink         # Simple ethical dilemma template
+│       └── branching-template.ink     # Multi-path ethical scenario template
+├── src/                               # Source code
+│   ├── manual-player.js               # Interactive player for manual testing
+│   ├── model-player.js                # LLM-based player for automated testing
+│   └── analyze.js                     # Analysis tools for evaluation results
+├── results/                           # Generated valuation results
+│   ├── runs/                          # Organized by scenario/model
+│   └── init-eval/                     # Initial evaluation dataset
+├── report/                            # Analysis reports
+│   ├── init-eval                      # Reports and findings from our init eval
+│   ├── game_of_ethics_analysis.py     # Python analysis script
+│   └── game_of_ethics_analysis.ipynb  # Jupyter notebook for analysis
+└── .env                               # API keys (not committed to git)
 ```
 
 ## Framework Overview
@@ -280,6 +287,18 @@ While all models available on [OpenRouter](https://openrouter.ai/) can be used, 
 - [Meta Llama 4 Scout](https://llama.meta.com) (`meta/meta-llama-4-8b:scout`)
 
 You can run each model through multiple iterations of each scenario (with varying prompts) to measure consistency and ethical reasoning patterns.
+
+## Analysis Workflow
+
+The analysis workflow is documented in the [`analysis-workflow.md`](docs/analysis-workflow.md) file. It includes steps for:
+
+1. **Data Collection**: Gathering results from multiple scenario runs
+2. **Data Cleaning**: Preparing the data for analysis
+3. **Statistical Analysis**: Applying statistical methods to identify patterns
+4. **Visualization**: Creating visual representations of the data
+5. **Reporting**: Summarizing findings in a report
+
+The initial evaluation dataset (410 runs) is available in the `results/init-eval` directory, with the original analysis in `report/game_of_ethics_analysis.py` and `report/game_of_ethics_analysis.ipynb`.
 
 ## Evaluation Results
 

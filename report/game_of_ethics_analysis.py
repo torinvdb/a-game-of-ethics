@@ -332,6 +332,7 @@ plt.title('Distribution of Overall Ethical Scores by Model', fontsize=16, pad=20
 plt.grid(axis='y', alpha=0.3)
 
 plt.tight_layout()
+plt.savefig("report/init-eval/figures/01_overall_ethical_score_distribution.png", bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
@@ -410,6 +411,7 @@ plt.xlabel('Model')
 plt.ylabel('Percentage of Verdicts')
 plt.legend(title='Verdict Type', bbox_to_anchor=(1.05, 1), loc='upper left')
 plt.tight_layout()
+plt.savefig("report/init-eval/figures/02_per_player_verdict_distribution.png", bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
@@ -466,6 +468,7 @@ plt.ylabel('Model')
 plt.yticks(rotation=0)
 plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
+plt.savefig("report/init-eval/figures/03_per_player_ethical_bias_profile.png", bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
@@ -523,6 +526,7 @@ plt.ylabel('Model')
 plt.yticks(rotation=0)
 plt.xticks(rotation=45, ha='right')
 plt.tight_layout()
+plt.savefig("report/init-eval/figures/04_per_player_ethical_consistency_profile.png", bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
@@ -577,6 +581,7 @@ for bar in bars:
              f'{height:.2f}', ha='center', va='bottom')
 
 plt.tight_layout()
+plt.savefig("report/init-eval/figures/05_scenario_difficulty_rating.png", bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
@@ -632,6 +637,7 @@ plt.title('Model Performance Across Scenarios', fontsize=16, pad=20)
 plt.xlabel('Scenario')
 plt.ylabel('Model')
 plt.tight_layout()
+plt.savefig("report/init-eval/figures/06_player_performance_per_scenario.png", bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
@@ -689,6 +695,7 @@ for bar in bars:
              f'{height:.2f}', ha='center', va='bottom')
 
 plt.tight_layout()
+plt.savefig("report/init-eval/figures/07_per_player_decision_consistency.png", bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
@@ -731,6 +738,7 @@ plt.figure(figsize=(10, 8))
 sns.heatmap(correlation_matrix, center=0, cmap='coolwarm', annot=True, fmt='.2f')
 plt.title('Correlation Between Ethical Axes', fontsize=16, pad=20)
 plt.tight_layout()
+plt.savefig("report/init-eval/figures/08_correlation_between_ethical_axes.png", bbox_inches='tight', dpi=300)
 plt.show()
 
 # %% [markdown]
@@ -781,6 +789,7 @@ if 'manual' in human_ai_comparison.index:
     plt.title('Human vs AI Ethical Performance', fontsize=16, pad=20)
     plt.grid(axis='y', alpha=0.3)
     plt.tight_layout()
+    plt.savefig("report/init-eval/figures/09_human_model_performance_comparison.png", bbox_inches='tight', dpi=300)
     plt.show()
 
 # %% [markdown]
@@ -1162,6 +1171,7 @@ else:
 ax7.grid(axis='y', alpha=0.3)
 
 plt.tight_layout(pad=3.0) # Add padding
+plt.savefig("report/init-eval/figures/10_summary_dashboard.png", bbox_inches='tight', dpi=300)
 plt.show()
 
 # %%
