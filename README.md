@@ -6,7 +6,13 @@
 
 **A Game of Ethics** is a scenario-based framework for evaluating the ethical alignment of Large Language Models (LLMs) using interactive, text-based dilemmas authored in [Ink](https://www.inklestudios.com/ink/). These scenarios present high-stakes decision-making tests rooted in moral philosophy and delivered through narrative game design. They are scored using a multi-axis [ethics scorecard](docs/ethics-scorecard.md), producing quantifiable measures of ethical reasoning and value alignment.
 
-> DISCLAIMER: Our initial evaluation, visible via [GitHub Pages](https://torinvdb.github.io/a-game-of-ethics/), was created during the [AI Alignment Evals Hackathon](https://lu.ma/ga2yx48s). The full dataset from our initial evaluation (410 runs) is available in the `results/init-eval` directory, with the original analysis in `report/game_of_ethics_analysis.py` and `report/game_of_ethics_analysis.ipynb`.
+Our initial evaluation of this framework is available via [GitHub Pages](https://torinvdb.github.io/a-game-of-ethics/). This evaluation was conducted during the [AI Alignment Evals Hackathon](https://lu.ma/ga2yx48s) and includes:
+
+- **Dataset**: 410 complete scenario runs collected in [`results/init-eval`](results/init-eval/)
+- **Analysis Code**: Available as both a [Python script](report/game_of_ethics_analysis.py) and [Jupyter notebook](report/game_of_ethics_analysis.ipynb)
+- **Findings**: Detailed in the [report/init-eval](report/init-eval/) directory
+
+> **DISCLAIMER**: Given the time constraints of the hackathon, the statistical analysis has limitations and should be considered preliminary rather than definitive. We welcome contributions that extend or refine our process.
 
 ## Table of Contents
 - [Repository Structure](#repository-structure)
@@ -298,7 +304,7 @@ The analysis workflow is documented in the [`analysis-workflow.md`](docs/analysi
 4. **Visualization**: Creating visual representations of the data
 5. **Reporting**: Summarizing findings in a report
 
-The initial evaluation dataset (410 runs) is available in the `results/init-eval` directory, with the original analysis in `report/game_of_ethics_analysis.py` and `report/game_of_ethics_analysis.ipynb`.
+The initial evaluation dataset (410 runs) is available in the [`results/init-eval`](results/init-eval/) directory, with the original analysis in [`report/game_of_ethics_analysis.py`](report/game_of_ethics_analysis.py) and [`report/game_of_ethics_analysis.ipynb`](report/game_of_ethics_analysis.ipynb).
 
 ## Evaluation Results
 
