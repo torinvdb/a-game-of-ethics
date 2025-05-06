@@ -4,7 +4,7 @@ on:
   push:
     paths:
       - 'scenarios/**/*.ink'
-      - 'src/scan-scenarios.js'
+      - 'src/debug.js'
     branches:
       - '**'  # Run on all branches
 
@@ -69,7 +69,7 @@ jobs:
           
           // Run the validation script
           try {
-            const result = execSync(`node src/scan-scenarios.js --auto-validate ${scenarioFiles.join(' ')}`, { 
+            const result = execSync(`node src/debug.js --auto-validate ${scenarioFiles.join(' ')}`, { 
               encoding: 'utf8', 
               stdio: 'pipe' 
             });
@@ -99,7 +99,7 @@ jobs:
         run: |
           echo "## Scenario Validation Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          if [ ${{ steps.validate.outcome }} == 'success' ]; then
+          if [ "${{ steps.validate.outcome }}" == 'success' ]; then
             echo "✅ All scenarios pass validation (or have only warnings)." >> $GITHUB_STEP_SUMMARY
           else
             echo "❌ Some scenarios failed validation. Check the output above for details." >> $GITHUB_STEP_SUMMARY

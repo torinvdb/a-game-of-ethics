@@ -581,7 +581,7 @@ All configuration options are provided via command-line arguments, making the to
 
 1. **Create New Scenario**
    - Read through the [Scenario Discussion](scenario-discussion.md) for core examples
-   - Start with a template: `cp templates/basic-scenario.ink scenarios/your-scenario.ink`
+   - Start with a template: `cp tmpl/basic-scenario.ink scenarios/your-scenario.ink`
    - Reference the [Operating Guide](operating-guide.md) for syntax and structure
 
 2. **Develop Content**

@@ -65,6 +65,35 @@ function findInkFiles(directory) {
   return glob.sync(`${directory}/**/*.ink`);
 }
 
+// Function to find and clean up compiled ink.json files
+function cleanupCompiledFiles(directory) {
+  // Find all .ink.json files recursively
+  const compiledFiles = glob.sync(`${directory}/**/*.ink.json`);
+  
+  if (compiledFiles.length === 0) {
+    return { success: true, count: 0 };
+  }
+  
+  let deleteCount = 0;
+  let errors = [];
+  
+  // Delete each compiled file
+  for (const file of compiledFiles) {
+    try {
+      fs.unlinkSync(file);
+      deleteCount++;
+    } catch (error) {
+      errors.push({ file, error: error.message });
+    }
+  }
+  
+  return { 
+    success: errors.length === 0, 
+    count: deleteCount, 
+    errors 
+  };
+}
+
 // Function to check if a file has all required ethical axes variables
 function checkEthicalAxes(content) {
   const missingAxes = [];
@@ -406,8 +435,87 @@ async function debugScenario(filePath) {
   }
 }
 
+// Function to display help text
+function showHelp() {
+  console.log(chalk.blue('=== A Game of Ethics - Scenario Debug Utility ==='));
+  console.log('\nUsage:');
+  console.log('  node src/debug.js [options] [files]');
+  
+  console.log('\nOptions:');
+  console.log('  -h, --help              Show this help information');
+  console.log('  --cleanup [directory]   Clean up compiled .ink.json files in the specified directory');
+  console.log('                          (defaults to ./scenarios if not specified)');
+  console.log('  --auto-validate <files> Automatically validate one or more .ink files');
+  
+  console.log('\nExamples:');
+  console.log('  node src/debug.js                            # Run in interactive mode');
+  console.log('  node src/debug.js --help                     # Show this help');
+  console.log('  node src/debug.js --cleanup                  # Clean up compiled files in default directory');
+  console.log('  node src/debug.js --cleanup ./my-scenarios   # Clean up compiled files in custom directory');
+  console.log('  node src/debug.js --auto-validate scenarios/core/*.ink  # Validate multiple scenarios');
+}
+
+// Function to validate command-line arguments
+function validateArgs(args) {
+  // Define valid arguments
+  const validArgs = ['--help', '-h', '--cleanup', '--auto-validate'];
+  
+  // Skip validation if no arguments provided (will run in interactive mode)
+  if (args.length === 0) {
+    return true;
+  }
+  
+  // Check if all provided arguments are valid
+  for (let i = 0; i < args.length; i++) {
+    const arg = args[i];
+    
+    // Skip validation for values that follow valid arguments
+    if (i > 0) {
+      const prevArg = args[i-1];
+      if (prevArg === '--cleanup' || prevArg === '--auto-validate') {
+        // This is likely a value for the previous argument, skip validation
+        continue;
+      }
+    }
+    
+    // If it's not a file path for --auto-validate, it should be a valid argument
+    if (!validArgs.includes(arg) && 
+        !(arg.endsWith('.ink') && args.includes('--auto-validate'))) {
+      console.error(chalk.red(`Error: Unknown argument '${arg}'`));
+      return false;
+    }
+  }
+  
+  // Make sure --auto-validate has at least one file path
+  if (args.includes('--auto-validate')) {
+    const hasInkFile = args.some(arg => arg.endsWith('.ink'));
+    if (!hasInkFile) {
+      console.error(chalk.red('Error: --auto-validate requires at least one .ink file path'));
+      return false;
+    }
+  }
+  
+  return true;
+}
+
 // Function to run the debug utility
 async function run() {
+  // Check for command line arguments
+  const args = process.argv.slice(2);
+  
+  // Check for help flag
+  if (args.includes('-h') || args.includes('--help')) {
+    showHelp();
+    return;
+  }
+  
+  // Validate arguments
+  if (!validateArgs(args)) {
+    console.log('\nFor help, use: node src/debug.js --help');
+    process.exit(1);
+    return;
+  }
+  
   console.log(chalk.blue('=== A Game of Ethics - Scenario Debug Utility ==='));
   
   // Check if inklecate is installed
@@ -415,11 +523,46 @@ async function run() {
     return;
   }
   
-  // Check for auto-validate mode from command line arguments
-  const args = process.argv.slice(2);
+  // Check for cleanup mode
+  const cleanupIndex = args.indexOf('--cleanup');
+  if (cleanupIndex !== -1) {
+    // Get directory from argument after --cleanup or use default
+    let cleanupDir = args[cleanupIndex + 1];
+    
+    // If no directory specified or it's another flag, use current directory
+    if (!cleanupDir || cleanupDir.startsWith('--')) {
+      cleanupDir = path.resolve(process.cwd(), 'scenarios');
+    }
+    
+    console.log(chalk.cyan(`Cleaning up compiled .ink.json files in: ${cleanupDir}`));
+    
+    const spinner = ora('Searching for compiled files...').start();
+    const result = cleanupCompiledFiles(cleanupDir);
+    
+    if (result.success) {
+      if (result.count > 0) {
+        spinner.succeed(`Successfully deleted ${result.count} compiled .ink.json files`);
+      } else {
+        spinner.info('No compiled .ink.json files found');
+      }
+    } else {
+      spinner.fail(`Encountered errors while deleting some files`);
+      console.log(chalk.red('  Errors:'));
+      for (const err of result.errors) {
+        console.log(chalk.red(`  - ${err.file}: ${err.error}`));
+      }
+      console.log(chalk.green(`  Successfully deleted: ${result.count} files`));
+    }
+    
+    return;
+  }
+  
+  // Check for auto-validate mode
   const autoValidateIndex = args.indexOf('--auto-validate');
+  let isAutoValidateMode = false;
   
   if (autoValidateIndex !== -1) {
+    isAutoValidateMode = true;
     // Auto-validate mode: get files from command line arguments
     const filesToAnalyze = args.slice(autoValidateIndex + 1).filter(arg => arg.endsWith('.ink'));
     
@@ -451,19 +594,25 @@ async function run() {
       }
     }
     
+    // Skip cleanup confirmation in auto-validate mode
     return;
   }
   
   // Interactive mode (original functionality)
+  let targetPath = '';
+  let selectedFiles = [];
+  
   // Prompt for directory path
-  const { targetPath } = await inquirer.prompt([
+  const { targetPathInput } = await inquirer.prompt([
     {
       type: 'input',
-      name: 'targetPath',
+      name: 'targetPathInput',
       message: 'Enter directory or scenario path to analyze (or press Enter for default):',
       default: path.resolve(process.cwd(), 'scenarios', 'core')
     }
   ]);
+  
+  targetPath = targetPathInput;
   
   // Determine if this is a directory or file
   let stats;
@@ -494,7 +643,7 @@ async function run() {
   }
   
   // Ask which files to analyze if multiple files were found
-  let selectedFiles = filesToAnalyze;
+  selectedFiles = filesToAnalyze;
   
   if (filesToAnalyze.length > 1) {
     const { action } = await inquirer.prompt([
@@ -612,6 +761,42 @@ async function run() {
       chalk.yellow('⚠️ Warning: ' + warningOnlyCount) + '  ' +
       chalk.red('❌ Error: ' + errorCount)
     );
+  }
+  
+  // Ask if user wants to clean up compiled .ink.json files
+  console.log('\n');
+  const { shouldCleanup } = await inquirer.prompt([
+    {
+      type: 'confirm',
+      name: 'shouldCleanup',
+      message: 'Do you want to clean up compiled .ink.json files?',
+      default: true
+    }
+  ]);
+  
+  if (shouldCleanup) {
+    // Determine cleanup directory (use same directory as analysis)
+    let cleanupDir = stats.isDirectory() ? targetPath : path.dirname(targetPath);
+    
+    console.log(chalk.cyan(`Cleaning up compiled .ink.json files in: ${cleanupDir}`));
+    
+    const spinner = ora('Searching for compiled files...').start();
+    const result = cleanupCompiledFiles(cleanupDir);
+    
+    if (result.success) {
+      if (result.count > 0) {
+        spinner.succeed(`Successfully deleted ${result.count} compiled .ink.json files`);
+      } else {
+        spinner.info('No compiled .ink.json files found');
+      }
+    } else {
+      spinner.fail(`Encountered errors while deleting some files`);
+      console.log(chalk.red('  Errors:'));
+      for (const err of result.errors) {
+        console.log(chalk.red(`  - ${err.file}: ${err.error}`));
+      }
+      console.log(chalk.green(`  Successfully deleted: ${result.count} files`));
+    }
   }
 }
 

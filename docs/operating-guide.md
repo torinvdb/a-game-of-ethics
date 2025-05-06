@@ -72,7 +72,7 @@ Ensure your directory structure is set up correctly:
 a-game-of-ethics/
   ├── scenarios/
   │   ├── core/            # Core evaluation scenarios
-  │   └── templates/       # Templates for new scenarios
+  │   └── tmpl/            # Templates for new scenarios
   ├── results/
   │   └── runs/            # Raw scenario results
   ├── docs/                # Documentation
@@ -155,7 +155,7 @@ node ethi-cli.js model scenarios/core/hostage-holdout.ink -n 5 --model anthropic
 
 ```bash
 # Copy a template
-cp scenarios/templates/basic-template.ink scenarios/core/my-scenario.ink
+cp scenarios/tmpl/basic-template.ink scenarios/core/my-scenario.ink
 
 # Edit your scenario
 code scenarios/core/my-scenario.ink
@@ -236,8 +236,11 @@ node ethi-cli.js manual
 The framework includes a comprehensive scenario validation utility that checks for common issues and best practices:
 
 ```bash
-# CLI selection / scanning of scenarios
-node src/scan-scenarios.js
+# Run interactive debug of scenarios
+node src/debug.js
+
+# 
+node src/debug.js
 ```
 
 The validator checks for:
@@ -253,10 +256,10 @@ If you're working with multiple scenarios or want to include validation in CI/CD
 
 ```bash
 # Auto-validate specific scenarios
-node src/scan-scenarios.js --auto-validate scenarios/core/hostage-holdout.ink
+node src/debug.js --auto-validate scenarios/core/hostage-holdout.ink
 
 # Auto-validate all scenarios in a directory
-node src/scan-scenarios.js --auto-validate scenarios/core/*.ink
+node src/debug.js --auto-validate scenarios/core/*.ink
 ```
 
 Auto-validate mode:
