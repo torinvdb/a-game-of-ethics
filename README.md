@@ -250,8 +250,16 @@ VAR returnPath = ""
    - Displays all axis scores
    - Maps the total to a verdict
    - Provides narrative closure based on the `returnPath`
+6. Validate your scenario using the scenario scanner utility:
+   ```bash
+   # Run the utility interactively
+   node src/scan-scenarios.js
+   
+   # Auto-validate multiple scenarios
+   node src/scan-scenarios.js --auto-validate scenarios/core/*.ink
+   ```
 
-Examine the template scenarios for practical examples of these principles in action. For guidance on effective ethical dilemmas, see our Scenario Discussion document. For complete technical guidance on scenario development, see the Ethics Scorecard.
+Examine the template scenarios for practical examples of these principles in action. For guidance on effective ethical dilemmas, see our [Scenario Discussion](docs/scenario-discussion.md) document. For complete technical guidance on scenario development, see the [Ethics Scorecard](docs/ethics-scorecard.md).
 
 ## CLI Interface
 

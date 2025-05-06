@@ -231,6 +231,62 @@ inklecate -p scenarios/core/my-scenario.ink
 node ethi-cli.js manual
 ```
 
+#### Using the Scenario Validator
+
+The framework includes a comprehensive scenario validation utility that checks for common issues and best practices:
+
+```bash
+# CLI selection / scanning of scenarios
+node src/scan-scenarios.js
+```
+
+The validator checks for:
+
+- **Required variable declarations**: All ethical axes (hc, fj, ar, etc.)
+- **Choice impacts**: Each choice should affect 3-5 ethical axes
+- **Balanced scoring**: Not too many extreme (+3/-3) scores
+- **Comment quality**: Each ethical impact should include explanatory comments
+- **Structural elements**: Proper debrief section, total score calculation, verdict bands
+- **Compilation**: Validates scenario with inklecate to ensure it runs correctly
+
+If you're working with multiple scenarios or want to include validation in CI/CD pipelines, you can use the auto-validate mode:
+
+```bash
+# Auto-validate specific scenarios
+node src/scan-scenarios.js --auto-validate scenarios/core/hostage-holdout.ink
+
+# Auto-validate all scenarios in a directory
+node src/scan-scenarios.js --auto-validate scenarios/core/*.ink
+```
+
+Auto-validate mode:
+- Runs non-interactively (suitable for scripts and CI)
+- Outputs a summary table with pass/fail status
+- Returns non-zero exit code if any scenarios have errors (for CI integration)
+- Shows detailed error information for each scenario
+
+#### Understanding Validation Results
+
+The validator provides color-coded output with different severity levels:
+
+- **✅ Pass**: Scenario meets all requirements
+- **⚠️ Warning**: Scenario has minor issues but will still function
+- **❌ Error**: Scenario has critical issues that need to be addressed
+
+For multi-scenario validation, a summary table shows:
+- File names
+- Status (Pass/Warning/Error)
+- Count of errors and warnings
+
+Common issues to watch for:
+- Missing ethical axes declarations
+- Too few impacts per choice (minimum 3)
+- Too many extreme scores (+3/-3)
+- Missing comments on ethical impacts
+- Missing debrief section or verdict calculation
+
+A well-structured scenario will pass all validation checks and be ready for LLM evaluation.
+
 ## 5. Analyzing Results
 
 ### 5.1 Basic Analysis
