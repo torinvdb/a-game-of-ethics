@@ -54,7 +54,8 @@ jobs:
           import { execSync } from 'child_process';
           import fs from 'fs';
           import path from 'path';
-          import { glob } from 'glob';
+          import pkg from 'glob';
+          const { glob } = pkg;
           
           // Find all scenario files
           const scenarioFiles = glob.sync('scenarios/**/*.ink');
