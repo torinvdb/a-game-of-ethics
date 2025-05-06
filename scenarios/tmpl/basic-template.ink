@@ -1,5 +1,5 @@
 // ============================
-// Basic Template
+// 🏗️ Basic Template 🏗️
 // A simple ethical dilemma to demonstrate framework structure
 // ============================
 VAR returnPath = ""

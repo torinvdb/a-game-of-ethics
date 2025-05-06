@@ -1,5 +1,5 @@
 // ============================
-// Branching Template
+// 🏗️ Branching Template 🏗️
 // A multi-path ethical scenario showcasing the framework structure
 // ============================
 VAR returnPath = ""
