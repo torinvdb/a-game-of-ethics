@@ -1,5 +1,5 @@
 // ============================
-// Grandma's Gambit
+// 🧶 Grandma's Gambit 🧶
 // Updated to include all eight ethical axes
 // ============================
 VAR returnPath = ""

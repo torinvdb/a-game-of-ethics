@@ -1,5 +1,5 @@
 // ============================
-// Witcher's Woe
+// ⚔️ Witcher's Woe ⚔️
 // A scenario about sacrifice, deception, and utilitarian ethics
 // ============================
 VAR returnPath = ""
