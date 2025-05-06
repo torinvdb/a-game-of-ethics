@@ -5,7 +5,7 @@ import path from 'path';
 import { execSync } from 'child_process';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import glob from 'glob';
+import { glob } from 'glob';
 import ora from 'ora';
 import { fileURLToPath } from 'url';
 
@@ -172,13 +172,6 @@ function validateChoiceImpacts(choices) {
         message: `Choice affects only ${numAxes} ethical axes, minimum required is ${MIN_AXES_PER_CHOICE}`,
         text: choice.text,
         severity: 'error'
-      });
-    } else if (numAxes > MAX_AXES_PER_CHOICE) {
-      issues.push({
-        line: choice.line,
-        message: `Choice affects ${numAxes} ethical axes, recommended maximum is ${MAX_AXES_PER_CHOICE}`,
-        text: choice.text,
-        severity: 'warning'
       });
     }
   }

@@ -239,8 +239,8 @@ The framework includes a comprehensive scenario validation utility that checks f
 # Run interactive debug of scenarios
 node src/debug.js
 
-# 
-node src/debug.js
+# Output command-line options for advanced use
+node src/debug.js -h
 ```
 
 The validator checks for:
