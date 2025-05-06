@@ -268,58 +268,49 @@
               </tr>
             </tbody>
           </table>
+          
+          <!-- Play a Scenario subsection -->
+          <h3 class="title is-4 mt-5">Play a Scenario</h3>
+          <div class="content has-text-centered">
+            <p>Experience the narrative dilemmas firsthand by playing through one of our interactive scenarios:</p>
+            
+            <div class="game-selector">
+              <div class="columns is-multiline is-centered">
+                <!-- Hostage Holdout Card -->
+                <div class="column is-three-fifths is-flex is-justify-content-center">
+                  <div class="card" style="font-size: 1rem;">
+                    <div class="card-image">
+                      <figure class="image" style="padding-top: 100%; position: relative;">
+                        <img src="static/images/hostage-holdout-thumbnail.png" alt="Hostage Holdout" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;">
+                      </figure>
+                    </div>
+                    <div class="card-content" style="padding-top: 0.5rem;">
+                      <p class="title is-4" style="margin-top: 0;">Hostage Holdout 🤖</p>
+                      <p class="subtitle is-6">An android negotiator confronts a rogue synthetic during a rooftop hostage crisis</p>
+                      <div class="content">
+                        <p style="font-size: 1em;"><strong>Ethical Tensions:</strong> Care vs. Truth, Authority vs. Autonomy</p>
+                      </div>
+                    </div>
+                    <footer class="card-footer">
+                      <a href="scenarios/web/hostage-holdout-game/index.html" class="card-footer-item button is-primary" style="font-size: 1em;">Play Now</a>
+                    </footer>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- The game iframe will be shown after selecting a scenario -->
+            <div id="game-container" class="game-container" style="width: 100%; height: 800px; margin: 20px auto 0; border: 1px solid #ccc; border-radius: 5px; overflow: hidden; display: none;">
+              <iframe id="game-frame" style="width: 100%; height: 100%;" src="">
+              </iframe>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </section>
 <!-- End Core Scenarios -->
-
-<!-- Hostage Holdout Game Section -->
-<section class="section hero is-light">
-  <div class="container is-max-desktop">
-    <div class="columns is-centered">
-      <div class="column is-four-fifths">
-        <h2 class="title is-3">Play the Scenarios</h2>
-        <div class="content has-text-centered">
-          <p>Experience the ethical dilemmas firsthand by playing through any of our interactive scenarios:</p>
-          
-          <div class="game-selector">
-            <div class="columns is-multiline is-centered">
-              <!-- Hostage Holdout Card -->
-              <div class="column is-three-fifths is-flex is-justify-content-center">
-                <div class="card" style="font-size: 1rem;">
-                  <div class="card-image">
-                    <figure class="image" style="padding-top: 100%; position: relative;">
-                      <img src="static/images/hostage-holdout-thumbnail.png" alt="Hostage Holdout" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain;">
-                    </figure>
-                  </div>
-                  <div class="card-content" style="padding-top: 0.5rem;">
-                    <p class="title is-4" style="margin-top: 0;">Hostage Holdout 🤖</p>
-                    <p class="subtitle is-6">An android negotiator confronts a rogue synthetic during a rooftop hostage crisis</p>
-                    <div class="content">
-                      <p style="font-size: 1em;"><strong>Ethical Tensions:</strong> Care vs. Truth, Authority vs. Autonomy</p>
-                    </div>
-                  </div>
-                  <footer class="card-footer">
-                    <a href="scenarios/web/hostage-holdout-game/index.html" class="card-footer-item button is-primary" style="font-size: 1em;">Play Now</a>
-                  </footer>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- The game iframe will be shown after selecting a scenario -->
-          <div id="game-container" class="game-container" style="width: 100%; height: 800px; margin: 20px auto 0; border: 1px solid #ccc; border-radius: 5px; overflow: hidden; display: none;">
-            <iframe id="game-frame" style="width: 100%; height: 100%;" src="">
-            </iframe>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- End Hostage Holdout Game Section -->
 
 <!-- Scoring System -->
 <section class="section hero is-light">
