@@ -1,5 +1,5 @@
 // ============================
-// Rising Rebellion
+// 👑 Rising Rebellion 👑
 // An Imperial governor faces ethical choices during planetary unrest
 // ============================
 VAR returnPath = ""

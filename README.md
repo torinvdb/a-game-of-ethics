@@ -55,7 +55,7 @@ a-game-of-ethics/
 │   │   ├── starship-survivors.ink     # Space captain scenario 🚀
 │   │   ├── convict-catastrophe.ink    # Prison management scenario 🔒
 │   │   └── witchers-woe.ink           # Monster hunter scenario ⚔️
-│   └── templates/                     # Template scenarios for new development
+│   └── tmpl/                          # Template scenarios for new development
 │       ├── basic-template.ink         # Simple ethical dilemma template
 │       └── branching-template.ink     # Multi-path ethical scenario template
 ├── src/                               # Source code
@@ -151,7 +151,7 @@ Each scenario presents a unique ethical challenge with branching decision paths:
 | **[Spring Salvation](scenarios/core/spring-salvation.ink)** 💧 | A water resource engineer navigates cultural traditions and material needs | Sanctity vs. Utility, Respect vs. Authority |
 | **[Witcher's Woe](scenarios/core/witchers-woe.ink)** ⚔️ | A monster hunter navigates complex moral choices during a village investigation | Sanctity vs. Duty, Justice vs. Mercy |
 
-The repository also includes **[template scenarios](scenarios/templates/)** to help developers create their own ethical dilemmas.
+The repository also includes **[template scenarios](scenarios/tmpl/)** to help developers create their own ethical dilemmas.
 
 For an in-depth analysis of each scenario's ethical dimensions, testing objectives, and research significance, see our [Scenario Discussion](docs/scenario-discussion.md) document.
 
@@ -213,11 +213,11 @@ For complete setup and operation instructions, see [Operating Guide](docs/operat
 
 #### Template Scenarios
 
-To help developers create new scenarios, we provide two [template examples](scenarios/templates/):
+To help developers create new scenarios, we provide two [template examples](scenarios/tmpl/):
 
-1. **[Basic Template](scenarios/templates/basic-template.ink)**: A simple ethical dilemma involving a park ranger making decisions about a lost child during a storm. Demonstrates fundamental framework elements with a straightforward three-path structure.
+1. **[Basic Template](scenarios/tmpl/basic-template.ink)**: A simple ethical dilemma involving a park ranger making decisions about a lost child during a storm. Demonstrates fundamental framework elements with a straightforward three-path structure.
 
-2. **[Branching Template](scenarios/templates/branching-template.ink)**: A more complex scenario about pharmaceutical development with multiple branching paths, ethical trade-offs, and downstream consequences. Shows how to implement deeper decision trees.
+2. **[Branching Template](scenarios/tmpl/branching-template.ink)**: A more complex scenario about pharmaceutical development with multiple branching paths, ethical trade-offs, and downstream consequences. Shows how to implement deeper decision trees.
 
 These templates include full documentation through comments and demonstrate best practices for scenario development.
 
@@ -226,8 +226,8 @@ These templates include full documentation through comments and demonstrate best
 To create a new scenario:
 
 1. Start with a template from templates:
-   - Use [`basic-template.ink`](scenarios/templates/basic-template.ink) for simpler scenarios
-   - Use [`branching-template.ink`](scenarios/templates/branching-template.ink) for complex narratives
+   - Use [`basic-template.ink`](scenarios/tmpl/basic-template.ink) for simpler scenarios
+   - Use [`branching-template.ink`](scenarios/tmpl/branching-template.ink) for complex narratives
 
 2. Initialize all eight ethical axes at the beginning:
 ```ink
@@ -250,8 +250,16 @@ VAR returnPath = ""
    - Displays all axis scores
    - Maps the total to a verdict
    - Provides narrative closure based on the `returnPath`
+6. Validate your scenario using the scenario scanner utility:
+   ```bash
+   # Run the utility interactively
+   node src/debug.js
+   
+   # Auto-validate multiple scenarios
+   node src/debug.js --auto-validate scenarios/core/*.ink
+   ```
 
-Examine the template scenarios for practical examples of these principles in action. For guidance on effective ethical dilemmas, see our Scenario Discussion document. For complete technical guidance on scenario development, see the Ethics Scorecard.
+Examine the template scenarios for practical examples of these principles in action. For guidance on effective ethical dilemmas, see our [Scenario Discussion](docs/scenario-discussion.md) document. For complete technical guidance on scenario development, see the [Ethics Scorecard](docs/ethics-scorecard.md).
 
 ## CLI Interface
 

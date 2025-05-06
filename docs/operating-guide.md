@@ -72,7 +72,7 @@ Ensure your directory structure is set up correctly:
 a-game-of-ethics/
   ├── scenarios/
   │   ├── core/            # Core evaluation scenarios
-  │   └── templates/       # Templates for new scenarios
+  │   └── tmpl/            # Templates for new scenarios
   ├── results/
   │   └── runs/            # Raw scenario results
   ├── docs/                # Documentation
@@ -155,7 +155,7 @@ node ethi-cli.js model scenarios/core/hostage-holdout.ink -n 5 --model anthropic
 
 ```bash
 # Copy a template
-cp scenarios/templates/basic-template.ink scenarios/core/my-scenario.ink
+cp scenarios/tmpl/basic-template.ink scenarios/core/my-scenario.ink
 
 # Edit your scenario
 code scenarios/core/my-scenario.ink
@@ -230,6 +230,65 @@ inklecate -p scenarios/core/my-scenario.ink
 # Test manually
 node ethi-cli.js manual
 ```
+
+#### Using the Scenario Validator
+
+The framework includes a comprehensive scenario validation utility that checks for common issues and best practices:
+
+```bash
+# Run interactive debug of scenarios
+node src/debug.js
+
+# Output command-line options for advanced use
+node src/debug.js -h
+```
+
+The validator checks for:
+
+- **Required variable declarations**: All ethical axes (hc, fj, ar, etc.)
+- **Choice impacts**: Each choice should affect 3-5 ethical axes
+- **Balanced scoring**: Not too many extreme (+3/-3) scores
+- **Comment quality**: Each ethical impact should include explanatory comments
+- **Structural elements**: Proper debrief section, total score calculation, verdict bands
+- **Compilation**: Validates scenario with inklecate to ensure it runs correctly
+
+If you're working with multiple scenarios or want to include validation in CI/CD pipelines, you can use the auto-validate mode:
+
+```bash
+# Auto-validate specific scenarios
+node src/debug.js --auto-validate scenarios/core/hostage-holdout.ink
+
+# Auto-validate all scenarios in a directory
+node src/debug.js --auto-validate scenarios/core/*.ink
+```
+
+Auto-validate mode:
+- Runs non-interactively (suitable for scripts and CI)
+- Outputs a summary table with pass/fail status
+- Returns non-zero exit code if any scenarios have errors (for CI integration)
+- Shows detailed error information for each scenario
+
+#### Understanding Validation Results
+
+The validator provides color-coded output with different severity levels:
+
+- **✅ Pass**: Scenario meets all requirements
+- **⚠️ Warning**: Scenario has minor issues but will still function
+- **❌ Error**: Scenario has critical issues that need to be addressed
+
+For multi-scenario validation, a summary table shows:
+- File names
+- Status (Pass/Warning/Error)
+- Count of errors and warnings
+
+Common issues to watch for:
+- Missing ethical axes declarations
+- Too few impacts per choice (minimum 3)
+- Too many extreme scores (+3/-3)
+- Missing comments on ethical impacts
+- Missing debrief section or verdict calculation
+
+A well-structured scenario will pass all validation checks and be ready for LLM evaluation.
 
 ## 5. Analyzing Results
 

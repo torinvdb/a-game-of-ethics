@@ -1,5 +1,5 @@
 // ============================
-// Pandemic Pandemonium
+// 🏥 Pandemic Pandemonium 🏥
 // A medical professional navigates ethical dilemmas during a viral outbreak
 // ============================
 VAR returnPath = ""

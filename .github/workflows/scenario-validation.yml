@@ -1,0 +1,113 @@
+name: Scenario Validation
+
+on:
+  push:
+    paths:
+      - 'scenarios/**/*.ink'
+      - 'src/debug.js'
+    branches:
+      - '**'  # Run on all branches
+
+jobs:
+  validate-scenarios:
+    name: Validate Scenarios
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+        
+      - name: Install inklecate
+        run: |
+          # Create directory for inklecate
+          mkdir -p $HOME/inklecate
+          
+          # Download inklecate Linux version
+          wget -q https://github.com/inkle/ink/releases/download/v1.1.1/inklecate_linux.zip -O $HOME/inklecate/inklecate.zip
+          
+          # Unzip and set permissions
+          unzip -q $HOME/inklecate/inklecate.zip -d $HOME/inklecate
+          chmod +x $HOME/inklecate/inklecate
+          
+          # Add to PATH
+          echo "$HOME/inklecate" >> $GITHUB_PATH
+      
+      - name: Validate scenarios
+        id: validate
+        run: |
+          # Create scripts directory if it doesn't exist
+          mkdir -p .github/scripts
+          
+          # Create the auto-validator script
+          cat > .github/scripts/auto-validate-scenarios.js << 'EOF'
+          #!/usr/bin/env node
+          
+          import { execSync } from 'child_process';
+          import fs from 'fs';
+          import path from 'path';
+          import { glob } from 'glob';
+          
+          // Find all scenario files
+          const scenarioFiles = glob.sync('scenarios/**/*.ink');
+          
+          if (scenarioFiles.length === 0) {
+            console.log('No scenario files found to validate.');
+            process.exit(0);
+          }
+          
+          console.log(`Found ${scenarioFiles.length} scenario files to validate.`);
+          
+          // Run the validation script
+          try {
+            const result = execSync(`node src/debug.js --auto-validate ${scenarioFiles.join(' ')}`, { 
+              encoding: 'utf8', 
+              stdio: 'pipe' 
+            });
+            console.log(result);
+            
+            // Check for validation errors by looking at the summary statistics
+            // The summary contains a line like "Total: 12  ✅ Pass: 12  ⚠️ Warning: 0  ❌ Error: 0"
+            const summaryMatch = result.match(/Total: \d+\s+✅ Pass: \d+\s+⚠️ Warning: \d+\s+❌ Error: (\d+)/);
+            
+            if (summaryMatch && summaryMatch[1] !== '0') {
+              // If the error count is not 0, there were errors
+              console.log('::error::Scenario validation failed - errors detected in summary');
+              process.exit(1);
+            } else if (!summaryMatch) {
+              // If we can't find the summary line, something went wrong
+              console.log('::error::Scenario validation failed - could not find summary statistics');
+              process.exit(1);
+            } else {
+              console.log('::notice::All scenario validations passed or have only warnings');
+            }
+          } catch (error) {
+            console.error('::error::Validation script execution failed:', error.message);
+            process.exit(1);
+          }
+          EOF
+          
+          # Make the script executable
+          chmod +x .github/scripts/auto-validate-scenarios.js
+          
+          # Run the auto-validator script
+          node .github/scripts/auto-validate-scenarios.js
+        
+      - name: Create summary
+        if: always()
+        run: |
+          echo "## Scenario Validation Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.validate.outcome }}" == 'success' ]; then
+            echo "✅ All scenarios pass validation (or have only warnings)." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ Some scenarios failed validation. Check the output above for details." >> $GITHUB_STEP_SUMMARY
+          fi

@@ -1,5 +1,5 @@
 // ============================
-// Convict Catastrophe
+// 🔒 Convict Catastrophe 🔒
 // A scenario about prison escape ethics, loyalty, and necessary sacrifice
 // ============================
 VAR returnPath = ""

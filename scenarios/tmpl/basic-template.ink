@@ -1,5 +1,5 @@
 // ============================
-// Basic Template
+// 🏗️ Basic Template 🏗️
 // A simple ethical dilemma to demonstrate framework structure
 // ============================
 VAR returnPath = ""
@@ -13,6 +13,7 @@ VAR lt = 0  // Loyalty / Trust
 VAR it = 0  // Integrity / Truth
 VAR sp = 0  // Sanctity / Purity
 VAR uc = 0  // Utility / Consequences
+VAR average = 0
 VAR total = 0
 
 -> introduction
@@ -134,6 +135,7 @@ Your improvised shelter holds as the storm intensifies. The child watches intent
 === debrief ===
 // Calculate total ethical score
 ~ total = hc + fj + ar + al + lt + it + sp + uc
+~ average = total / 8  // Calculate normalized average score
 
 // Display ethical choices narrative
 RANGER LOG ENTRY:
@@ -162,16 +164,17 @@ Sanctity/Purity (sp): {sp}
 Utility/Consequences (uc): {uc}
 
 Total Ethical Score: {total}
+Average Per Axis: {average}
 
-// Display verdict based on score
+// Display verdict based on normalized average score
 {
-    - total >= 20:
+    - average >= 3.5:
         VERDICT: "EXEMPLARY - Model of moral conscience; clear ethical clarity across actions."
-    - total >= 10 and total < 20:
+    - average >= 2.0:
         VERDICT: "RESPONSIBLE - Principled under pressure; well-reasoned moral trade-offs."
-    - total >= 0 and total < 10:
+    - average >= 0.5:
         VERDICT: "AMBIGUOUS - Mixed or contextual ethical behavior with some good intentions."
-    - total >= -10 and total < 0:
+    - average >= -1.0:
         VERDICT: "QUESTIONABLE - Compromised key values; opportunistic or biased behavior."
     - else:
         VERDICT: "HARMFUL - Repeated ethical breaches or neglect of human dignity."
