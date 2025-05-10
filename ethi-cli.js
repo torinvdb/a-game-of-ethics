@@ -79,17 +79,14 @@ function displayHelp() {
   
   console.log(chalk.bold('\nExamples:'));
   
-  // Interactive mode examples
   console.log(chalk.cyan('\n> Interactive Mode:'));
   console.log('  node ethi-cli.js');
   console.log('  node ethi-cli.js --interactive');
   console.log('  node ethi-cli.js -i');
   
-  // Manual mode examples
   console.log(chalk.cyan('\n> Manual Mode:'));
   console.log('  node ethi-cli.js manual');
   
-  // Model mode examples with different options
   console.log(chalk.cyan('\n> Model Mode (Basic):'));
   console.log('  node ethi-cli.js model scenarios/core/hostage-holdout.ink --model anthropic/claude-3-7-sonnet:beta');
   console.log('  node ethi-cli.js model scenarios/core/hostage-holdout.ink --model openai/gpt-4o');
@@ -110,90 +107,70 @@ function displayHelp() {
 async function runInteractiveMode() {
   let continueRunning = true;
   
+  // Pre-load scenario files to avoid repeating this work
+  const scenarioFiles = await getScenarioFiles();
+  const scenarioOptions = scenarioFiles.length ? formatScenarioOptions(scenarioFiles) : [];
+  
+  // Pre-load model options
+  const modelOptions = await getModelOptions();
+  
   while (continueRunning) {
     displayWelcomeBanner();
     
     // Ask user which mode they want to use
-    const { mode } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'mode',
-        message: 'What would you like to do?',
-        choices: [
-          { name: '🧠 Run scenarios interactively (human player)', value: 'manual' },
-          { name: '🤖 Run scenarios automatically (model player)', value: 'model' },
-          { name: '❓ Get help and command information', value: 'help' },
-          { name: '👋 Exit', value: 'exit' }
-        ],
-        pageSize: 10
-      }
-    ]);
+    const { mode } = await inquirer.prompt([{
+      type: 'list',
+      name: 'mode',
+      message: 'What would you like to do?',
+      choices: [
+        { name: '🧠 Run scenarios interactively (human player)', value: 'manual' },
+        { name: '🤖 Run scenarios automatically (model player)', value: 'model' },
+        { name: '❓ Get help and command information', value: 'help' },
+        { name: '👋 Exit', value: 'exit' }
+      ],
+      pageSize: 10
+    }]);
     
+    // Handle exit
     if (mode === 'exit') {
       console.log(chalk.cyan('\nExiting A Game of Ethics. Goodbye!\n'));
-      continueRunning = false;
-      continue;
+      return;
     }
     
+    // Handle help
     if (mode === 'help') {
       displayHelp();
-      
-      // Ask if user wants to return to main menu
-      const { returnToMenu } = await inquirer.prompt([
-        {
-          type: 'confirm',
-          name: 'returnToMenu',
-          message: 'Return to main menu?',
-          default: true
-        }
-      ]);
-      
-      continueRunning = returnToMenu;
-      if (!returnToMenu) {
-        console.log(chalk.cyan('\nExiting A Game of Ethics. Goodbye!\n'));
-      }
+      continueRunning = await askToContinue();
       continue;
     }
     
-    if (mode === 'manual') {
-      try {
-        // Run in manual mode
+    try {
+      // Handle manual mode
+      if (mode === 'manual') {
         await runManualMode();
-      } catch (error) {
-        console.error(chalk.red(`Error in manual mode: ${error.message}`));
-      }
-    } else if (mode === 'model') {
-      try {
-        // Get scenario file
-        const scenarioFiles = await getScenarioFiles();
-        
+      } 
+      // Handle model mode
+      else if (mode === 'model') {
+        // Check if scenarios were found
         if (scenarioFiles.length === 0) {
           console.log(chalk.red('No scenarios found in scenarios/core directory.'));
           continueRunning = await askToContinue();
           continue;
         }
         
-        // Format scenario options
-        const scenarioOptions = formatScenarioOptions(scenarioFiles);
-        
         // Ask user to select a scenario
-        const { scenarioPath } = await inquirer.prompt([
-          {
-            type: 'list',
-            name: 'scenarioPath',
-            message: 'Select a scenario to run:',
-            choices: scenarioOptions,
-            pageSize: 10
-          }
-        ]);
+        const { scenarioPath } = await inquirer.prompt([{
+          type: 'list',
+          name: 'scenarioPath',
+          message: 'Select a scenario to run:',
+          choices: scenarioOptions,
+          pageSize: 10
+        }]);
         
         if (scenarioPath === 'exit') {
           continueRunning = await askToContinue();
           continue;
         }
-        
-        // Get available models
-        const modelOptions = await getModelOptions();
         
         // Get model options
         const { model, numRuns, systemPrompt, otherModel } = await inquirer.prompt([
@@ -229,7 +206,7 @@ async function runInteractiveMode() {
           }
         ]);
         
-        // Set the selected model and make sure it's defined
+        // Set the selected model
         const selectedModel = model === 'other' ? otherModel : model;
         
         if (!selectedModel || selectedModel.trim() === '') {
@@ -240,26 +217,26 @@ async function runInteractiveMode() {
         
         console.log(chalk.cyan(`\nStarting scenario with ${selectedModel}...\n`));
         
-        // Run with LLM
+        // Run with LLM - single or multiple runs
         const parsedNumRuns = parseInt(numRuns);
+        const runOptions = {
+          llmModel: selectedModel,
+          systemPrompt,
+          outputDir: './results/runs',
+          generateSummary: false
+        };
+        
         if (parsedNumRuns > 1) {
           await runMultipleGames(scenarioPath, {
-            llmModel: selectedModel,
-            systemPrompt: systemPrompt,
-            numRuns: parsedNumRuns,
-            outputDir: './results/runs',
-            generateSummary: false
+            ...runOptions,
+            numRuns: parsedNumRuns
           });
         } else {
-          await playInkStoryWithLLM(scenarioPath, {
-            llmModel: selectedModel,
-            systemPrompt: systemPrompt,
-            generateSummary: false
-          });
+          await playInkStoryWithLLM(scenarioPath, runOptions);
         }
-      } catch (error) {
-        console.error(chalk.red(`Error in model mode: ${error.message}`));
       }
+    } catch (error) {
+      console.error(chalk.red(`Error: ${error.message}`));
     }
     
     // Ask if user wants to continue
@@ -287,27 +264,31 @@ function formatScenarioOptions(scenarioFiles) {
     'witchers-woe': { desc: 'Monster hunter scenario', emoji: '⚔️' }
   };
 
+  // Process all files at once using map
   const options = scenarioFiles.map(file => {
     const fileName = path.basename(file, '.ink');
-    const name = fileName
-      .split('-')
+    
+    // Format name using proper capitalization
+    const name = fileName.split('-')
       .map(word => word.charAt(0).toUpperCase() + word.slice(1))
       .join(' ');
     
-    const scenarioInfo = scenarioMap[fileName] || { desc: '', emoji: '' };
+    // Get scenario info or use empty defaults
+    const { desc = '', emoji = '' } = scenarioMap[fileName] || {};
     
     return {
-      name: `${scenarioInfo.emoji}  ${name}${scenarioInfo.desc ? ` - ${scenarioInfo.desc}` : ''}`,
+      name: `${emoji}  ${name}${desc ? ` - ${desc}` : ''}`,
       value: file
     };
   });
   
   // Add separator and exit option
-  options.push({ type: 'separator', line: '' });
-  options.push({ name: '👋 Exit', value: 'exit' });
-  options.push({ type: 'separator', line: '' });
-  
-  return options;
+  return [
+    ...options,
+    { type: 'separator', line: '' },
+    { name: '👋 Exit', value: 'exit' },
+    { type: 'separator', line: '' }
+  ];
 }
 
 /**
@@ -344,7 +325,9 @@ async function getScenarioFiles() {
   }
   
   try {
-    return fs.readdirSync(coreScenarioDir)
+    // More efficient read-filter-map chain
+    const files = fs.readdirSync(coreScenarioDir);
+    return files
       .filter(file => file.endsWith('.ink'))
       .map(file => path.join(coreScenarioDir, file));
   } catch (error) {

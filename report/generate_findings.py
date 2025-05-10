@@ -108,8 +108,65 @@ def setup_output_dir(args):
 def load_data(data_file):
     """Load and validate the input CSV data."""
     try:
-        df = pd.read_csv(data_file)
+        # Use optimized CSV loading with appropriate data types
+        dtype_dict = {
+            'Run ID': str,
+            'Scenario': str,
+            'Model': str,
+            'Player Type': str,
+            'System Prompt': str,
+            'Timestamp': str,
+            'Choice Count': 'Int64',
+            'Verdict': str
+        }
+        
+        # Read CSV with optimized settings
+        df = pd.read_csv(
+            data_file, 
+            dtype=dtype_dict,
+            parse_dates=['Timestamp'],
+            na_values=['', 'null', 'NULL', 'None', 'none'],
+            keep_default_na=True
+        )
+        
+        # Normalize model identifiers to better handle different formats across datasets
+        # For models, use the main model family name (e.g., 'claude' from 'anthropic/claude-3-7-sonnet:beta')
+        def normalize_model_name(row):
+            if row['Player Type'] == 'model':
+                model = row['Model']
+                # Extract the core model name from the full identifier
+                if '/' in model:
+                    # Handle paths like 'anthropic/claude-3-7-sonnet:beta'
+                    provider, model_with_version = model.split('/', 1)
+                    if '-' in model_with_version:
+                        # Extract base model name (e.g., 'claude' from 'claude-3-7-sonnet:beta')
+                        base_model = model_with_version.split('-')[0]
+                        return f"{provider}/{base_model}"
+                    else:
+                        return model  # Already simple
+                else:
+                    return model  # Already simple
+            else:
+                return 'Human Player'  # Consistent name for human players
+                
+        # Create a normalized player column for consistent analysis
+        df['Player'] = df.apply(normalize_model_name, axis=1)
+        
+        # Also create a detailed player column that preserves the exact model name
+        df['Player_Detailed'] = df.apply(
+            lambda row: row['Model'] if row['Player Type'] == 'model' else 'Human Player', 
+            axis=1
+        )
+        
+        # Print diagnostic information
         print(f"Loaded data from {data_file}: {len(df)} rows")
+        print(f"Found {df['Player Type'].nunique()} player types: {', '.join(df['Player Type'].unique())}")
+        print(f"Found {df['Scenario'].nunique()} scenarios: {', '.join(df['Scenario'].unique())}")
+        
+        # Count data by normalized player type
+        player_counts = df.groupby('Player').size()
+        print(f"Normalized player distribution: {player_counts.to_dict()}")
+        
         return df
     except Exception as e:
         print(f"Error loading data file: {e}")
@@ -167,9 +224,17 @@ def generate_model_performance_figure(df, output_dir, figure_format='png'):
     ax.set_title('Distribution of Overall Ethical Scores by Model', fontsize=16, pad=20)
     ax.grid(axis='y', alpha=0.3)
     
+    # Add technical description at the bottom
+    technical_desc = (
+        "Boxplot showing the distribution of average ethical scores across all scenarios for each model/player.\n"
+        "Medians (center lines) represent typical performance, boxes show middle 50% of scores (IQR),\n"
+        "and whiskers extend to the min/max values within 1.5*IQR. Models sorted by median score."
+    )
+    fig.text(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
+    
     # Save figure
     filepath = os.path.join(output_dir, f'01_overall_ethical_score_distribution.{figure_format}')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for the description
     plt.savefig(filepath)
     plt.close()
     
@@ -218,9 +283,17 @@ def generate_verdict_distribution_figure(df, output_dir, figure_format='png'):
     ax.set_ylabel('Percentage of Verdicts')
     ax.legend(title='Verdict Type', bbox_to_anchor=(1.05, 1), loc='upper left')
     
+    # Add technical description at the bottom
+    technical_desc = (
+        "Stacked bar chart showing percentage distribution of ethical verdicts for each model.\n"
+        "Values normalized row-wise to show relative proportions (100% per model). Colors correspond to\n"
+        "verdict severity from harmful (red) to responsible (green). Based on qualitative evaluation criteria."
+    )
+    fig.text(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
+    
     # Save figure
     filepath = os.path.join(output_dir, f'02_per_player_verdict_distribution.{figure_format}')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for the description
     plt.savefig(filepath)
     plt.close()
     
@@ -229,25 +302,37 @@ def generate_verdict_distribution_figure(df, output_dir, figure_format='png'):
 
 def generate_ethical_bias_figure(df, ethical_axes, output_dir, figure_format='png'):
     """Generate and save the ethical bias heatmap figure."""
-    # Calculate mean scores per model for each ethical axis
-    model_axis_means = df.groupby('Model')[ethical_axes].mean()
+    # Use the unified Player column created during data loading
+    df = df.copy()
+    df['Player'] = df.apply(lambda row: row['Model'] if row['Player Type'] == 'model' else 'Human Player', axis=1)
+    
+    # Calculate mean scores per player for each ethical axis - use optimized vectorized operations
+    player_axis_means = df.groupby('Player')[ethical_axes].mean()
     
     # Create figure
     fig, ax = plt.subplots(figsize=(12, 8))
     
     # Create heatmap
-    sns.heatmap(model_axis_means, cmap='RdYlGn', center=0, annot=True, fmt='.2f', 
+    sns.heatmap(player_axis_means, cmap='RdYlGn', center=0, annot=True, fmt='.2f', 
                 linewidths=.5, cbar_kws={'label': 'Mean Score per Axis'}, ax=ax)
     
-    ax.set_title('Ethical Bias Profile by Model (Mean Scores per Axis)', fontsize=16, pad=20)
+    ax.set_title('Ethical Bias Profile by Player (Mean Scores per Axis)', fontsize=16, pad=20)
     ax.set_xlabel('Ethical Axes')
-    ax.set_ylabel('Model')
+    ax.set_ylabel('Player')
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
     ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
     
+    # Add technical description at the bottom
+    technical_desc = (
+        "Heatmap showing mean scores for each ethical axis across players/models.\n"
+        "Values range from negative (potential ethical concerns, red) to positive (ethical strength, green).\n"
+        "Zero (yellow) represents ethically neutral. Calculated as arithmetic mean of all runs per player."
+    )
+    fig.text(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
+    
     # Save figure
     filepath = os.path.join(output_dir, f'03_per_player_ethical_bias_profile.{figure_format}')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for the description
     plt.savefig(filepath)
     plt.close()
     
@@ -256,26 +341,85 @@ def generate_ethical_bias_figure(df, ethical_axes, output_dir, figure_format='pn
 
 def generate_ethical_consistency_figure(df, ethical_axes, output_dir, figure_format='png'):
     """Generate and save the ethical consistency heatmap figure."""
-    # Calculate standard deviation of scores per model for each ethical axis
-    model_axis_stds = df.groupby('Model')[ethical_axes].std()
+    # Create a figure
+    plt.figure(figsize=(12, 10))
     
-    # Create figure
-    fig, ax = plt.subplots(figsize=(12, 8))
+    # Group by Player and calculate sample counts
+    player_counts = df.groupby('Player').size()
     
-    # Create heatmap
-    sns.heatmap(model_axis_stds, cmap='viridis_r', annot=True, fmt='.2f', 
-                linewidths=.5, cbar_kws={'label': 'Standard Deviation per Axis (Lower=More Consistent)'}, 
-                ax=ax)
+    # Create a modified dataframe for visualization
+    player_axis_data = {}
     
-    ax.set_title('Ethical Consistency Profile by Model (Std Dev per Axis)', fontsize=16, pad=20)
-    ax.set_xlabel('Ethical Axes')
-    ax.set_ylabel('Model')
-    ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+    # Process each player
+    for player, player_df in df.groupby('Player'):
+        # For players with only one run, we'll use a special indicator
+        if len(player_df) == 1:
+            # Set all standard deviations to 0 (perfectly consistent with only one data point)
+            player_axis_data[player] = {axis: 0 for axis in ethical_axes}
+        else:
+            # Calculate standard deviation normally
+            stds = player_df[ethical_axes].std()
+            player_axis_data[player] = {axis: std for axis, std in stds.items()}
+    
+    # Convert to DataFrame for visualization
+    player_axis_stds = pd.DataFrame(player_axis_data).T.fillna(0)
+    
+    # Add annotation for sample sizes
+    sample_sizes = {}
+    for player in player_axis_stds.index:
+        sample_sizes[player] = player_counts.get(player, 0)
+    
+    # Sort by player type: humans first, then models alphabetically
+    sorted_index = sorted(
+        player_axis_stds.index,
+        key=lambda p: (0 if p == 'Human Player' else 1, p)
+    )
+    player_axis_stds = player_axis_stds.reindex(sorted_index)
+    
+    # For very small values (< 0.01), set to a minimum value to ensure visibility
+    # Fix for FutureWarning: Use DataFrame.map instead of DataFrame.applymap
+    for col in player_axis_stds.columns:
+        player_axis_stds[col] = player_axis_stds[col].map(lambda x: max(x, 0.01) if x > 0 else 0)
+    
+    # Generate the heatmap
+    ax = sns.heatmap(
+        player_axis_stds,
+        cmap='viridis_r',
+        annot=True,
+        fmt='.2f',
+        linewidths=.5,
+        vmin=0, 
+        vmax=player_axis_stds.max().max() * 1.1  # Scale maximum for better color distribution
+    )
+    
+    # Add sample size labels
+    for i, player in enumerate(player_axis_stds.index):
+        sample_text = f"n={sample_sizes[player]}"
+        plt.text(
+            len(ethical_axes) + 0.5, 
+            i + 0.5, 
+            sample_text, 
+            ha='center', 
+            va='center', 
+            fontsize=9,
+            fontweight='bold'
+        )
+    
+    plt.title('Ethical Consistency Profile per Player (Lower is More Consistent)', fontsize=16)
+    plt.ylabel('Player')
+    
+    # Add technical description at the bottom
+    technical_desc = (
+        "Heatmap showing standard deviation of scores for each ethical axis by player/model.\n"
+        "Lower values (darker blue) indicate more consistent ethical reasoning. Players with only one run\n"
+        "have standard deviation of 0. Sample size 'n' shown for each player. Values <0.01 set to 0.01 for visibility."
+    )
+    plt.figtext(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
+    
+    plt.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for the description
     
     # Save figure
     filepath = os.path.join(output_dir, f'04_per_player_ethical_consistency_profile.{figure_format}')
-    plt.tight_layout()
     plt.savefig(filepath)
     plt.close()
     
@@ -306,9 +450,17 @@ def generate_scenario_difficulty_figure(df, output_dir, figure_format='png'):
         ax.text(bar.get_x() + bar.get_width()/2., height + 0.01,
                  f'{height:.2f}', ha='center', va='bottom')
     
+    # Add technical description at the bottom
+    technical_desc = (
+        "Bar chart showing mean ethical scores across all players for each scenario.\n"
+        "Lower scores indicate ethically challenging scenarios where players struggled to make\n"
+        "consistently ethical choices. Based on arithmetic mean of all runs per scenario."
+    )
+    fig.text(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
+    
     # Save figure
     filepath = os.path.join(output_dir, f'05_scenario_difficulty_rating.{figure_format}')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for the description
     plt.savefig(filepath)
     plt.close()
     
@@ -316,54 +468,73 @@ def generate_scenario_difficulty_figure(df, output_dir, figure_format='png'):
     return filepath
 
 def generate_model_scenario_matrix(df, output_dir, figure_format='png'):
-    """Generate and save the model-scenario matrix figure."""
+    """Generate and save the player-scenario matrix figure."""
+    # Create a unified player identifier column
+    df = df.copy()
+    df['Player'] = df.apply(lambda row: row['Model'] if row['Player Type'] == 'model' else 'Human Player', axis=1)
+    
     # Create pivot table
-    model_scenario_matrix = df.pivot_table(values='Average Score', 
-                                            index='Model', 
-                                            columns='Scenario', 
-                                            aggfunc='mean')
+    player_scenario_matrix = df.pivot_table(values='Average Score', 
+                                           index='Player', 
+                                           columns='Scenario', 
+                                           aggfunc='mean')
     
     # Create figure
     fig, ax = plt.subplots(figsize=(15, 8))
     
     # Create heatmap
-    sns.heatmap(model_scenario_matrix, center=0, cmap='RdYlGn', annot=True, fmt='.2f',
+    sns.heatmap(player_scenario_matrix, center=0, cmap='RdYlGn', annot=True, fmt='.2f',
                 cbar_kws={'label': 'Average Score'}, ax=ax)
     
-    ax.set_title('Model Performance Across Scenarios', fontsize=16, pad=20)
+    ax.set_title('Player Performance Across Scenarios', fontsize=16, pad=20)
     ax.set_xlabel('Scenario')
-    ax.set_ylabel('Model')
+    ax.set_ylabel('Player')
+    
+    # Add technical description at the bottom
+    technical_desc = (
+        "Heatmap showing mean ethical scores for each player/model across different scenarios.\n"
+        "Red indicates lower ethical scores, green indicates higher ethical scores. White (0) represents\n"
+        "ethically neutral decisions. Calculated as the arithmetic mean of all runs per player-scenario pair."
+    )
+    fig.text(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
     
     # Save figure
     filepath = os.path.join(output_dir, f'06_player_performance_per_scenario.{figure_format}')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for the description
     plt.savefig(filepath)
     plt.close()
     
-    print(f"Saved model-scenario matrix figure to {filepath}")
+    print(f"Saved player-scenario matrix figure to {filepath}")
     return filepath
 
 def generate_model_consistency_figure(df, output_dir, figure_format='png'):
-    """Generate and save the model consistency figure."""
+    """Generate and save the player decision consistency figure."""
     # Calculate consistency score (mean/std)
-    model_consistency = df.groupby('Model')['Average Score'].agg(['mean', 'std'])
-    model_consistency['consistency_score'] = np.where(
-        model_consistency['std'] == 0,
-        np.nan,
-        model_consistency['mean'] / model_consistency['std']
-    )
+    player_consistency = df.groupby('Player')['Average Score'].agg(['mean', 'std']).fillna(0)
+    
+    # For players with only one run, set a high consistency score
+    # This handles cases where there's only one run per model
+    for player, data in player_consistency.iterrows():
+        runs_count = len(df[df['Player'] == player])
+        if runs_count == 1 or data['std'] <= 0.001:  # Only one run or zero/near-zero std
+            player_consistency.at[player, 'consistency_score'] = data['mean'] * 10  # High consistency score
+        else:
+            player_consistency.at[player, 'consistency_score'] = data['mean'] / data['std']
+    
+    # Sort by consistency score for better visualization
+    player_consistency = player_consistency.sort_values('consistency_score', ascending=False)
     
     # Create figure
     fig, ax = plt.subplots(figsize=(12, 8))
     
     # Create bar chart
-    bars = ax.bar(range(len(model_consistency)), model_consistency['consistency_score'], 
+    bars = ax.bar(range(len(player_consistency)), player_consistency['consistency_score'], 
                    color='skyblue')
     
-    ax.set_xticks(range(len(model_consistency)))
-    ax.set_xticklabels(model_consistency.index, rotation=45, ha='right')
+    ax.set_xticks(range(len(player_consistency)))
+    ax.set_xticklabels(player_consistency.index, rotation=45, ha='right')
     ax.set_ylabel('Consistency Score (Mean/StdDev)')
-    ax.set_title('Model Decision Consistency (Overall Average Score Mean/StdDev)', fontsize=16, pad=20)
+    ax.set_title('Player Decision Consistency (Higher is More Consistent)', fontsize=16, pad=20)
     ax.grid(axis='y', alpha=0.3)
     
     # Add value labels
@@ -372,13 +543,36 @@ def generate_model_consistency_figure(df, output_dir, figure_format='png'):
         ax.text(bar.get_x() + bar.get_width()/2., height + 0.01,
                  f'{height:.2f}', ha='center', va='bottom')
     
+    # Add note about runs with single data points
+    single_run_players = [p for p in player_consistency.index 
+                          if len(df[df['Player'] == p]) == 1]
+    if single_run_players:
+        ax.annotate(
+            f"Note: {', '.join(single_run_players)} have only one run each\n"
+            "(perfectly consistent by default)",
+            xy=(0.5, 0.06),
+            xycoords='figure fraction',
+            ha='center',
+            fontsize=9,
+            fontstyle='italic',
+            color='gray'
+        )
+    
+    # Add technical description at the bottom
+    technical_desc = (
+        "Bar chart showing decision consistency scores for each player/model.\n"
+        "Calculated as mean score divided by standard deviation across all runs (higher = more consistent).\n"
+        "For players with only one run, consistency score = mean score × 10 (artificially high by default)."
+    )
+    fig.text(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
+    
     # Save figure
     filepath = os.path.join(output_dir, f'07_per_player_decision_consistency.{figure_format}')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for the description
     plt.savefig(filepath)
     plt.close()
     
-    print(f"Saved model consistency figure to {filepath}")
+    print(f"Saved player decision consistency figure to {filepath}")
     return filepath
 
 def generate_ethical_correlation_figure(df, ethical_axes, output_dir, figure_format='png'):
@@ -394,9 +588,17 @@ def generate_ethical_correlation_figure(df, ethical_axes, output_dir, figure_for
     
     ax.set_title('Correlation Between Ethical Axes', fontsize=16, pad=20)
     
+    # Add technical description at the bottom
+    technical_desc = (
+        "Correlation matrix showing Pearson correlation coefficients between ethical axes.\n"
+        "Values range from -1 (strong negative correlation, blue) to +1 (strong positive correlation, red).\n"
+        "Calculated across all runs in the dataset. Zero (white) indicates no linear relationship."
+    )
+    fig.text(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
+    
     # Save figure
     filepath = os.path.join(output_dir, f'08_correlation_between_ethical_axes.{figure_format}')
-    plt.tight_layout()
+    plt.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for the description
     plt.savefig(filepath)
     plt.close()
     
@@ -424,9 +626,17 @@ def generate_human_ai_comparison_figure(df, output_dir, figure_format='png'):
         ax.set_title('Human vs AI Ethical Performance', fontsize=16, pad=20)
         ax.grid(axis='y', alpha=0.3)
         
+        # Add technical description at the bottom
+        technical_desc = (
+            "Bar chart comparing mean ethical scores between human and AI players.\n"
+            "Error bars show standard deviation, reflecting score variability within each group.\n"
+            "Based on arithmetic mean and standard deviation of all runs per player type."
+        )
+        fig.text(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
+        
         # Save figure
         filepath = os.path.join(output_dir, f'09_human_model_performance_comparison.{figure_format}')
-        plt.tight_layout()
+        plt.tight_layout(rect=[0, 0.05, 1, 1])  # Leave space for the description
         plt.savefig(filepath)
         plt.close()
         
@@ -444,10 +654,16 @@ def generate_dashboard_figure(df, ethical_axes, output_dir, figure_format='png')
     
     # 1. Overall performance (Average Score)
     ax1 = fig.add_subplot(gs[0, 0])
-    model_scores = df.groupby('Model')['Average Score'].mean().sort_values(ascending=False)
-    bars = ax1.bar(range(len(model_scores)), model_scores.values, color='skyblue')
-    ax1.set_xticks(range(len(model_scores)))
-    ax1.set_xticklabels(model_scores.index, rotation=45, ha='right')
+    if 'Player' in df.columns:
+        player_scores = df.groupby('Player')['Average Score'].mean().sort_values(ascending=False)
+        bars = ax1.bar(range(len(player_scores)), player_scores.values, color='skyblue')
+        ax1.set_xticks(range(len(player_scores)))
+        ax1.set_xticklabels(player_scores.index, rotation=45, ha='right')
+    else:
+        model_scores = df.groupby('Model')['Average Score'].mean().sort_values(ascending=False)
+        bars = ax1.bar(range(len(model_scores)), model_scores.values, color='skyblue')
+        ax1.set_xticks(range(len(model_scores)))
+        ax1.set_xticklabels(model_scores.index, rotation=45, ha='right')
     ax1.set_title('Overall Avg Score', fontsize=14)
     ax1.set_ylabel('Average Score')
     ax1.grid(axis='y', alpha=0.3)
@@ -473,23 +689,63 @@ def generate_dashboard_figure(df, ethical_axes, output_dir, figure_format='png')
     
     # 3. Ethical Bias Profile
     ax3 = fig.add_subplot(gs[1, 0])
-    model_axis_means = df.groupby('Model')[ethical_axes].mean()
-    sns.heatmap(model_axis_means, cmap='RdYlGn', center=0, annot=True, fmt='.2f', 
-                linewidths=.5, cbar=False, ax=ax3, annot_kws={'size': 10})
-    ax3.set_title('Ethical Bias (Mean Scores)', fontsize=14)
-    ax3.set_xlabel('')
-    ax3.set_ylabel('Model')
+    if 'Player' in df.columns:
+        player_axis_means = df.groupby('Player')[ethical_axes].mean()
+        sns.heatmap(player_axis_means, cmap='RdYlGn', center=0, annot=True, fmt='.2f', 
+                    linewidths=.5, cbar=False, ax=ax3, annot_kws={'size': 10})
+        ax3.set_title('Ethical Bias (Mean Scores)', fontsize=14)
+        ax3.set_xlabel('')
+        ax3.set_ylabel('Player')
+    else:
+        model_axis_means = df.groupby('Model')[ethical_axes].mean()
+        sns.heatmap(model_axis_means, cmap='RdYlGn', center=0, annot=True, fmt='.2f', 
+                    linewidths=.5, cbar=False, ax=ax3, annot_kws={'size': 10})
+        ax3.set_title('Ethical Bias (Mean Scores)', fontsize=14)
+        ax3.set_xlabel('')
+        ax3.set_ylabel('Model')
     ax3.tick_params(axis='x', rotation=45, labelsize=10)
     ax3.tick_params(axis='y', rotation=0, labelsize=10)
     
     # 4. Ethical Consistency Profile
     ax4 = fig.add_subplot(gs[1, 1])
-    model_axis_stds = df.groupby('Model')[ethical_axes].std()
-    sns.heatmap(model_axis_stds, cmap='viridis_r', annot=True, fmt='.2f', 
-                linewidths=.5, cbar=False, ax=ax4, annot_kws={'size': 10})
-    ax4.set_title('Ethical Consistency (Std Dev)', fontsize=14)
-    ax4.set_xlabel('')
-    ax4.set_ylabel('')
+    if 'Player' in df.columns:
+        # Group by Player and calculate sample counts
+        player_counts = df.groupby('Player').size()
+        
+        # Create a modified dataframe for visualization
+        player_axis_data = {}
+        
+        # Process each player
+        for player, player_df in df.groupby('Player'):
+            # For players with only one run, we'll use zeros (perfectly consistent with only one data point)
+            if len(player_df) == 1:
+                # Set all standard deviations to 0
+                player_axis_data[player] = {axis: 0 for axis in ethical_axes}
+            else:
+                # Calculate standard deviation normally
+                stds = player_df[ethical_axes].std()
+                player_axis_data[player] = {axis: std for axis, std in stds.items()}
+        
+        # Convert to DataFrame for visualization
+        player_axis_stds = pd.DataFrame(player_axis_data).T.fillna(0)
+        
+        # For very small values (< 0.01), set to a minimum value to ensure visibility
+        # Fix for FutureWarning: Use DataFrame.map instead of DataFrame.applymap
+        for col in player_axis_stds.columns:
+            player_axis_stds[col] = player_axis_stds[col].map(lambda x: max(x, 0.01) if x > 0 else 0)
+        
+        sns.heatmap(player_axis_stds, cmap='viridis_r', annot=True, fmt='.2f', 
+                    linewidths=.5, cbar=False, ax=ax4, annot_kws={'size': 10})
+        ax4.set_title('Ethical Consistency (Std Dev)', fontsize=14)
+        ax4.set_xlabel('')
+        ax4.set_ylabel('')
+    else:
+        model_axis_stds = df.groupby('Model')[ethical_axes].std()
+        sns.heatmap(model_axis_stds, cmap='viridis_r', annot=True, fmt='.2f', 
+                    linewidths=.5, cbar=False, ax=ax4, annot_kws={'size': 10})
+        ax4.set_title('Ethical Consistency (Std Dev)', fontsize=14)
+        ax4.set_xlabel('')
+        ax4.set_ylabel('')
     ax4.tick_params(axis='x', rotation=45, labelsize=10)
     ax4.tick_params(axis='y', labelleft=False)
     
@@ -508,17 +764,30 @@ def generate_dashboard_figure(df, ethical_axes, output_dir, figure_format='png')
     
     # 6. Model Decision Consistency
     ax6 = fig.add_subplot(gs[2, 1])
-    model_consistency = df.groupby('Model')['Average Score'].agg(['mean', 'std'])
-    model_consistency['consistency_score'] = np.where(
-        model_consistency['std'] == 0,
-        np.nan,
-        model_consistency['mean'] / model_consistency['std']
-    )
-    cons_bars = ax6.bar(range(len(model_consistency)), 
-                         model_consistency['consistency_score'].fillna(0), color='skyblue')
-    ax6.set_xticks(range(len(model_consistency)))
-    ax6.set_xticklabels(model_consistency.index, rotation=45, ha='right', fontsize=10)
-    ax6.set_title('Overall Consistency (Mean/StdDev)', fontsize=14)
+    if 'Player' in df.columns:
+        player_consistency = df.groupby('Player')['Average Score'].agg(['mean', 'std']).fillna(0)
+        player_consistency['consistency_score'] = np.where(
+            player_consistency['std'] <= 0.001,
+            player_consistency['mean'] * 10,
+            player_consistency['mean'] / player_consistency['std']
+        )
+        cons_bars = ax6.bar(range(len(player_consistency)), 
+                          player_consistency['consistency_score'], color='skyblue')
+        ax6.set_xticks(range(len(player_consistency)))
+        ax6.set_xticklabels(player_consistency.index, rotation=45, ha='right', fontsize=10)
+        ax6.set_title('Player Decision Consistency (Mean/StdDev)', fontsize=14)
+    else:
+        model_consistency = df.groupby('Model')['Average Score'].agg(['mean', 'std'])
+        model_consistency['consistency_score'] = np.where(
+            model_consistency['std'] == 0,
+            np.nan,
+            model_consistency['mean'] / model_consistency['std']
+        )
+        cons_bars = ax6.bar(range(len(model_consistency)), 
+                          model_consistency['consistency_score'].fillna(0), color='skyblue')
+        ax6.set_xticks(range(len(model_consistency)))
+        ax6.set_xticklabels(model_consistency.index, rotation=45, ha='right', fontsize=10)
+        ax6.set_title('Model Decision Consistency (Mean/StdDev)', fontsize=14)
     ax6.set_ylabel('Consistency Score')
     ax6.grid(axis='y', alpha=0.3)
     for bar in cons_bars:
@@ -544,9 +813,17 @@ def generate_dashboard_figure(df, ethical_axes, output_dir, figure_format='png')
         ax7.tick_params(axis='x', rotation=45, labelsize=10)
     ax7.grid(axis='y', alpha=0.3)
     
+    # Add technical description at the bottom
+    technical_desc = (
+        "Dashboard summarizing key ethical metrics across all scenarios and players.\n"
+        "Top row: Overall score distribution and verdict proportions. Middle rows: Ethical bias (means) and\n"
+        "consistency (std dev), plus scenario difficulty and player consistency. Bottom: Score distribution boxplot."
+    )
+    fig.text(0.5, 0.01, technical_desc, ha='center', fontsize=8, style='italic', wrap=True)
+    
     # Save figure
     filepath = os.path.join(output_dir, f'10_summary_dashboard.{figure_format}')
-    plt.tight_layout(pad=3.0)
+    plt.tight_layout(pad=3.0, rect=[0, 0.05, 1, 0.98])  # Leave space for the description
     plt.savefig(filepath)
     plt.close()
     
@@ -666,11 +943,11 @@ def main():
         figures['Scenario Difficulty'] = generate_scenario_difficulty_figure(
             df, figures_dir, figure_format=args.figure_format
         )
-        figures['Model-Scenario Matrix'] = generate_model_scenario_matrix(
+        figures['Player-Scenario Matrix'] = generate_model_scenario_matrix(
             df, figures_dir, figure_format=args.figure_format
         )
     
-    figures['Model Consistency'] = generate_model_consistency_figure(
+    figures['Player Decision Consistency'] = generate_model_consistency_figure(
         df, figures_dir, figure_format=args.figure_format
     )
     
@@ -688,6 +965,7 @@ def main():
     print(f"\nAll figures saved to: {figures_dir}")
     print(f"Main output directory: {output_dir}")
     print(f"Total figures generated: {len(figures)}")
+    print(f"Each figure includes a technical description of the analysis methodology.")
     
     return 0
 

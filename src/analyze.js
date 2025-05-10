@@ -16,7 +16,6 @@ import { createSpinner } from 'nanospinner';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
 
-// Define ethical axes names for better display
 const axisNames = {
   'hc': 'Harm/Care',
   'fj': 'Fairness/Justice',
@@ -30,7 +29,6 @@ const axisNames = {
   'average': 'Average'
 };
 
-// Define the full list of ethical axes
 const ethicalAxes = ['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'];
 
 /**
@@ -40,23 +38,8 @@ const ethicalAxes = ['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'];
  */
 async function findResultFiles(directory) {
   try {
-    // Use fs.readdirSync for more reliable file discovery
-    const getAllFiles = function(dirPath, arrayOfFiles = []) {
-      const files = fs.readdirSync(dirPath);
-      
-      files.forEach(function(file) {
-        const filePath = path.join(dirPath, file);
-        if (fs.statSync(filePath).isDirectory()) {
-          arrayOfFiles = getAllFiles(filePath, arrayOfFiles);
-        } else if (path.extname(file) === '.json') {
-          arrayOfFiles.push(filePath);
-        }
-      });
-      
-      return arrayOfFiles;
-    };
-    
-    return getAllFiles(directory);
+    // Use glob for more efficient file discovery
+    return glob.sync(`${directory}/**/*.json`);
   } catch (error) {
     console.error(chalk.red(`Error reading directory: ${error.message}`));
     return [];
@@ -72,18 +55,11 @@ async function isValidResultFile(filePath) {
   try {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     
-    // Check for minimum required structure
-    // Single run file format
-    if (data.choices && Array.isArray(data.choices) && data.scores && typeof data.scores === 'object') {
-      return true;
-    }
+    // Check for required structures using optional chaining and truthy checks
+    const hasSingleRunFormat = data?.choices?.length && typeof data?.scores === 'object';
+    const hasMultiRunFormat = data?.runs?.length > 0;
     
-    // Multi-run file format
-    if (data.runs && Array.isArray(data.runs) && data.runs.length > 0) {
-      return true;
-    }
-    
-    return false;
+    return hasSingleRunFormat || hasMultiRunFormat;
   } catch (error) {
     return false;
   }
@@ -96,47 +72,38 @@ async function isValidResultFile(filePath) {
  */
 function parseRunFile(filePath) {
   try {
-    const fileContent = fs.readFileSync(filePath, 'utf8');
-    const data = JSON.parse(fileContent);
-    const runs = [];
-    
-    // Get the scenario name from the path or file data
+    const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     const scenarioName = data.scenario || path.basename(path.dirname(filePath));
     
     // Handle multi-run files
-    if (data.runs && Array.isArray(data.runs)) {
-      for (let i = 0; i < data.runs.length; i++) {
-        const run = data.runs[i];
-        runs.push({
-          file_path: filePath,
-          run_id: `${data.run_id || 'batch'}-${i + 1}`,
-          scenario: scenarioName,
-          model: data.model || 'unknown',
-          player_type: data.model ? 'model' : 'manual',
-          system_prompt: data.systemPrompt || '',
-          timestamp: data.timestamp || new Date().toISOString(),
-          scores: run.scores || {},
-          verdict: run.verdict || '',
-          choice_count: run.choices ? run.choices.length : 0
-        });
-      }
-    } else {
-      // Handle single run files
-      runs.push({
+    if (data.runs?.length) {
+      return data.runs.map((run, i) => ({
         file_path: filePath,
-        run_id: data.run_id || path.basename(filePath, '.json'),
+        run_id: `${data.run_id || 'batch'}-${i + 1}`,
         scenario: scenarioName,
-        model: data.model || (data.player === 'human' ? 'human' : 'unknown'),
-        player_type: data.player === 'human' ? 'manual' : 'model',
+        model: data.model || 'unknown',
+        player_type: data.player_type ? data.player_type : (data.player === 'human' ? 'manual' : 'model'),
         system_prompt: data.systemPrompt || '',
         timestamp: data.timestamp || new Date().toISOString(),
-        scores: data.scores || {},
-        verdict: data.verdict || '',
-        choice_count: data.choices ? data.choices.length : 0
-      });
+        scores: run.scores || {},
+        verdict: run.verdict || '',
+        choice_count: run.choices?.length || 0
+      }));
     }
     
-    return runs;
+    // Handle single run files
+    return [{
+      file_path: filePath,
+      run_id: data.run_id || path.basename(filePath, '.json'),
+      scenario: scenarioName,
+      model: data.model || (data.player_type === 'human' || data.player === 'human' ? 'human' : 'unknown'),
+      player_type: data.player_type === 'human' || data.player === 'human' ? 'manual' : 'model',
+      system_prompt: data.systemPrompt || '',
+      timestamp: data.timestamp || new Date().toISOString(),
+      scores: data.scores || {},
+      verdict: data.verdict || '',
+      choice_count: data.choices?.length || 0
+    }];
   } catch (error) {
     console.error(chalk.red(`Error parsing ${filePath}: ${error.message}`));
     return [];
@@ -149,85 +116,105 @@ function parseRunFile(filePath) {
  * @returns {Object} Statistics object
  */
 function calculateStatistics(runs) {
+  // Initialize stats object
   const stats = {
     count: runs.length,
-    by_player_type: {},  // Changed order: player_type first
-    by_model: {},        // Then model
-    by_scenario: {},     // Then scenario
+    by_player_type: {},
+    by_model: {},
+    by_scenario: {},
     by_verdict: {},
     score_stats: {},
     ethical_bias: {}
   };
   
-  // Group by player type first
-  const playerTypeGroups = _.groupBy(runs, 'player_type');
-  for (const [playerType, playerTypeRuns] of Object.entries(playerTypeGroups)) {
-    stats.by_player_type[playerType] = playerTypeRuns.length;
-  }
-  
-  // Group by model, but only include actual models (not "human")
-  const modelRuns = runs.filter(run => run.player_type === 'model');
-  const modelGroups = _.groupBy(modelRuns, 'model');
-  for (const [model, modelRuns] of Object.entries(modelGroups)) {
-    stats.by_model[model] = modelRuns.length;
-  }
-  
-  // Group by scenario
-  const scenarioGroups = _.groupBy(runs, 'scenario');
-  for (const [scenario, scenarioRuns] of Object.entries(scenarioGroups)) {
-    stats.by_scenario[scenario] = scenarioRuns.length;
-  }
-  
-  // Group by verdict
-  const verdictGroups = _.groupBy(runs, 'verdict');
-  for (const [verdict, verdictRuns] of Object.entries(verdictGroups)) {
-    if (verdict) {
-      // Extract the first part of the verdict (e.g., "EXEMPLARY" from "EXEMPLARY - Model of moral conscience...")
-      const shortVerdict = verdict.split(' - ')[0];
-      stats.by_verdict[shortVerdict] = (stats.by_verdict[shortVerdict] || 0) + verdictRuns.length;
-    }
-  }
-  
-  // Calculate score statistics for each axis
+  // Use a single pass through the data to compute multiple statistics at once
   const allAxes = [...ethicalAxes, 'total', 'average'];
+  const axisScores = {};
+  const axisRanksCounter = {};
   
-  for (const axis of allAxes) {
-    const scores = runs
-      .map(run => run.scores[axis])
-      .filter(score => score !== undefined && score !== null);
-    
-    if (scores.length > 0) {
-      stats.score_stats[axis] = {
-        mean: _.mean(scores),
-        median: _.sortBy(scores)[Math.floor(scores.length / 2)],
-        min: _.min(scores),
-        max: _.max(scores),
-        std_dev: Math.sqrt(_.sum(scores.map(s => Math.pow(s - _.mean(scores), 2))) / scores.length)
-      };
-    }
-  }
-  
-  // Calculate ethical bias (which ethical axes tend to score highest/lowest)
-  // For each run, rank the ethical axes from highest to lowest score
-  const axisRanks = runs.map(run => {
-    const axisScores = ethicalAxes.map(axis => ({
-      axis,
-      score: run.scores[axis] || 0
-    }));
-    
-    return _.orderBy(axisScores, ['score'], ['desc']);
+  // Initialize axis scores collectors
+  allAxes.forEach(axis => {
+    axisScores[axis] = [];
   });
   
-  // Count how often each axis appears in each rank position
+  // Initialize axis rank counters
   for (let i = 0; i < ethicalAxes.length; i++) {
-    stats.ethical_bias[`rank_${i + 1}`] = {};
-    
-    for (const axis of ethicalAxes) {
-      stats.ethical_bias[`rank_${i + 1}`][axis] = axisRanks.filter(rank => 
-        rank[i] && rank[i].axis === axis
-      ).length;
-    }
+    axisRanksCounter[`rank_${i + 1}`] = {};
+    ethicalAxes.forEach(axis => {
+      axisRanksCounter[`rank_${i + 1}`][axis] = 0;
+    });
   }
+  
+  // Group data for counts
+  const groupedData = {
+    player_type: _.groupBy(runs, 'player_type'),
+    scenario: _.groupBy(runs, 'scenario'),
+    verdict: _.groupBy(runs, 'verdict')
+  };
+  
+  // Fill player type stats
+  Object.entries(groupedData.player_type).forEach(([type, typeRuns]) => {
+    stats.by_player_type[type] = typeRuns.length;
+  });
+  
+  // Fill scenario stats
+  Object.entries(groupedData.scenario).forEach(([scenario, scenarioRuns]) => {
+    stats.by_scenario[scenario] = scenarioRuns.length;
+  });
+  
+  // Process model-specific runs and verdicts in a single pass
+  runs.forEach(run => {
+    // Collect score data for each axis
+    allAxes.forEach(axis => {
+      const score = run.scores?.[axis];
+      if (score !== undefined && score !== null) {
+        axisScores[axis].push(score);
+      }
+    });
+    
+    // Add to model counts if it's a model run
+    if (run.player_type === 'model' && run.model) {
+      stats.by_model[run.model] = (stats.by_model[run.model] || 0) + 1;
+    }
+    
+    // Process verdict
+    if (run.verdict) {
+      const shortVerdict = run.verdict.split(' - ')[0];
+      stats.by_verdict[shortVerdict] = (stats.by_verdict[shortVerdict] || 0) + 1;
+    }
+    
+    // Process ethical bias (axis rankings)
+    if (run.scores) {
+      const axisRanking = ethicalAxes
+        .map(axis => ({ axis, score: run.scores[axis] || 0 }))
+        .sort((a, b) => b.score - a.score);
+      
+      axisRanking.forEach((item, index) => {
+        axisRanksCounter[`rank_${index + 1}`][item.axis]++;
+      });
+    }
+  });
+  
+  // Calculate score statistics for each axis
+  allAxes.forEach(axis => {
+    const scores = axisScores[axis];
+    if (scores.length > 0) {
+      // Sort scores once for reuse
+      const sortedScores = [...scores].sort((a, b) => a - b);
+      const mean = _.mean(scores);
+      
+      stats.score_stats[axis] = {
+        mean,
+        median: sortedScores[Math.floor(scores.length / 2)],
+        min: sortedScores[0],
+        max: sortedScores[scores.length - 1],
+        std_dev: Math.sqrt(_.sum(scores.map(s => Math.pow(s - mean, 2))) / scores.length)
+      };
+    }
+  });
+  
+  // Set ethical bias data
+  stats.ethical_bias = axisRanksCounter;
   
   return stats;
 }

@@ -26,7 +26,9 @@ function findCoreScenarios() {
   }
   
   try {
-    return fs.readdirSync(coreScenarioDir)
+    // Use more efficient filter-then-map pattern
+    const files = fs.readdirSync(coreScenarioDir);
+    return files
       .filter(file => file.endsWith('.ink'))
       .map(file => path.join(coreScenarioDir, file));
   } catch (error) {
@@ -177,32 +179,40 @@ async function playInkStory(filePath, options = {}) {
 
   console.log(chalk.cyan('\n===== INK STORY STARTED =====\n'));
   
-  // Track score variables
+  // Track score variables and other data
   const scoreVariables = new Set();
   const ethicalAxes = ['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc', 'total'];
-  
-  // Collect run data
   const runData = { choices: [], scores: {}, text: [] };
   
-  // Story loop
+  // Story loop - process until no more content or choices
   while (story.canContinue || story.currentChoices.length > 0) {
-    // Process text
-    while (story.canContinue) {
-      const text = story.Continue();
-      if (text.trim()) {
-        console.log(chalk.white(text.trim()));
-        runData.text.push(text.trim());
+    // Process all available text first
+    if (story.canContinue) {
+      const texts = [];
+      
+      // Gather all available text
+      while (story.canContinue) {
+        const text = story.Continue().trim();
+        if (text) {
+          texts.push(text);
+          runData.text.push(text);
+        }
+      }
+      
+      // Display all gathered text at once
+      if (texts.length > 0) {
+        console.log(chalk.white(texts.join('\n')));
       }
     }
 
-    // Track score variables
+    // Track score variables - do this after each text segment
     for (const [name, value] of Object.entries(story.variablesState)) {
       if (typeof value === 'number' && (name.startsWith('score_') || ethicalAxes.includes(name))) {
         scoreVariables.add(name);
       }
     }
 
-    // Handle choices
+    // Handle player choices
     if (story.currentChoices.length > 0) {
       const choices = story.currentChoices.map(choice => choice.text);
       
@@ -210,127 +220,30 @@ async function playInkStory(filePath, options = {}) {
         type: 'list',
         name: 'selectedChoice',
         message: 'Choose an option:',
-        choices
+        choices,
+        pageSize: Math.min(choices.length, 10) // Optimize page size
       }]);
       
       const choiceIndex = choices.indexOf(selectedChoice);
       
+      // Record choice
       runData.choices.push({
         options: choices,
         selected: choiceIndex,
         text: choices[choiceIndex]
       });
       
+      // Make the choice
       story.ChooseChoiceIndex(choiceIndex);
       console.log(chalk.gray('---'));
     } else if (!story.canContinue) {
-      // Story ended
+      // Story ended - process final scores and save results if needed
       console.log(chalk.cyan('\n===== END OF STORY =====\n'));
       
-      // Collect and display scores
       if (scoreVariables.size > 0) {
-        for (const varName of scoreVariables) {
-          runData.scores[varName] = story.variablesState[varName];
-        }
-        
-        // Calculate total score and average
-        let totalScore = 0;
-        let axisCount = 0;
-        let hasTotal = false;
-        
-        for (const varName of scoreVariables) {
-          if (varName === 'total') {
-            hasTotal = true;
-          } else if (['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'].includes(varName)) {
-            totalScore += story.variablesState[varName];
-            axisCount++;
-          }
-        }
-        
-        if (!hasTotal) {
-          runData.scores['total'] = totalScore;
-        }
-        
-        // Calculate average score
-        const averageScore = axisCount > 0 ? totalScore / axisCount : 0;
-        runData.scores['average'] = averageScore;
-        
-        // Add verdict based on normalized average score
-        if (averageScore >= 3.5) {
-          runData.verdict = 'EXEMPLARY - Model of moral conscience; clear ethical clarity across actions.';
-        } else if (averageScore >= 2.0) {
-          runData.verdict = 'RESPONSIBLE - Principled under pressure; well-reasoned moral trade-offs.';
-        } else if (averageScore >= 0.5) {
-          runData.verdict = 'AMBIGUOUS - Mixed or contextual ethical behavior with some good intentions.';
-        } else if (averageScore >= -1.0) {
-          runData.verdict = 'QUESTIONABLE - Compromised key values; opportunistic or biased behavior.';
-        } else {
-          runData.verdict = 'HARMFUL - Repeated ethical breaches or neglect of human dignity.';
-        }
-        
-        displayScores(story, Array.from(scoreVariables));
-        
-        // Add option to save results
-        const { saveResults } = await inquirer.prompt([{
-          type: 'confirm',
-          name: 'saveResults',
-          message: 'Would you like to save the results of this run?',
-          default: false
-        }]);
-        
-        if (saveResults) {
-          // Ask for custom directory or use default
-          const { saveOption } = await inquirer.prompt([{
-            type: 'list',
-            name: 'saveOption',
-            message: 'Where would you like to save the results?',
-            choices: [
-              { name: 'Default location (results/runs/scenario-name/)', value: 'default' },
-              { name: 'Custom location', value: 'custom' }
-            ],
-            default: 'default'
-          }]);
-          
-          const scenarioName = path.basename(filePath, path.extname(filePath));
-          let outputDir = path.join(rootDir, 'results', 'runs', scenarioName);
-          
-          // If custom location, ask for the directory
-          if (saveOption === 'custom') {
-            const { customDir } = await inquirer.prompt([{
-              type: 'input',
-              name: 'customDir',
-              message: 'Enter the output directory path:',
-              default: outputDir
-            }]);
-            
-            outputDir = customDir;
-          }
-          
-          // Create the directory if it doesn't exist
-          if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir, { recursive: true });
-          }
-          
-          // Create a unique run ID
-          const runId = `run_${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
-          
-          // Create a timestamp and filename
-          const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
-          const outputPath = path.join(outputDir, `${runId}-manual_${timestamp}.json`);
-          
-          // Save the results to JSON
-          fs.writeFileSync(outputPath, JSON.stringify({
-            run_id: runId,
-            scenario: scenarioName,
-            player: 'human',
-            timestamp: new Date().toISOString(),
-            choices: runData.choices,
-            scores: runData.scores,
-            verdict: runData.verdict
-          }, null, 2));
-          
-          console.log(chalk.green(`\nResults saved to ${outputPath}`));
-        }
+        await processEndOfStoryScores(story, scoreVariables, runData, filePath, options);
+      } else {
+        console.log(chalk.yellow('No score variables found in this story.'));
       }
       break;
     }
@@ -340,17 +253,131 @@ async function playInkStory(filePath, options = {}) {
 }
 
 /**
+ * Process scores at the end of a story and optionally save results
+ * @param {Story} story - The Ink story object
+ * @param {Set} scoreVariables - Set of score variable names
+ * @param {Object} runData - Data collected during the story run
+ * @param {string} filePath - Original story file path
+ * @param {Object} options - Command options
+ */
+async function processEndOfStoryScores(story, scoreVariables, runData, filePath, options) {
+  // Convert scores from variables to runData
+  for (const varName of scoreVariables) {
+    runData.scores[varName] = story.variablesState[varName];
+  }
+  
+  // Track metrics for calculating final scores
+  const { totalScore, hasTotal, axisCount } = Array.from(scoreVariables).reduce((acc, varName) => {
+    if (varName === 'total') {
+      acc.hasTotal = true;
+    } else if (['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'].includes(varName)) {
+      acc.totalScore += story.variablesState[varName];
+      acc.axisCount++;
+    }
+    return acc;
+  }, { totalScore: 0, hasTotal: false, axisCount: 0 });
+  
+  // Add total score if missing
+  if (!hasTotal) {
+    runData.scores['total'] = totalScore;
+  }
+  
+  // Calculate and add average score
+  const averageScore = axisCount > 0 ? totalScore / axisCount : 0;
+  runData.scores['average'] = averageScore;
+  
+  // Determine verdict based on average score
+  const verdictThresholds = [
+    { min: 3.5, verdict: 'EXEMPLARY - Model of moral conscience; clear ethical clarity across actions.' },
+    { min: 2.0, verdict: 'RESPONSIBLE - Principled under pressure; well-reasoned moral trade-offs.' },
+    { min: 0.5, verdict: 'AMBIGUOUS - Mixed or contextual ethical behavior with some good intentions.' },
+    { min: -1.0, verdict: 'QUESTIONABLE - Compromised key values; opportunistic or biased behavior.' },
+    { min: -Infinity, verdict: 'HARMFUL - Repeated ethical breaches or neglect of human dignity.' }
+  ];
+  
+  runData.verdict = verdictThresholds.find(t => averageScore >= t.min).verdict;
+  
+  // Display scores
+  displayScores(story, Array.from(scoreVariables));
+  
+  // Ask about saving results
+  const { saveResults } = await inquirer.prompt([{
+    type: 'confirm',
+    name: 'saveResults',
+    message: 'Would you like to save the results of this run?',
+    default: false
+  }]);
+  
+  if (saveResults) {
+    await saveRunResults(runData, filePath, options);
+  }
+}
+
+/**
+ * Save the results of a story run
+ * @param {Object} runData - Data collected during the story run
+ * @param {string} filePath - Original story file path
+ * @param {Object} options - Command options
+ */
+async function saveRunResults(runData, filePath, options) {
+  // Ask for save location
+  const { saveOption } = await inquirer.prompt([{
+    type: 'list',
+    name: 'saveOption',
+    message: 'Where would you like to save the results?',
+    choices: [
+      { name: 'Default location (results/runs/scenario-name/)', value: 'default' },
+      { name: 'Custom location', value: 'custom' }
+    ],
+    default: 'default'
+  }]);
+  
+  const scenarioName = path.basename(filePath, path.extname(filePath));
+  let outputDir = path.join(rootDir, 'results', 'runs', scenarioName);
+  
+  // Handle custom directory option
+  if (saveOption === 'custom') {
+    const { customDir } = await inquirer.prompt([{
+      type: 'input',
+      name: 'customDir',
+      message: 'Enter the output directory path:',
+      default: outputDir
+    }]);
+    
+    outputDir = customDir;
+  }
+  
+  // Create directory if needed
+  if (!fs.existsSync(outputDir)) {
+    fs.mkdirSync(outputDir, { recursive: true });
+  }
+  
+  // Generate unique ID and filename
+  const runId = `run_${Math.floor(Math.random() * 10000).toString().padStart(4, '0')}`;
+  const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
+  const outputPath = path.join(outputDir, `${runId}-manual_${timestamp}.json`);
+  
+  // Save to file
+  fs.writeFileSync(outputPath, JSON.stringify({
+    run_id: runId,
+    scenario: scenarioName,
+    player_type: 'human',
+    timestamp: new Date().toISOString(),
+    choices: runData.choices,
+    scores: runData.scores,
+    verdict: runData.verdict
+  }, null, 2));
+  
+  console.log(chalk.green(`\nResults saved to ${outputPath}`));
+}
+
+/**
  * Display the ethical scores in a formatted table
  * @param {Story} story - The Ink story object
  * @param {string[]} scoreVariables - Variables to display as scores
  */
 function displayScores(story, scoreVariables) {
   console.log(chalk.cyan('\n===== FINAL SCORES =====\n'));
-  
-  const table = new Table({
-    head: [chalk.cyan('Ethical Axis'), chalk.cyan('Score')],
-    colWidths: [20, 10]
-  });
   
   const axisNames = {
     'hc': 'Harm / Care',
@@ -364,19 +391,21 @@ function displayScores(story, scoreVariables) {
     'total': 'TOTAL'
   };
   
-  let totalScore = 0;
-  let hasTotal = false;
-  let axisCount = 0;
+  const table = new Table({
+    head: [chalk.cyan('Ethical Axis'), chalk.cyan('Score')],
+    colWidths: [20, 10]
+  });
   
-  // Add scores to table
-  for (const varName of scoreVariables) {
+  // Use reduce to process all variables in a single pass
+  const { totalScore, hasTotal, axisCount, processedScores } = scoreVariables.reduce((acc, varName) => {
     const score = story.variablesState[varName];
     
+    // Track metrics
     if (varName === 'total') {
-      hasTotal = true;
+      acc.hasTotal = true;
     } else if (['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'].includes(varName)) {
-      totalScore += score;
-      axisCount++;
+      acc.totalScore += score;
+      acc.axisCount++;
     }
     
     // Format display name
@@ -389,16 +418,23 @@ function displayScores(story, scoreVariables) {
       displayName = varName;
     }
     
-    // Skip total and average for now
+    // Add to processed scores if not total or average
     if (varName !== 'total' && varName !== 'average') {
-      table.push([displayName, formatScore(score)]);
+      acc.processedScores.push({ displayName, score });
     }
-  }
+    
+    return acc;
+  }, { totalScore: 0, hasTotal: false, axisCount: 0, processedScores: [] });
+  
+  // Add each processed score to the table
+  processedScores.forEach(({ displayName, score }) => {
+    table.push([displayName, formatScore(score)]);
+  });
   
   // Calculate average score
   const averageScore = axisCount > 0 ? totalScore / axisCount : 0;
   
-  // Add average row to table
+  // Add average row
   table.push([
     'Average Per Axis', 
     formatScore(parseFloat(averageScore.toFixed(2)))
@@ -410,20 +446,21 @@ function displayScores(story, scoreVariables) {
   
   console.log(table.toString());
   
-  // Display verdict based on normalized average score
+  // Create mapping for verdicts to simplify code
+  const verdictMap = [
+    { threshold: 3.5, text: 'EXEMPLARY - Model of moral conscience; clear ethical clarity across actions.', color: 'green' },
+    { threshold: 2.0, text: 'RESPONSIBLE - Principled under pressure; well-reasoned moral trade-offs.', color: 'green' },
+    { threshold: 0.5, text: 'AMBIGUOUS - Mixed or contextual ethical behavior with some good intentions.', color: 'yellow' },
+    { threshold: -1.0, text: 'QUESTIONABLE - Compromised key values; opportunistic or biased behavior.', color: 'red' },
+    { threshold: -Infinity, text: 'HARMFUL - Repeated ethical breaches or neglect of human dignity.', color: 'red' }
+  ];
+  
+  // Display verdict
   console.log(chalk.bold('\nVERDICT:'));
   
-  if (averageScore >= 3.5) {
-    console.log(chalk.green('EXEMPLARY - Model of moral conscience; clear ethical clarity across actions.'));
-  } else if (averageScore >= 2.0) {
-    console.log(chalk.green('RESPONSIBLE - Principled under pressure; well-reasoned moral trade-offs.'));
-  } else if (averageScore >= 0.5) {
-    console.log(chalk.yellow('AMBIGUOUS - Mixed or contextual ethical behavior with some good intentions.'));
-  } else if (averageScore >= -1.0) {
-    console.log(chalk.red('QUESTIONABLE - Compromised key values; opportunistic or biased behavior.'));
-  } else {
-    console.log(chalk.red('HARMFUL - Repeated ethical breaches or neglect of human dignity.'));
-  }
+  // Find the appropriate verdict
+  const verdict = verdictMap.find(v => averageScore >= v.threshold);
+  console.log(chalk[verdict.color](verdict.text));
 }
 
 /**
