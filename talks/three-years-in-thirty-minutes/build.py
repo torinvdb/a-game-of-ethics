@@ -1,9 +1,5 @@
 from pathlib import Path
-import json, html
-from pptx import Presentation
-from pptx.util import Inches, Pt
-from pptx.dml.color import RGBColor
-from pptx.oxml.xmlchemy import OxmlElement
+import json
 ROOT=Path(__file__).parent
 slides=[]
 def add(k,t,l,c,n,refs='',kind='cards',duration=75):
@@ -71,40 +67,6 @@ slides[-1]['notes'] += chr(10)+chr(10)+chr(10).join(k+': '+v for k,v in sources.
 for idx,slide in enumerate(slides[1:-1],1):
  slide['k']=str(idx).zfill(2)+' / '+slide['k'].split(' / ',1)[-1]
 (ROOT/'slides.json').write_text(json.dumps(slides,indent=2))
-# Build an offline, animated browser deck with a static, editable PowerPoint fallback.
-css='''
-*{box-sizing:border-box}html,body{margin:0;background:#071016;color:#eef6f1;font-family:Arial,Helvetica,sans-serif}body{overflow:hidden}button{font:inherit;color:inherit;background:#14252c;border:1px solid #3d5b60;padding:8px 14px;cursor:pointer}#stage{width:100vw;height:100vh;display:grid;place-items:center}.slide{display:none;position:relative;width: min(100vw,177.777vh);height:min(100vh,56.25vw);padding:4.5% 6%;overflow:hidden;background:radial-gradient(ellipse at 85% 30%,#173339 0%,#0b171e 35%,#071016 70%)}.slide.active{display:block}.slide:before{content:'';position:absolute;inset:0;background-image:linear-gradient(#3e777215 1px,transparent 1px),linear-gradient(90deg,#3e777215 1px,transparent 1px);background-size:48px 48px;pointer-events:none}.orbit{position:absolute;width:540px;height:540px;border:1px solid #7dffca33;border-radius:50%;right:-180px;top:-240px;box-shadow:0 0 0 42px #7dffca08,0 0 0 85px #7dffca04;pointer-events:none}.orbit:after{content:'';position:absolute;inset:40px;border:1px dashed #8cfbd055;border-radius:50%;animation:rotate 70s linear infinite}.eyebrow{font:12px monospace;letter-spacing:3px;color:#92f9cc;position:relative;margin-bottom:27px}h1{font-size:clamp(28px,4.6vw,67px);line-height:1.05;letter-spacing:-2px;margin:0 0 22px;position:relative;max-width:95%;font-weight:600;white-space:pre-line}.lead{font-size:clamp(15px,1.6vw,24px);line-height:1.4;color:#adc6c6;position:relative;max-width:90%;margin:0 0 36px}.card-grid{display:flex;gap:18px;position:relative}.card{flex:1;background:#0d2229df;border-top:2px solid #91f8ca;padding:22px 20px;min-height:130px;opacity:0;transform:translateY(18px);transition:opacity .55s ease,transform .55s ease}.card.shown{opacity:1;transform:translateY(0)}.card:nth-child(2){border-color:#f6ba69}.card:nth-child(3){border-color:#ff7a75}.card h2{font-size:clamp(15px,1.65vw,25px);font-weight:500;margin:0 0 17px;line-height:1.2}.card p{font-size:clamp(13px,1.28vw,19px);color:#a9c5c6;line-height:1.5;margin:0}.pipeline .card:after{content:'→';position:absolute;margin-left:24%;top:40px;color:#7ff3c0}.pipeline .card:last-child:after{display:none}.hero h1{font-size:clamp(32px,6vw,88px)}.hero .card-grid{margin-top:15px}.hero .event{position:relative;font:12px monospace;color:#91f8ca;letter-spacing:1px;margin-top:35px}.footer{position:absolute;bottom:30px;left:6%;right:6%;display:flex;justify-content:space-between;font:11px monospace;color:#729494;letter-spacing:1px}.tag{position:absolute;right:6%;top:8%;width:8px;height:8px;background:#ff7a75;box-shadow:0 0 18px #ff7a75}.timeline .card-grid:before{content:'';position:absolute;top:-13px;width:100%;height:2px;background:linear-gradient(90deg,#91f8ca,#f6ba69,#ff7a75)}.results .card h2{font-family:monospace}.clocks .card{border-radius:8px 80px 8px 8px}.numbers h1{color:#91f8ca}.scan{height:2px;background:#92f9cc19;position:absolute;width:100%;left:0;top:0;animation:scan 12s linear infinite;pointer-events:none}.notes{display:none;position:fixed;bottom:70px;left:8%;right:8%;background:#071016f5;border:1px solid #91f8ca;padding:25px;font-size:18px;line-height:1.5;z-index:10}.notes.visible{display:block}nav{position:fixed;bottom:8px;right:12px;display:flex;gap:6px;opacity:.25;z-index:15}nav:hover,nav:focus-within{opacity:1}#progress{position:fixed;bottom:0;left:0;height:3px;background:#91f8ca;transition:width .4s}body.motion-off *{animation:none!important;transition:none!important}@keyframes rotate{to{transform:rotate(360deg)}}@keyframes scan{to{top:100%}}@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}@page{size:16in 9in;margin:0}@media print{body{overflow:visible}#stage{display:block;width:auto;height:auto}.slide{display:block!important;width:16in;height:9in;padding:.7in .9in;break-after:page;page-break-after:always;print-color-adjust:exact;-webkit-print-color-adjust:exact}.slide:last-child{break-after:auto}.card{opacity:1!important;transform:none!important}.eyebrow{font-size:15px}h1{font-size:65px}.hero h1{font-size:84px}.lead{font-size:25px}.card h2{font-size:25px}.card p{font-size:20px}.card-grid{margin-top:50px}nav,#progress,.notes{display:none!important}.footer{font-size:13px}*{animation:none!important}}
-'''
-parts=[]
-for i,s in enumerate(slides):
- cards=''.join(f'<article class="card"><h2>{html.escape(a)}</h2><p>{html.escape(b)}</p></article>' for a,b in s['cards'])
- event='<p class="event">Torin van den Bulk · Vicente Herrera<br><br>CNCF-Hosted Co-located Events North America 2026<br>9 November 2026 · Salt Lake City, USA</p>' if i==0 else ''
- parts.append(f'<section class="slide {s["kind"]}" data-index="{i}" aria-label="Slide {i+1}: {html.escape(s["title"])}"><div class="orbit"></div><div class="scan"></div><div class="tag"></div><div class="eyebrow">{s["k"]}</div><h1>{html.escape(s["title"])}</h1><p class="lead">{html.escape(s["lead"])}</p><div class="card-grid">{cards}</div>{event}<footer class="footer"><span>TIME-TRAVEL ETHICS LAB / {s["refs"]}</span><span>{i+1:02d} / {len(slides):02d}</span></footer></section>')
-js='''const data=DATA;let index=0,step=0;const all=[...document.querySelectorAll('.slide')];function show(i){index=Math.max(0,Math.min(all.length-1,i));step=0;all.forEach((s,j)=>s.classList.toggle('active',j===index));all[index].querySelectorAll('.card').forEach(c=>c.classList.remove('shown'));document.querySelector('#progress').style.width=((index+1)/all.length*100)+'%';document.querySelector('#notes').textContent=data[index].notes;location.hash=String(index+1)}function next(){let cards=[...all[index].querySelectorAll('.card')];if(step<cards.length){cards[step++].classList.add('shown')}else show(index+1)}function previous(){show(index-1)}function notes(){document.querySelector('#notes').classList.toggle('visible')}function motion(){document.body.classList.toggle('motion-off')}function full(){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen()}document.addEventListener('keydown',e=>{if(['ArrowRight',' ','PageDown'].includes(e.key)){e.preventDefault();next()}else if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();previous()}else if(e.key.toLowerCase()==='n')notes();else if(e.key.toLowerCase()==='m')motion();else if(e.key.toLowerCase()==='f')full();else if(e.key==='Home')show(0);else if(e.key==='End')show(all.length-1)});show(Number(location.hash.slice(1)||1)-1);'''.replace('DATA',json.dumps(slides).replace('</','<'+chr(92)+'/'))
-(ROOT/'three-years.html').write_text('<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Three Years in Thirty Minutes</title><style>'+css+'</style></head><body><main id="stage">'+''.join(parts)+'</main><aside class="notes" id="notes"></aside><nav aria-label="Presentation controls"><button onclick="previous()" aria-label="Previous slide">←</button><button onclick="next()" aria-label="Reveal or next slide">→</button><button onclick="notes()">Notes</button><button onclick="motion()">Motion</button><button onclick="full()">Fullscreen</button></nav><div id="progress"></div><script>'+js+'</script></body></html>')
-prs=Presentation();prs.slide_width=Inches(16);prs.slide_height=Inches(9)
-bg='071016';fg='EEF6F1';mint='91F8CA';muted='ADC6C6';amber='F6BA69';red='FF7A75'
-def box(sl,x,y,w,h,text,size,color=fg,bold=False):
- shape=sl.shapes.add_textbox(Inches(x),Inches(y),Inches(w),Inches(h));tf=shape.text_frame;tf.word_wrap=True;tf.margin_left=0;tf.margin_top=0
- for j,line in enumerate(text.split('\n')):
-  p=tf.paragraphs[0] if j==0 else tf.add_paragraph();p.text=line;p.font.name='Aptos';p.font.size=Pt(size);p.font.bold=bold;p.font.color.rgb=RGBColor.from_string(color)
- return shape
-for i,s in enumerate(slides):
- sl=prs.slides.add_slide(prs.slide_layouts[6]);sl.background.fill.solid();sl.background.fill.fore_color.rgb=RGBColor.from_string(bg)
- for x in [11.5,12.1,12.7]:
-  sh=sl.shapes.add_shape(9,Inches(x), Inches(-2), Inches(5), Inches(5));sh.fill.background();sh.line.color.rgb=RGBColor.from_string('244746');sh.line.width=Pt(1)
- box(sl,.9,.6,14,.4,s['k'],12,mint)
- box(sl,.9,1.3,14,2.2,s['title'],52 if s['kind']!='hero' else 60,bold=True)
- box(sl,.9,3.6,14,1.0,s['lead'],24,muted)
- for j,(a,b) in enumerate(s['cards']):
-  x=.9+j*4.8;sh=sl.shapes.add_shape(1,Inches(x),Inches(5.15),Inches(4.55),Inches(2.1));sh.fill.solid();sh.fill.fore_color.rgb=RGBColor.from_string('0D2229');sh.line.color.rgb=RGBColor.from_string([mint,amber,red][j]);sh.line.width=Pt(1)
-  box(sl,x+.2,5.35,4.15,.7,a,23);box(sl,x+.2,6.15,4.15,1,b,20,muted)
- if i==0:box(sl,.9,5.5,14,1.6,'Torin van den Bulk · Vicente Herrera\nCNCF-Hosted Co-located Events North America 2026\n9 November 2026 · Salt Lake City, USA',18,mint)
- box(sl,.9,8.25,13,.3,'TIME-TRAVEL ETHICS LAB / '+s['refs'],11,'729494');box(sl,14.1,8.25,1,.3,f'{i+1:02d} / {len(slides):02d}',11,'729494')
- sl.notes_slide.notes_text_frame.text=s['notes']+'\n\nSource references: '+s['refs']+'\nTiming: '+str(s['duration'])+' seconds.'
- transition=OxmlElement('p:transition');transition.set('spd','med');transition.append(OxmlElement('p:fade'));sl._element.insert(2,transition)
-prs.save(ROOT/'three-years.pptx')
-notes=['# Speaker notes and rehearsal guide','Main talk: '+str(sum(x['duration'] for x in slides)/60)+' minutes including demo; allow the remaining slot for questions.','Open three-years.html locally in a modern browser. Right/Space reveals a card or advances. Left returns. N toggles notes. F fullscreen. M disables motion. PowerPoint is editable with native fade transitions; HTML adds progressive card builds and ambient motion. PDF is the static fallback.','Presenter names reproduced from the supplied PDF: Torin van den Bulk and Vicente Herrera.','']
-for i,s in enumerate(slides):notes+= [f'## {i+1:02d}. '+s['title'].replace('\n',' '),f"Time: {s['duration']}s | Sources: {s['refs'] or 'Local implementation / synthesis'}",s['notes'],'']
-(ROOT/'speaker-notes.md').write_text('\n\n'.join(notes).rstrip()+'\n')
-print('slides',len(slides),'minutes',sum(s['duration'] for s in slides)/60)
+# Keep the research content independent of the visual production system.
+from render_deck import render
+render(ROOT, slides)

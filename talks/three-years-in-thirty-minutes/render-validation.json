@@ -1,0 +1,20 @@
+{
+  "slides": 24,
+  "js_errors": [],
+  "external_requests": [],
+  "layout_issues": [],
+  "viewports": [
+    "1600x900",
+    "1280x720",
+    "1024x768",
+    "1920x1080"
+  ],
+  "checks": [
+    "navigation",
+    "annotation and diagram reveals",
+    "notes",
+    "motion toggle",
+    "reduced motion",
+    "offline assets"
+  ]
+}

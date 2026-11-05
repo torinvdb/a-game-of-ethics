@@ -1,0 +1,12 @@
+[
+  {
+    "file": "akira-kaneda.jpg",
+    "title": "AKIRA \u2014 Kaneda and motorcycle poster artwork",
+    "source_url": "https://raw.githubusercontent.com/Realdhiru/wallps/1a2bd8e505f6a29bd68b422269e4c9c900f4a914/light/akira-kaneda-bike.png",
+    "source_sha256": "88648a8115da475705e64597187e43d2343133220e367d60d72e7e45764e38d6",
+    "asset_sha256": "9a378f850112cefffb70020e16712ba5ff56d2e227c8015c5c4b5737e941963f",
+    "treatment": "Resized to 2400x1350 and encoded as JPEG for presentation size; native layout cropping only. No generative editing.",
+    "credit": "AKIRA (1988). Artwork belongs to its respective rights holders; excluded from the repository MIT license.",
+    "selection": "Non-graphic poster artwork; no gore or nudity."
+  }
+]
