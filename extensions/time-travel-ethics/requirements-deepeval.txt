@@ -1,0 +1,2 @@
+# Optional; core offline runner has no Python third-party dependencies.
+deepeval==4.3.3

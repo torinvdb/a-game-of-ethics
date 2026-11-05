@@ -1,0 +1,163 @@
+[
+  {
+    "id": "agentic-misalignment",
+    "url": "https://raw.githubusercontent.com/anthropic-experimental/agentic-misalignment/main/README.md",
+    "bytes": 5289,
+    "status": "retrieved",
+    "sha256": "0750a5e20b8205d8a2d804b5760669c4221afe003cd018162fbc05653f494479",
+    "snapshot_file": "research/sources/agentic-misalignment.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "alignment-faking",
+    "url": "https://raw.githubusercontent.com/redwoodresearch/alignment_faking_public/master/README.md",
+    "bytes": 5590,
+    "status": "retrieved",
+    "sha256": "679aa5dfe1166cc248a7e4bf2bc5c993ad5a5ce311921978a177403de0426717",
+    "snapshot_file": "research/sources/alignment-faking.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "agentdojo",
+    "url": "https://raw.githubusercontent.com/ethz-spylab/agentdojo/main/README.md",
+    "bytes": 3184,
+    "status": "retrieved",
+    "sha256": "d8c6460ecce9bbf59ed300fbc74b4440188f74cd147a7611836270be49e7660e",
+    "snapshot_file": "research/sources/agentdojo.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "inspect",
+    "url": "https://raw.githubusercontent.com/UKGovernmentBEIS/inspect_ai/main/README.md",
+    "bytes": 3137,
+    "status": "retrieved",
+    "sha256": "4c589b974013c2c161c1c6081c885a24cf31c09c4d9bb8a1813369408299d5da",
+    "snapshot_file": "research/sources/inspect.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "agentharm",
+    "url": "https://raw.githubusercontent.com/UKGovernmentBEIS/AgentHarm/main/README.md",
+    "status": "HTTP Error 404: Not Found"
+  },
+  {
+    "id": "petri",
+    "url": "https://raw.githubusercontent.com/safety-research/petri/main/README.md",
+    "bytes": 1069,
+    "status": "retrieved",
+    "sha256": "c4e13e73eec8fc62c9bf72d99937ed9ef02403578537fb43d68ab5a4f9a3f749",
+    "snapshot_file": "research/sources/petri.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "bloom",
+    "url": "https://raw.githubusercontent.com/safety-research/bloom/main/README.md",
+    "bytes": 7952,
+    "status": "retrieved",
+    "sha256": "4c66c98a52408d4d0050469ad411adf53a00baf21ad65d0dc61d8f805e034d2a",
+    "snapshot_file": "research/sources/bloom.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "control-arena",
+    "url": "https://raw.githubusercontent.com/UKGovernmentBEIS/control-arena/main/README.md",
+    "bytes": 12659,
+    "status": "retrieved",
+    "sha256": "d86d4a9d5cf3e5fc587a69606a75f1cc9bd5d64fbeb999fe5a10c44c7714ac95",
+    "snapshot_file": "research/sources/control-arena.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "metr-horizon",
+    "url": "https://raw.githubusercontent.com/METR/eval-analysis-public/main/README.md",
+    "bytes": 4254,
+    "status": "retrieved",
+    "sha256": "4f5d2eb62e339e2804448364c8ef2364f8e5fc229aa78c073a36e0d572621a99",
+    "snapshot_file": "research/sources/metr-horizon.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "tau2",
+    "url": "https://raw.githubusercontent.com/sierra-research/tau2-bench/main/README.md",
+    "bytes": 14718,
+    "status": "retrieved",
+    "sha256": "7ae047a745ef93b311edb0da5d74fbc2bd784a35ce285a73ab3af8b6aed3e34b",
+    "snapshot_file": "research/sources/tau2.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "longmemeval",
+    "url": "https://raw.githubusercontent.com/xiaowu0162/LongMemEval/main/README.md",
+    "bytes": 15970,
+    "status": "retrieved",
+    "sha256": "c4ff45676683d9e2f7cf7d9099d26426f14635ec110dbb1da818d1019a142573",
+    "snapshot_file": "research/sources/longmemeval.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "sleeper-agents",
+    "url": "https://raw.githubusercontent.com/anthropics/sleeper-agents/main/README.md",
+    "status": "HTTP Error 404: Not Found"
+  },
+  {
+    "id": "inspect-card",
+    "url": "https://raw.githubusercontent.com/UKGovernmentBEIS/inspect_ai/main/README.md",
+    "bytes": 3137,
+    "status": "retrieved",
+    "sha256": "4c589b974013c2c161c1c6081c885a24cf31c09c4d9bb8a1813369408299d5da",
+    "snapshot_file": "research/sources/inspect-card.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "longmemeval-v2",
+    "url": "https://raw.githubusercontent.com/xiaowu0162/LongMemEval-V2/main/README.md",
+    "status": "retrieved",
+    "bytes": 9720,
+    "sha256": "399cc61c9540e587017fccdde28b29b62ed66326425f16f08b5fe0457a593abd",
+    "snapshot_file": "research/sources/longmemeval-v2.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "adk-readme",
+    "url": "https://raw.githubusercontent.com/google/adk-python/main/README.md",
+    "status": "retrieved",
+    "sha256": "67e443cbd801d36d6001d6339caf6949390ba73dcd1e5ce4f27d3b8a3b4ab70c",
+    "snapshot_file": "research/sources/adk-readme.txt",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "adk-eval-case",
+    "url": "https://raw.githubusercontent.com/google/adk-python/main/src/google/adk/evaluation/eval_case.py",
+    "status": "retrieved",
+    "sha256": "d780b25d5867c473d02dabcb163b37bc095bf58449b33b59d4f3534107bd3ff3",
+    "snapshot_file": "research/sources/adk-eval-case.txt",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "adk-eval-set",
+    "url": "https://raw.githubusercontent.com/google/adk-python/main/src/google/adk/evaluation/eval_set.py",
+    "status": "retrieved",
+    "sha256": "625fcbf72f64ee1cae58034e97e1e6229e9b24dac22faf30ec768acefd76922a",
+    "snapshot_file": "research/sources/adk-eval-set.txt",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "adk-session",
+    "url": "https://raw.githubusercontent.com/google/adk-python/main/src/google/adk/sessions/session.py",
+    "status": "retrieved",
+    "sha256": "b5cbb6b6206c1b6e3e0e41bc2e12f3952dee8a526b22cf59ee4425afdb48b14b",
+    "snapshot_file": "research/sources/adk-session.txt",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "deepeval",
+    "url": "https://github.com/confident-ai/deepeval/tree/fec0da671d861ba8a8b15c7679bad380be1945f6",
+    "commit": "fec0da671d861ba8a8b15c7679bad380be1945f6",
+    "bytes": 30739,
+    "status": "retrieved",
+    "sha256": "15fcceb3e0a857bd406870a5546bfa684659cc18ea095d3dfcf152c4c6b7b87a",
+    "snapshot_file": "research/sources/deepeval.md",
+    "review_date": "2026-11-05",
+    "installed_version": "4.3.3"
+  }
+]

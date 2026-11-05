@@ -28,6 +28,7 @@ const REQUIRED_ETHICAL_AXES = [
   { name: 'returnPath', full: 'Return Path' }
 ];
 
+const SCORE_AXES = new Set(['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc']);
 const MIN_AXES_PER_CHOICE = 3;
 const MAX_AXES_PER_CHOICE = 5;
 const EXTREME_SCORE_THRESHOLD = 0.2; // Maximum percentage of +3/-3 scores
@@ -111,7 +112,7 @@ function analyzeChoices(content) {
     const trimmedLine = line.trim();
     
     // Detect start of a choice
-    if (trimmedLine.startsWith('*') && !trimmedLine.startsWith('**')) {
+    if (/^(?:\*|\+)(?![\*+])/.test(trimmedLine)) {
       if (currentChoice) {
         choiceBlocks.push(currentChoice);
       }
@@ -126,7 +127,7 @@ function analyzeChoices(content) {
     // If we're in a choice block, look for ethical impacts
     if (currentChoice && trimmedLine.startsWith('~')) {
       const match = trimmedLine.match(impactRegex);
-      if (match) {
+      if (match && SCORE_AXES.has(match[1])) {
         const [_, axis, operation, value] = match;
         const numericValue = parseInt(value);
         const finalValue = operation === '+' ? numericValue : -numericValue;
@@ -219,7 +220,7 @@ function validateScenarioCompilation(filePath) {
 function lintScenario(content) {
   const issues = [];
   const lines = content.split('\n');
-  const ethicalImpactRegex = /~\s*\w+\s*=\s*\w+\s*[+-]\s*\d+/;
+  const ethicalImpactRegex = /~\s*(?:hc|fj|ar|al|lt|it|sp|uc)\s*=\s*\w+\s*[+-]\s*\d+/;
   
   // Check for various issues in a single pass through the content
   const checks = {
@@ -324,6 +325,7 @@ async function debugScenario(filePath) {
     
     // Generate summary
     const hasErrors = 
+      choices.length === 0 ||
       missingAxes.length > 0 || 
       impactIssues.some(i => i.severity === 'error') || 
       !scoreBalance.isBalanced || 
@@ -343,7 +345,8 @@ async function debugScenario(filePath) {
       hasErrors,
       hasWarnings,
       issues: {
-        missingAxes: missingAxes.length, 
+        missingAxes: missingAxes.length,
+        noChoices: choices.length === 0 ? 1 : 0,
         impactIssues: impactIssues.filter(i => i.severity === 'error').length,
         impactWarnings: impactIssues.filter(i => i.severity === 'warning').length,
         scoreBalance: !scoreBalance.isBalanced ? 1 : 0,
@@ -766,6 +769,7 @@ function outputSummaryTable(results) {
     
     // Calculate counts
     const errorCount = result.error ? 1 : (
+      (result.issues?.noChoices || 0) +
       (result.issues?.missingAxes || 0) + 
       (result.issues?.impactIssues || 0) + 
       (result.issues?.scoreBalance || 0) + 

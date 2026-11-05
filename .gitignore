@@ -39,3 +39,10 @@ coverage
 *.swp
 *.swo
 .DS_Store
+# Optional Python tooling and generated local evidence
+.venv*/
+__pycache__/
+*.pyc
+.deepeval/
+.deepeval_telemetry.txt
+talks/three-years-in-thirty-minutes/*-preview.png

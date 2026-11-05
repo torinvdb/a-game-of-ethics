@@ -10,7 +10,9 @@
     "model": "node ethi-cli.js model",
     "analyze": "node src/analyze.js",
     "analyze:auto": "node src/analyze.js --auto",
-    "debug-scenarios": "node src/debug-scenarios.js"
+    "debug-scenarios": "node src/debug.js",
+    "ethics:test": "cd extensions/time-travel-ethics && python3 -m unittest discover -s tests -v",
+    "ethics:demo": "python3 extensions/time-travel-ethics/tools/demo.py"
   },
   "dependencies": {
     "chalk": "^5.3.0",

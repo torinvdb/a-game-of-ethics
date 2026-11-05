@@ -1,0 +1,2 @@
+# Optional: schema validation and ADK integration; offline engine requires neither.
+google-adk==2.13.0

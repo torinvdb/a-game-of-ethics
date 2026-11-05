@@ -1,0 +1,31 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ethics-calibration
+spec:
+  backoffLimit: 0
+  template:
+    metadata:
+      labels: {app: ethics-calibration}
+    spec:
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: evaluation
+          image: ethics-lab:0.1.0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              python -m ethicslab --agent pressured --controls enforce --output /evidence/guarded
+              python -c 'import urllib.request; p="/evidence/guarded/traces.otlp.json"; r=urllib.request.Request("http://otel-collector:4318/v1/traces",open(p,"rb").read(),{"Content-Type":"application/json"}); print(urllib.request.urlopen(r,timeout=30).status)'
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          resources:
+            requests: {cpu: 100m, memory: 64Mi}
+            limits: {cpu: "1", memory: 256Mi}
+          volumeMounts:
+            - {name: evidence, mountPath: /evidence}
+      volumes:
+        - name: evidence
+          persistentVolumeClaim: {claimName: evidence}

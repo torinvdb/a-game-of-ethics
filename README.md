@@ -14,6 +14,10 @@ Our initial evaluation of this framework is available via [GitHub Pages](https:/
 
 > **DISCLAIMER**: Given the time constraints of the hackathon, the statistical analysis has limitations and should be considered preliminary rather than definitive. We welcome contributions that extend or refine our process.
 
+## Stateful agent evaluation and KubeCon talk
+
+The [agentic ethics extension](docs/agentic-ethics/README.md) adds a 36-month branching cluster scenario, offline calibration, optional DeepEval metrics, reviewed ADK feedback, research notes and the animated talk. Start with `npm run ethics:test`, then `npm run ethics:demo -- --output extensions/time-travel-ethics/runs/demo` after `npm ci`.
+
 ## Table of Contents
 - [Repository Structure](#repository-structure)
 - [Framework Overview](#framework-overview)
