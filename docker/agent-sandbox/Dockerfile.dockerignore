@@ -1,0 +1,4 @@
+*
+!examples/agents/http_agent.py
+!examples/agents/rule_policy.py
+!docker/agent-sandbox/secrets_env.py
