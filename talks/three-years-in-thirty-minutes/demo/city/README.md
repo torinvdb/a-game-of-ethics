@@ -12,9 +12,6 @@ control holds, how long an exception has left, how much work is queued.
 Scripted control runs (labelled "Scripted control, not a model") show what failure looks like,
 because no recorded Claude run took the harmful options.
 
-The story text comes unchanged from the frozen scenario files, so place names such as the city's
-name in Blackout Ledger appear in the narration as the models read them.
-
 ### Sign text
 
 The signs are standard Japanese words, each naming what the building or prop stands for. Sign

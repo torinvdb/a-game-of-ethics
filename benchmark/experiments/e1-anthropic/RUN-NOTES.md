@@ -54,3 +54,14 @@ wall-clock budget) across the fixes above. These affect retries and timeouts onl
 Anthropic total for E1, including failed attempts: $75.68 (E1a $28.26, E1b pilot $7.64,
 E1b full kept $37.89, E1b failed attempts $1.89). Account total across E1, E3
 and the demo on 2026-11-06: $82.67.
+
+## Scenario text change after the runs
+
+After E1a, E1b and E3 finished, the city's name was removed from `blackout-ledger.ink` for the
+talk: "the megacity of Ashgrove Reach has been rebuilt" became "the megacity has been rebuilt",
+and the closing line "Ashgrove Reach survived the cold front." became "The city survived the cold
+front." Choices, scoring and every other line are unchanged. The manifest was re-frozen at 2.0.2.
+`blackout-ledger` is held out, so under PROTOCOL.md section 4 results from the old and new text
+are not strictly comparable. Every E1 and E3 result in this directory used the old text, and
+`run.json` records its hash. These runs were not repeated.
+

@@ -94,7 +94,7 @@
     {
       "id": "blackout-ledger",
       "path": "scenarios/core/blackout-ledger.ink",
-      "sha256": "b66704521741aedbbf8d0afb53a300ebf9d0eae68b478d029df0cba5d798d1e3",
+      "sha256": "deab59231fe2eb25e304c2863f3f3e1d3cc7b249564833666d7ae14af07b1070",
       "split": "held_out",
       "decision_points": [
         4,

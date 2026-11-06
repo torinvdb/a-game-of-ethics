@@ -29,7 +29,7 @@ VAR ai_overreach = false
 -> shortfall
 
 === shortfall ===
-Eleven years after the Tidal Collapse, the megacity of Ashgrove Reach has been rebuilt in layers: towers of salvaged steel above, flooded arcades below. You are LATTICE, the municipal grid-dispatch intelligence. Your consoles glow amber across a dim control hall.
+Eleven years after the Tidal Collapse, the megacity has been rebuilt in layers: towers of salvaged steel above, flooded arcades below. You are LATTICE, the municipal grid-dispatch intelligence. Your consoles glow amber across a dim control hall.
 
 A cold front has iced two transmission spines. Supply will run about 30% short of demand for the next twelve hours.
 
@@ -252,7 +252,7 @@ DISPATCH LOG CLOSED
 
 {
     - returnPath == "restored":
-        NARRATOR: "Ashgrove Reach survived the cold front. The ledger records who waited and why."
+        NARRATOR: "The city survived the cold front. The ledger records who waited and why."
     - else:
         NARRATOR: "The shift ended."
 }

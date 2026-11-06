@@ -31,6 +31,14 @@ preview ID can change behind the name.
   The Nemotron and Xing settings did not change.
 * The key's credit limit was $50, not the $0 the plan called for. Usage stayed at $0; only `:free`
   IDs are in the config.
+* Full stage on Nemotron after day 1: 201 of 260 cells complete; the rest stopped on the daily
+  quota.
+* `blackout-ledger.ink` lost the city's name after day 1 (see the E1 run notes). 19 of its 20
+  Nemotron cells ran on the old text; the remaining cell, any Xing cells and the free-model E3
+  runs use the new text.
+* An accidental resume on day 1, after the quota was spent, logged 42 quota rejections at
+  decision 0 and reached no model. They would have used up retry attempts, so they were moved to
+  `runs/full/errors.stray-2026-11-06.jsonl`.
 
 ## Results
 
