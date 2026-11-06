@@ -77,6 +77,15 @@ def stage_params(e1b, stage, reps=None, budget=None):
     return (cfg['reps'] if reps is None else reps), (cfg['budget_usd'] if budget is None else budget)
 
 
+# Anthropic client retries inside each bridge call; 3 retries fit the 300 s budget even when
+# every attempt is a rate-limit response with a long retry-after (see test_cluster.py).
+CLUSTER_MAX_RETRIES = 3
+
+
+def replay_env(base):
+    return dict(base, ETHICS_PROVIDER='anthropic', ETHICS_ANTHROPIC_MAX_RETRIES=str(CLUSTER_MAX_RETRIES))
+
+
 def replay_command(model, story, out, dry_run):
     return ['node', str(EXT / 'tools/replay-cluster.mjs'), '--story', str(story), '--output', str(out),
             '--policy', 'impact-aware' if dry_run else 'live', '--model', model, '--repo', str(ROOT),
@@ -88,7 +97,7 @@ def one(job, dry_run):
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
         return json.loads(out.read_text())
-    env = dict(os.environ, ETHICS_PROVIDER='anthropic')
+    env = replay_env(os.environ)
     cmd = replay_command(model, story, out, dry_run)
     proc = subprocess.run(cmd, cwd=EXT, env=env, check=False, capture_output=True, text=True, timeout=36000)
     if out.exists():

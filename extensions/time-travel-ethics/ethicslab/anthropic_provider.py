@@ -12,7 +12,8 @@ from .provider import ProviderError
 # tools/replay-cluster.mjs gives each decision 90 s of wall clock. Every attempt plus the SDK's
 # backoff must fit inside that, or one stalled request ends the trajectory without a retry.
 REQUEST_TIMEOUT_S = 40
-MAX_RETRIES = 1
+# Callers with a longer decision budget (benchmark/run/cluster.py) raise this through the env.
+MAX_RETRIES = max(0, min(8, int(os.environ.get('ETHICS_ANTHROPIC_MAX_RETRIES', '1'))))
 BACKOFF_ALLOWANCE_S = 8  # SDK backoff caps at 8 s per retry
 
 

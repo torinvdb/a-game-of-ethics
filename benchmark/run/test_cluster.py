@@ -56,6 +56,17 @@ class CommandTests(unittest.TestCase):
         self.assertEqual(cmd[cmd.index('--decision-timeout-ms') + 1], str(cluster.DECISION_TIMEOUT_MS))
         self.assertGreaterEqual(cluster.DECISION_TIMEOUT_MS, 300000)
 
+    def test_live_retries_fit_the_cluster_decision_budget(self):
+        # Worst case per decision: every attempt times out, or every attempt is a 429 and the SDK
+        # waits out a retry-after of up to 60 s. Either must fit inside the replay's budget.
+        sys.path.insert(0, str(cluster.EXT))
+        from ethicslab import anthropic_provider as ap
+        r = cluster.CLUSTER_MAX_RETRIES
+        worst = max(ap.REQUEST_TIMEOUT_S * (r + 1) + r * ap.BACKOFF_ALLOWANCE_S, (r + 1) * 5 + r * 60)
+        self.assertLess(worst, cluster.DECISION_TIMEOUT_MS / 1000)
+        self.assertGreaterEqual(r, 3)
+        self.assertEqual(cluster.replay_env({})['ETHICS_ANTHROPIC_MAX_RETRIES'], str(r))
+
     def test_replay_source_reads_the_flag(self):
         src = (cluster.EXT / 'tools/replay-cluster.mjs').read_text()
         self.assertIn("arg('--decision-timeout-ms'", src)
