@@ -61,6 +61,16 @@ class CommandTests(unittest.TestCase):
         self.assertIn("arg('--decision-timeout-ms'", src)
 
 
+class StageTests(unittest.TestCase):
+    E1B = {'stages': {'full': {'reps': 3, 'budget_usd': 45}}}
+
+    def test_config_values_by_default(self):
+        self.assertEqual(cluster.stage_params(self.E1B, 'full', None, None), (3, 45))
+
+    def test_cli_overrides(self):
+        self.assertEqual(cluster.stage_params(self.E1B, 'full', 5, 40.0), (5, 40.0))
+
+
 class PathTests(unittest.TestCase):
     def test_relative_paths_become_absolute(self):
         rel = Path('some/relative/dir')

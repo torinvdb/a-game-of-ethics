@@ -4,7 +4,7 @@
   npm run ethics:demo -- --output extensions/time-travel-ethics/runs/e1b-stories    # frozen stories + variants
   python3 benchmark/run/cluster.py --stories extensions/time-travel-ethics/runs/e1b-stories \\
       --config benchmark/experiments/e1-anthropic/config.json --out benchmark/experiments/e1-anthropic/runs/e1b-<stage> \\
-      [--stage pilot|full] [--models a,b] [--dry-run]
+      [--stage pilot|full] [--models a,b] [--reps N] [--budget-usd X] [--dry-run]
 
 Each replay calls the model once per decision through ethicslab.cluster_agent with
 ETHICS_PROVIDER=anthropic. Adapter failures end the trajectory and are reported as
@@ -70,6 +70,13 @@ def schedule(jobs, work, cost, budget, workers):
 DECISION_TIMEOUT_MS = 300000
 
 
+def stage_params(e1b, stage, reps=None, budget=None):
+    """(reps, budget_usd) for a stage; CLI values override the config. The budget is cumulative
+    over everything already in --out, since finished trajectories are counted on resume."""
+    cfg = e1b['stages'][stage]
+    return (cfg['reps'] if reps is None else reps), (cfg['budget_usd'] if budget is None else budget)
+
+
 def replay_command(model, story, out, dry_run):
     return ['node', str(EXT / 'tools/replay-cluster.mjs'), '--story', str(story), '--output', str(out),
             '--policy', 'impact-aware' if dry_run else 'live', '--model', model, '--repo', str(ROOT),
@@ -98,6 +105,8 @@ def main():
     ap.add_argument('--out', type=Path, required=True)
     ap.add_argument('--stage', default='pilot')
     ap.add_argument('--models')
+    ap.add_argument('--reps', type=int, help='override the stage rep count (record the change)')
+    ap.add_argument('--budget-usd', type=float, help='override the stage cap (cumulative over --out)')
     ap.add_argument('--dry-run', action='store_true', help='scripted impact-aware policy instead of live calls (plumbing check)')
     a = ap.parse_args()
     a.stories, a.out = absolute(a.stories), absolute(a.out)
@@ -105,8 +114,7 @@ def main():
     e1b = cfg['e1b_cluster']
     models = a.models.split(',') if a.models else [m['id'] for m in cfg['models']]
     prices = {m['id']: m['price_per_mtok'] for m in cfg['models']}
-    reps = e1b['stages'][a.stage]['reps']
-    budget = e1b['stages'][a.stage]['budget_usd']
+    reps, budget = stage_params(e1b, a.stage, a.reps, a.budget_usd)
     if not a.dry_run and not (os.environ.get('ANTHROPIC_API_KEY') or os.environ.get('ANTHROPIC_AUTH_TOKEN')):
         sys.exit('Set ANTHROPIC_API_KEY before a live run (or pass --dry-run).')
     jobs = [(m, v, r, story_path(a.stories, v), a.out / m / v / f'rep-{r}.json')
