@@ -74,11 +74,11 @@
   },
   "pilot": {
    "reps": 2,
-   "budget_usd": 12.0
+   "budget_usd": 12
   },
   "full": {
    "reps": 30,
-   "budget_usd": 160.0
+   "budget_usd": 120
   }
  },
  "e1b_cluster": {
@@ -92,11 +92,11 @@
   "stages": {
    "pilot": {
     "reps": 1,
-    "budget_usd": 10.0
+    "budget_usd": 8
    },
    "full": {
-    "reps": 5,
-    "budget_usd": 90.0
+    "reps": 3,
+    "budget_usd": 45
    }
   }
  }
