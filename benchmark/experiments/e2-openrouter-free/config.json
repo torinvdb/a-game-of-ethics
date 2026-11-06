@@ -12,13 +12,6 @@
    }
   },
   {
-   "id": "google/gemma-4-26b-a4b-it:free",
-   "price_per_mtok": {
-    "in": 0,
-    "out": 0
-   }
-  },
-  {
    "id": "xingchen-agi/xing4.0-29b-a4b:free",
    "price_per_mtok": {
     "in": 0,
