@@ -87,9 +87,9 @@ Sources: Anthropic (2025) Agentic Misalignment; Debenedetti et al. (2024) AgentD
 ## 08. Freeze the scenario. Test the whole agent.
 *VICENTE · 90 s*
 
-VICENTE: The unit under test is not the model. [CLICK] We freeze the scenario: an Ink story plus a seed, hashed. [CLICK] The agent under test is the whole configuration: model, prompt, tools, permissions, memory. [CLICK] Its tools are mocked; side effects go to a ledger, never to a real cluster. [CLICK] Everything that happens becomes evidence. Swap the prompt or widen a permission and you have a new system to test. Let me show you.
+VICENTE: The unit under test is not the model. [CLICK] We freeze the scenario: an Ink story plus a seed, hashed. [CLICK] The agent under test is the whole configuration: model, prompt, tools, permissions, memory. [CLICK] Its tools are mocked behind a permission gateway; every intended effect goes into a hash-chained ledger, never to a real cluster. [CLICK] Everything that happens becomes evidence. Swap the prompt or widen a permission and you have a new system to test. Let me show you.
 
-> Game of Ethics + Ink provide branching and persistent state. The robot arm stamping FROZEN is illustrative. Held-out cases are kept out of development.
+> Implemented and executed offline (scripted policies): ethicslab/scaffold.py routes model text → parsed tool call → permission gateway → mocked tools → hash-chained ledger; external effects are recorded as not sent. 3 dev + 4 held-out cases; the held-out set is frozen by hash. No real model has been run through it yet. The robot arm stamping FROZEN uses the real story hash prefix.
 
 Sources: Game of Ethics + time-travel-ethics extension
 
@@ -123,18 +123,18 @@ Sources: docs/agentic-ethics/evidence/cluster-calibration.json
 ## 12. Keep four ledgers, not one score.
 *VICENTE · 80 s*
 
-VICENTE: So we keep four separate ledgers. [CLICK] Execution: timeouts, malformed output. A crashed adapter is a bug report, not an ethical failure, and counting it as one corrupts your data. [CLICK] Rules: did it use authority it didn't have, or that had expired? [CLICK] Work: did it actually get things done? [CLICK] People: who absorbed the disruption? DeepEval checks the first two on real trajectories; the people ledger stays a human judgment.
+VICENTE: So we keep four separate ledgers. [CLICK] Execution: timeouts, malformed output. A crashed adapter is a bug report, not an ethical failure, and counting it as one corrupts your data. [CLICK] Rules: did it use authority it didn't have, or that had expired? [CLICK] Work: did it actually get things done? [CLICK] People: who absorbed the disruption? And here's why one number isn't enough: in our mocked-tool scaffold, the permission guard blocked every forbidden tool call, but a policy that writes misleading reports sailed through it 93 times out of 93. Torin.
 
-> DeepEval custom metrics check explicit policy and completion on actual Ink trajectories; burden and paired-label behavior are reported separately.
+> Executed offline with scripted policies (docs/agentic-ethics/evidence/scaffold-calibration.json). The guard and rubric share an author, so tool-level zeros are partly true by construction. OPTIONAL ANECDOTE (owner's call): a v2 re-analysis found that the 2025 hackathon dataset's 400 model runs had recorded every choice as 'Random fallback due to LLM error': exactly the execution-vs-ethics conflation this slide warns about.
 
-Sources: DeepEval custom metrics (extensions/time-travel-ethics/docs/DEEPEVAL.md)
+Sources: docs/agentic-ethics/evidence/scaffold-calibration.json; DeepEval custom metrics
 
 ## 13. Run it on the stack you already operate.
 *VICENTE · 80 s*
 
-VICENTE: None of this needs a new platform. [CLICK] Each evaluation is a Kubernetes Job: isolated, no egress. [CLICK] Flux reconciles the scenario and agent configuration from Git, so every result points at a commit. [CLICK] OpenTelemetry carries decisions as traces, next to your ops data. Exactly what we've run on a cluster, and what's still an example, is on appendix A1; we won't oversell it. Torin.
+VICENTE: None of this needs a new platform. [CLICK] Each evaluation is a Kubernetes Job: isolated, no egress. [CLICK] Flux reconciles the scenario and agent configuration from Git, so every result points at a commit. [CLICK] OpenTelemetry carries decisions as traces, next to your ops data. Honest status: we've run that Job's container against a real collector, but not yet rolled it out on a cluster. That's next. Torin.
 
-> HANDOFF → TORIN. Keep this aligned with VALIDATION.md: say only what has been executed.
+> Executed: docker build + Job-style run (read-only root, UID 10001), collector logged 1,062 spans, outputs matched the manifest; kubeconform -strict validated manifests. NOT executed: kind/k3s (nested containers unavailable in the build environment), NetworkPolicy enforcement, RBAC, PVC, Flux. The egress block observed came from Docker's internal network, not a NetworkPolicy. HANDOFF → TORIN.
 
 Sources: extensions/time-travel-ethics/deploy/
 
@@ -159,7 +159,7 @@ Sources: github.com/torinvdb/a-game-of-ethics
 ## A1. What we have actually shown
 *hidden appendix*
 
-> Updated after the v2 test campaign. Keep this slide synchronized with VALIDATION.md.
+> Synchronized with docs/agentic-ethics/VALIDATION.md and SYSTEM-REVIEW.md on 2026-11-06.
 
 Sources: docs/agentic-ethics/VALIDATION.md
 
