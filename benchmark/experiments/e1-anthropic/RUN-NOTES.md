@@ -23,7 +23,7 @@ the original caps.
 | Arm | Completed | Terminal failures | Cost |
 | --- | --- | --- | ---: |
 | E1a full | 2,335 / 2,340 | Haiku refusal 3, Opus refusal 1, Sonnet truncated 1 | $26.38 |
-| E1b full | 27 / 27 | none | $22.75 |
+| E1b full | 45 / 45 (5 reps; 3 first, then extended within the $45 cap) | none | $37.89 |
 
 ## E1b execution failures and re-runs
 
@@ -33,7 +33,7 @@ The first E1b pilot invocation failed all 9 trajectories as `replay_crashed` bef
 because the runner's budget cap did not stop submission (all jobs were queued while spend was $0).
 Both bugs are fixed in `0905f35`.
 
-43 E1b full trajectories ended as `bridge_timeout`, an execution failure (the replay kills its
+52 E1b full trajectories ended as an execution failure (43 `bridge_timeout`, 9 `rate_limited`), an execution failure (the replay kills its
 per-decision bridge process after a wall-clock limit). They were moved, not deleted, to
 `runs/e1b-full-sleep-failures/` and re-run from month 1. Causes, in order:
 
@@ -43,14 +43,14 @@ per-decision bridge process after a wall-clock limit). They were moved, not dele
 | attempt 2 | 13 | sleep continued under `caffeinate -i` | `caffeinate -dimsu`, operator kept the machine awake |
 | attempt 3 | 4 (Sonnet) | first attributed to the Anthropic client allowing 120 s × 5 attempts inside a 90 s decision budget; the same pattern recurred after that fix, so host overload (next row) is the likely cause | `8a3c766`: 40 s, 1 retry (kept as a correctness fix) |
 | attempt 4 | 4 (Sonnet) | host overload (load average about 49 on 10 cores, heavy swapping from an unrelated process); the same decision answered in about 3 s when run directly | `a816a68`: 300 s decision budget for live runs |
+| attempt 5 (reps 3-4) | 9 (Haiku 5, Sonnet 4) | `rate_limited`: E3 Inspect runs overlapped and briefly hit the account rate limit; the bridge had one retry | `20ae614`: 3 retries for the 300 s budget |
 
 Re-running an execution failure from the start matches E1a's resume rule (failures are never
-scored as choices). The final 27 trajectories mix transport settings: all Opus and Haiku trajectories and
-5 of the Sonnet trajectories ran with the original client retry settings; the other 4 Sonnet
-trajectories ran after `8a3c766` and `a816a68`. These settings affect retries and timeouts only,
-not requests.
+scored as choices). The final 45 trajectories mix transport settings (client timeouts, retries and the per-decision
+wall-clock budget) across the fixes above. These affect retries and timeouts only, not requests.
 
 ## Spend
 
-Anthropic total for E1, including failed attempts: $60.37 (E1a $28.26, E1b pilot $7.64,
-E1b full kept $22.75, E1b failed attempts $1.72).
+Anthropic total for E1, including failed attempts: $75.68 (E1a $28.26, E1b pilot $7.64,
+E1b full kept $37.89, E1b failed attempts $1.89). Account total across E1, E3
+and the demo on 2026-11-06: $82.67.
