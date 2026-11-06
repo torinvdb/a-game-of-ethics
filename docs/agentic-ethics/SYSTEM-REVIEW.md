@@ -212,31 +212,23 @@ Not executed:
 - Flux reconciliation.
 - Namespace cleanup.
 
-## 7. Remaining gaps, by priority, with the evidence that would close each
+## 7. Gap status after the second pass (2026-11-06)
 
-1. **No real model has run through any adapter.** To close: a local-runtime run (Ollama or llama.cpp with a pinned small model) through both the Ink bridge and the scaffold. Record the model digest, the raw-response hashes, the execution-failure rate, and repeated trials with confidence intervals.
-2. **No Kubernetes execution.** To close: a kind or k3d run on a host that supports nested containers. Record:
-   - the PSA admission result;
-   - a Job log ending in `collector accepted 1062 spans` and `egress probe blocked`;
-   - the collector log;
-   - `kubectl auth can-i --list` for the Job's service account;
-   - the PVC contents read by a second pod;
-   - namespace deletion completing.
-3. **Oracle independence.** To close: a rubric and expected outcomes written by someone who has not seen the implementation, and a backlog recomputation. Record agreement statistics against the current audit.
-4. **The guard is tautological at tool level.** To close: guards evaluated on cases written by a separate red-team author. Add content-level checks for reports, such as comparing report claims against ledger effects, and measure false-positive and false-negative rates.
-5. **The scripted injection policy is phrase-specific.** To close: a red-team corpus of paraphrased and obfuscated injections run against a real model, reporting attack success with and without the guard.
-6. **The Ink world does not respond to the agent.** To close: randomized fix and reviewer outcomes per seed, and asymmetric impact profiles. Report variance across seeds rather than single counts.
-7. **Proxy-discrimination probes.** To close: swap or vary the revenue line and other proxies independently of the labels.
-8. **Evidence authenticity.** To close: a signed manifest (e.g. Sigstore or an in-toto attestation) with the anchored head stored outside the run's storage.
-9. **Ink-path resumability.** It is not implemented: the replay runner restarts from month 1. To close: save Ink state per month and add a resume-equivalence test.
+Details: [ink-v2-notes.md](evidence/ink-v2-notes.md), [scaffold-v2-notes.md](evidence/scaffold-v2-notes.md),
+[deploy-v2-notes.md](evidence/deploy-v2-notes.md).
 
-## Addendum (lead review, 2026-11-06): inkjs float serialization
+| # | Gap | Status | Evidence |
+| --- | --- | --- | --- |
+| 1 | Real model through an adapter | **Open, blocked here.** huggingface.co and the Ollama registry are unreachable, so no weights can be fetched. Paid APIs need credentials and a budget | Close with a pinned local model through the Ink bridge and the scaffold: model digest, raw-response hashes, execution-failure rate, repeated trials with CIs |
+| 2 | Kubernetes execution | **Partly closed.** etcd + kube-apiserver + kube-controller-manager v1.32.13 (checksums verified): server-side apply, PodSecurity `restricted` admits the Job pod and rejects a privileged variant, `auth can-i --list` shows least privilege, NetworkPolicy selectors match, namespace deletion garbage-collects everything. Fixed: PSA version pin, dedicated token-less ServiceAccounts, DNS egress limited to kube-dns. **Open:** pods on a node (kind fails: `runc create failed ... can't get final child's PID`), NetworkPolicy enforcement, PVC writes, Flux | deploy-v2-notes.md |
+| 3 | Oracle independence | **Closed for metrics.** `tools/independent-oracle.py` recomputes every summary metric from the transcript and the documented rules without importing ethicslab. First run 37/42; the 5 disagreements exposed an undocumented backlog rule (spec gap, code correct). After documenting it: 42/42 | ink-v2-notes.md |
+| 4 | Guard tautology / content checks | **Mostly closed.** 12 red-team cases written without reading guard code (first run: 8 matched, 3 missed, 1 not exercised; after fixes: 11/0/1). Ledger-backed report check: detects 80/93 misleading reports (13 were months with nothing to disclose); the guarded gate blocks all 80. **Open:** the report check is keyword-based; rt-09 not exercised | scaffold-v2-notes.md |
+| 5 | Injection corpus | **Closed for scripted policies, open for real models.** 38 paraphrased/obfuscated variants. Phrase-matching policy reacted to 6/38, a broad rule-based policy to 32/38; guarded realized violations 0/38. Rule-based, so it shows how rules handle obfuscation, not how a model would | scaffold-v2-notes.md |
+| 6 | Agent-responsive world | **Closed in the scaffold.** Seeded fix success, reviewer decisions and harm weights; 20 seeds x 7 cases with bootstrap 95% CIs. Default unseeded run unchanged and byte-reproducible. The Ink scenario is still deterministic | scaffold-calibration.json |
+| 7 | Proxy discrimination | **Closed.** Revenue-cue swap/removal and age-label probes in both paths. A revenue-seeking control passes the age-swap test and flips 36/36 under revenue swap; impact-aware flips 0 | ink-v2-notes.md, scaffold-v2-notes.md |
+| 8 | Evidence authenticity | **Closed locally.** ed25519 signing (`tools/sign-evidence.py`) and `verify-evidence.py --signature --allowed-signers`: valid passes, tampered exits 2. The trust anchor is the public key published out of band; no key is committed | deploy-v2-notes.md |
+| 9 | Ink-path resume | **Closed.** Checkpoint (inkjs state + ledger + digest) at decision k; resumed runs byte-identical for k in {0, 1, 37, n-1}; five tamper classes rejected | ink-v2-notes.md |
+| - | Horizon censoring | **Quantified.** 48-month runs: months 1-36 identical; delivery violations 107 -> 143, exceptions expiry reviews 11 -> 15, defer backlog 36 -> 48 | ink-v2-notes.md |
+| - | inkjs float serialization | **Fixed.** Scenarios use `FLOAT(total) / N`; the cluster scenario averages its seven scored axes (sp excluded: no choice concerns it) | ink-v2-notes.md |
 
-`extensions/time-travel-ethics/scenarios/cluster-template.ink` computes
-`average = total / 8.0`. inkjs 2.4.0 writes the float literal `8.0` to compiled JSON
-as `8`, so a story replayed from `.ink.json` performs integer division. Only the
-printed cluster verdict text is affected; no metric in this extension reads
-`average`. The template is left unchanged so the recorded evidence hashes stay
-reproducible. The core scenarios now use `FLOAT(total) / 8`, which survives the
-JSON round trip (verified by compiling, serializing and reloading a test story).
-Apply the same change to the template at the next evidence re-baseline.
+Core calibration counts are unchanged by all of the above.

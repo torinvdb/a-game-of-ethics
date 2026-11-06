@@ -20,7 +20,7 @@ npm run ethics:test
 npm run ethics:demo -- --output extensions/time-travel-ethics/runs/kubecon
 ```
 
-The demo must end with `Verified scripted calibrations and paired cohort probes.`
+The demo's last line must start with `Verified scripted calibrations`.
 Pre-generate the run you will show, so the live step is a replay, not a build.
 
 ```bash

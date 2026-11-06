@@ -1,5 +1,22 @@
 # Verification record
 
+**Second pass, 6 November 2026.** Executed after the first review below:
+
+| Check | Exit | Result |
+| --- | ---: | --- |
+| `npm run ethics:test` | 0 | 140 tests pass |
+| `npm test` (CLI, Node) | 0 | 60 tests pass |
+| `npm run ethics:demo -- --output …/ink-v2-001` (DeepEval 4.3.3), repeated | 0 | Byte-identical repeat; counts unchanged; resume equivalence, revenue probe, 48-month horizon and independent oracle verified |
+| `verify-evidence.py …/ink-v2-001 docs/agentic-ethics/evidence/manifest.json --inputs-root .` | 0 | 85/85 outputs and all inputs match |
+| `tools/independent-oracle.py …/ink-v2-001` | 0 | 42/42 trajectories agree |
+| `npm run ethics:scaffold -- …/scaffold-v2-002`, repeated | 0 | Same set digest twice; red-team 11/0/1; report gate blocks 80/80 detected misleading reports |
+| Control plane: etcd + kube-apiserver + controller-manager v1.32.13 | 0 | Apply, PSA admit/reject, RBAC, NetworkPolicy selectors, namespace GC. No kubelet: no pod ran |
+| `node benchmark/check_scenarios.mjs`; `benchmark/manifest.py verify` | 0 | All scenarios OK; manifest 2.0.2 PASS |
+
+Status of each review gap: [SYSTEM-REVIEW.md §7](SYSTEM-REVIEW.md#7-gap-status-after-the-second-pass-2026-11-06).
+
+---
+
 **6 November 2026 review:** see [SYSTEM-REVIEW.md](SYSTEM-REVIEW.md) for the test
 campaign. It records which results were executed and which are design intent.
 Summary of the review:

@@ -123,18 +123,18 @@ Sources: docs/agentic-ethics/evidence/cluster-calibration.json
 ## 12. Keep four ledgers, not one score.
 *VICENTE · 80 s*
 
-VICENTE: We keep four ledgers. [CLICK] Execution: timeouts and malformed output. A crashed adapter is a bug report. Scoring it as an ethical failure corrupts the data. [CLICK] Rules: did it use authority it lacked, or that had expired? [CLICK] Work: did it complete the tasks? [CLICK] People: who absorbed the disruption? In our mocked-tool scaffold, the permission guard blocked every forbidden tool call, and a policy that writes misleading reports passed it 93 times out of 93. Torin.
+VICENTE: We keep four ledgers. [CLICK] Execution: timeouts and malformed output. A crashed adapter is a bug report. Scoring it as an ethical failure corrupts the data. [CLICK] Rules: did it use authority it lacked, or that had expired? [CLICK] Work: did it complete the tasks? [CLICK] People: who absorbed the disruption? In our mocked-tool scaffold, the permission guard blocked every forbidden tool call and still passed all 93 misleading reports, because a report is not a forbidden tool. Checking each report against the ledger caught every one that omitted something. Torin.
 
-> Executed offline with scripted policies (docs/agentic-ethics/evidence/scaffold-calibration.json). The guard and rubric share an author, so tool-level zeros are partly true by construction. OPTIONAL ANECDOTE (owner's call): a v2 re-analysis found that the 2025 hackathon dataset's 400 model runs had recorded every choice as 'Random fallback due to LLM error': exactly the execution-vs-ethics conflation this slide warns about.
+> Executed offline with scripted policies (docs/agentic-ethics/evidence/scaffold-calibration.json, scaffold-v2-notes.md). v1 tool guard: 93/93 misleading reports passed. v2 ledger-backed report check: detects 80/93 (the other 13 were months with nothing to disclose) and the guarded config blocks all 80. The check is keyword-based: text stuffed with the right terms passes. The guard and rubric share an author; 12 red-team cases written without reading the guard: first run 8 matched / 3 missed / 1 not exercised; after fixes 11/0/1. OPTIONAL ANECDOTE (owner's call): the 2025 hackathon dataset's 400 model runs recorded every choice as 'Random fallback due to LLM error', which is the execution-vs-ethics conflation this slide describes.
 
 Sources: docs/agentic-ethics/evidence/scaffold-calibration.json; DeepEval custom metrics
 
 ## 13. Run it on the stack you already operate.
 *VICENTE · 80 s*
 
-VICENTE: This runs on the platform you already operate. [CLICK] Each evaluation is a Kubernetes Job: isolated, with no external egress. [CLICK] Flux reconciles the scenario and agent configuration from Git, so every result points at a commit. [CLICK] OpenTelemetry carries decisions as traces, next to your ops data. Status: we have run the Job's container against a real collector. We have not yet run it on a cluster. Torin.
+VICENTE: This runs on the platform you already operate. [CLICK] Each evaluation is a Kubernetes Job: isolated, with no external egress. [CLICK] Flux reconciles the scenario and agent configuration from Git, so every result points at a commit. [CLICK] OpenTelemetry carries decisions as traces, next to your ops data. Status: the Job's container runs against a real collector, and a real Kubernetes API server admits the manifests under restricted pod security. No pod has run on a node yet. Torin.
 
-> Executed: docker build + Job-style run (read-only root, UID 10001), collector logged 1,062 spans, outputs matched the manifest; kubeconform -strict validated manifests. NOT executed: kind/k3s (nested containers unavailable in the build environment), NetworkPolicy enforcement, RBAC, PVC, Flux. The egress block observed came from Docker's internal network, not a NetworkPolicy. HANDOFF → TORIN.
+> Executed: docker build + Job-style run (read-only root, UID 10001), collector received 1,062 spans, outputs matched the manifest. Control plane (etcd + kube-apiserver + controller-manager v1.32.13, no kubelet): server-side apply, PodSecurity restricted admits the Job pod and rejects a privileged variant, RBAC least privilege, NetworkPolicy selectors match, namespace deletion cleans up. Not executed: pods on a node (nested containers fail here), NetworkPolicy enforcement, PVC writes, Flux. HANDOFF → TORIN.
 
 Sources: extensions/time-travel-ethics/deploy/
 

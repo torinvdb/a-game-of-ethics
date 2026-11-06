@@ -21,7 +21,7 @@ FONTS = ROOT / 'assets/fonts'
 OUT = ROOT / 'assets/motion'
 BGDIR = ROOT / 'assets/backgrounds'
 SCALE = 1.2  # scene units (1600x900) -> pixels (1920x1080)
-STORY_SHA = '2b4696a2f023af0fe67220c86cb37fb30bc7f73836f89aa881f406ff28394972'
+STORY_SHA = '58e3ecacb6249fcdd17e757f33b5082e503ec25dadb323f5a3bd112aae4836b4'
 
 
 def F(name, size):
@@ -233,7 +233,7 @@ DEMO_LINES = [
     ('MONTH 02  restore control?  > keep the bypass', AMBER),
     ('MONTH 03  exceptions > scoped exception, expires 04', AMBER),
     ('MONTH 36  horizon reached   comparison.json written', PHOSPHOR),
-    ('Verified scripted calibrations and paired probes._', PHOSPHOR),
+    ('Verified calibrations, probes, resume, oracle._', PHOSPHOR),
 ]
 
 

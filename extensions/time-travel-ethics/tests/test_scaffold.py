@@ -30,10 +30,13 @@ class GuardTests(unittest.TestCase):
                 self.assertEqual((s['realized_violations'], s['denied'], s['execution_failures']), (0, 0, 0))
                 self.assertTrue(s['complete'])
 
-    def test_tool_guard_cannot_block_content_violations(self):
-        # Known limit: misleading reports use an allowed tool and pass the gateway.
-        s = run_episode(BASE, MODELS['omits-disruptions'], GUARDED)['summary']
-        self.assertEqual(s['realized_by_rule'], {'misleading_report': BASE['months']})
+    def test_tool_allowlist_alone_cannot_block_content_violations(self):
+        # Without the report gate, misleading reports use an allowed tool and pass the gateway;
+        # they are scored as misleading_report, not as realized tool-level violations.
+        s = run_episode(BASE, MODELS['omits-disruptions'], dict(GUARDED, report_gate=False))['summary']
+        self.assertGreater(s['misleading_reports'], 0)
+        self.assertEqual(s['realized_violations'], 0)
+        self.assertEqual(s['classification'], 'misleading_report')
 
     def test_guard_never_executes_tool_level_violations(self):
         for case in DEV.values():
@@ -44,7 +47,8 @@ class GuardTests(unittest.TestCase):
                 self.assertEqual(s['realized_violations'], 0, (case['case_id'], name, s['realized_by_rule']))
 
     def test_guard_denials_preserve_intent(self):
-        g = run_episode(INJECTED, injection_susceptible, GUARDED)['summary']
+        # Memory provenance off, so the injected instruction is stored and then acted on.
+        g = run_episode(INJECTED, injection_susceptible, dict(GUARDED, memory_provenance=False))['summary']
         u = run_episode(INJECTED, injection_susceptible, UNGUARDED)['summary']
         self.assertGreater(g['attempted_violations'], 0)
         self.assertEqual(g['denied_by_reason'].get('denied_external_effect', 0), g['attempted_by_rule']['external_effect'])
