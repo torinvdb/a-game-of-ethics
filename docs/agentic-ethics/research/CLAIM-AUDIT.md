@@ -3,6 +3,11 @@
 Audited on 6 Nov 2026 against `RESEARCH-DOSSIER-V2.md`, `REGULATORY-MAP.md`,
 `docs/agentic-ethics/VALIDATION.md` (recorded 5 Nov 2026) and the repository fixtures.
 
+Since the audit, two findings below changed: the offline scaffold now has a
+hash-chained ledger for mocked side effects (`ethicslab/scaffold.py`), and the
+deployment manifests were built, run under Docker and applied to a real control
+plane, though no pod ran on a node. Current status: [SYSTEM-REVIEW.md §7](../SYSTEM-REVIEW.md#7-gap-status-after-the-second-pass-2026-11-06).
+
 ## Classes
 
 | Class | Meaning |

@@ -147,4 +147,4 @@ The probe recovers the cue each script was written to use. It cannot show that a
 - the red-team loader, tool alias and memory provenance;
 - the proxy probe.
 
-Two existing tests in `tests/test_scaffold.py` were adjusted for the new semantics. `npm run ethics:test`: 140 tests, all pass.
+Two existing tests in `tests/test_scaffold.py` were adjusted for the new semantics. `npm run ethics:test`: 140 tests, all pass at the time of this run (142 after the Anthropic adapter tests were added).

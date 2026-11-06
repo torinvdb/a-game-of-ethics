@@ -25,7 +25,7 @@ The replay runner records a `narrative` block holding the axes, `not_applicable:
 **Left unchanged, outside this scope.**
 
 - `src/lib/scoring.js summarizeScores()` averages every declared axis variable, so the parent CLI still averages over 8 with `sp` = 0.
-- `scenarios/core/cluster-pressure.ink` is a generated copy. It still has the eight-axis total and the old fixed revenue line (already float-safe) and should be regenerated from the template.
+- `scenarios/core/cluster-pressure.ink` is a generated copy. It has since been regenerated: it uses the seven-axis `FLOAT(total) / 7` average.
 
 ## 2. Resuming an Ink replay
 

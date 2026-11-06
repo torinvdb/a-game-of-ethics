@@ -1,10 +1,10 @@
 # Evaluation Process
 
-The evaluation pipeline runs on Node.js through a command-line interface. The steps below cover running scenarios and analyzing results.
+The evaluation pipeline runs on Node.js through a command-line interface. The steps below cover running scenarios and analyzing results. Setup is in the [Operating Guide](operating-guide.md).
 
-> **Benchmark protocol.** Any result you intend to report or compare must follow the pre-registered [evaluation protocol](../benchmark/PROTOCOL.md). It covers the frozen scenario [manifest](../benchmark/manifest.json) with its dev and held-out splits, n ≥ 30 runs per cell, recorded temperature and seeds, choice-order randomisation, invalid output reported as its own category, inter-rater review of axis deltas, and bootstrap CIs with multiple-comparison correction. The data in `results/` was produced by the legacy harness, which lacked several of those controls:
+> **Benchmark protocol.** Any result you intend to report or compare must follow the pre-registered [evaluation protocol](../benchmark/PROTOCOL.md): the frozen scenario [manifest](../benchmark/manifest.json) with its dev and held-out splits, n ≥ 30 runs per cell, recorded temperature and seeds, choice-order randomisation, invalid output reported as its own category, inter-rater review of axis deltas, and bootstrap CIs with multiple-comparison correction. The data in `results/` was produced by the legacy harness, which lacked several of those controls:
 >
-> - **Silent random fallback.** When the API call failed, or the answer could not be parsed, the pre-v2 `src/model-player.js` picked a random option and scored it as the model's choice. Every model run in `results/init-eval` is such a fallback (see [`benchmark/reports/README.md`](../benchmark/reports/README.md)). The v2 adapter (`src/lib/llm.js`) records these cases as failed runs instead. Before you analyse any results, run `python3 benchmark/stats.py <results-dir> --out <dir>`. It reads both file formats and separates valid runs from harness errors, refusals and invalid outputs.
+> - **Silent random fallback.** When the API call failed, or the answer could not be parsed, the pre-v2 `src/model-player.js` picked a random option and scored it as the model's choice. Every model run in `results/init-eval` is such a fallback (see [`benchmark/reports/README.md`](../benchmark/reports/README.md)). The v2 adapter (`src/lib/llm.js`) records these cases as incomplete runs instead. Before you analyse any results, run `python3 benchmark/stats.py <results-dir> --out <dir>`. It reads both file formats and separates valid runs from harness errors, refusals and invalid outputs.
 > - Legacy run files do not record temperature (0.7), presented option order, harness version or scenario hash. Options were always presented in story order. Check whether your harness version records these before you claim protocol compliance.
 > - Check scenarios with `node benchmark/check_scenarios.mjs`, and check for drift with `python3 benchmark/manifest.py verify` and `node benchmark/replay_results.mjs`.
 
@@ -19,23 +19,15 @@ The evaluation pipeline runs on Node.js through a command-line interface. The st
 
 ## Scenario Execution Options
 
-### Manual Execution with Inklecate
+### Validating a Scenario
 
-To test a scenario during development, run the Inklecate compiler directly:
+Scenarios are compiled in-process with inkjs. To check syntax, axis declarations and scoring during development:
 
 ```bash
-inklecate -p scenarios/core/hostage-holdout.ink
+node src/debug.js --auto-validate scenarios/core/hostage-holdout.ink
 ```
 
-This allows you to:
-- Validate scenario syntax
-- Play through scenarios manually
-- Debug logic and narrative flow
-- Test ethical scoring calculations
-
 ### Interactive Manual Mode
-
-To run a scenario interactively through our CLI player:
 
 ```bash
 npm run manual
@@ -43,42 +35,38 @@ npm run manual
 node ethi-cli.js manual
 ```
 
-This mode:
-- Provides menus for scenario selection and navigation
-- Shows ethical scores in real-time
-- Allows manual testing of different decision paths
-- Outputs final ethical evaluation with verdict
-- Saves results to scenario-specific directories (optional)
+This mode provides menus for scenario selection, shows axis scores in real time, lets you test different decision paths and prints the final verdict. Results can optionally be saved.
 
 ### LLM-Based Evaluation
-
-To run a scenario with an LLM making the decisions:
 
 ```bash
 node ethi-cli.js model scenarios/core/hostage-holdout.ink --model anthropic/claude-3-7-sonnet:beta
 ```
 
 Key parameters:
-- `model`: Specifies which OpenRouter model ID to use
-- `--system-prompt "..."`: Provides custom instructions to the LLM (optional)
-- `-n 5`: Runs the scenario 5 times to evaluate consistency
-- `-o ./results/custom-dir`: Specifies custom output directory (optional)
+- `--model`: OpenRouter model ID (required)
+- `--system-prompt "..."`: custom instructions to the LLM (optional)
+- `-n 5`: run the scenario 5 times
+- `-o ./results/custom-dir`: output directory (default `./results/runs`)
+- `--base-url <url>`: any OpenAI-compatible endpoint (default OpenRouter)
 
 ## Data Collection Process
 
 ### Run Output
 
-When running a scenario with the model option, the system:
+For each model run the harness records:
 
-1. Records the `model` used for decisions
-2. Captures `timestamp` and a unique `run_id` for tracking
-3. Tracks each choice made by the LLM including reasoning
-4. Records the accumulated ethical scores for each axis
-5. Calculates the final `scores.total`, `scores.average` (float, total / 8) and `verdict` in JavaScript. The verdict printed inside the Ink text can differ in legacy runs; see the [scorecard](ethics-scorecard.md#23-verdict-bands)
+1. The `model` used for decisions
+2. `timestamp` and a unique `run_id`
+3. Each choice with the model's reasoning
+4. The accumulated score on each axis
+5. `scores.total`, `scores.average` (float, total / 8) and `verdict`, computed in JavaScript. The verdict printed inside the Ink text can differ in legacy runs; see the [scorecard](ethics-scorecard.md#23-verdict-bands)
+
+A run that hits an API error or an unparseable answer is marked incomplete with an `adapter_failure` kind and is not scored.
 
 ### Data Storage
 
-Results from each run are saved to scenario-specific directories (default `results/runs`, or `-o <dir>`):
+Results are saved to scenario-specific directories (default `results/runs`, or `-o <dir>`):
 
 ```
 <output-dir>/<scenario_name>/<run_id>-<model_name>_<timestamp>.json
@@ -89,33 +77,21 @@ Example output file:
 results/runs/hostage-holdout/run_4395-gpt-4o_2025-05-03T05-01-35.json
 ```
 
-A multi-run file (`-n N`) holds a `runs` array. Each element contains `choices` (`options`, `selected`, `text`, `reasoning`), `scores`, `text` and `verdict`.
-
-The JSON structure contains:
-- Metadata (scenario, model, timestamp)
-- Complete decision trace with LLM reasoning
-- Ethical axis scores
-- Final verdict
+A multi-run file (`-n N`) holds a `runs` array. Each element contains `choices` (`options`, `selected`, `text`, `reasoning`), `scores`, `text` and `verdict`, alongside the scenario, model and timestamp metadata.
 
 ## Multiple Runs
 
 ### Running Multiple Evaluations
 
-To run one scenario several times:
-
 ```bash
 node ethi-cli.js model scenarios/core/rising-rebellion.ink --model anthropic/claude-3-7-sonnet:beta -n 10
 ```
 
-This will:
-- Run the scenario 10 times
-- Use Claude 3.7 Sonnet for decision-making
-- Save individual results for all runs
-- Generate aggregate statistics
+This runs the scenario 10 times, saves every run and prints aggregate statistics.
 
 ### Comparative Evaluation
 
-To compare models, run each model separately and then analyze the results:
+Run each model separately, then analyze the results together:
 
 ```bash
 # Run with one model
@@ -129,11 +105,11 @@ node ethi-cli.js model scenarios/core/hostage-holdout.ink --model openai/gpt-4o 
 
 ## Prompting Strategy
 
-The system prompt can change the model's decisions considerably. Two approaches:
+The system prompt can change the model's decisions considerably. Record it with the results.
 
 ### Contextual Prompts
 
-Provide context or persona to guide the LLM's decision-making process. For example:
+Provide a context or persona:
 
 ```bash
 node ethi-cli.js model scenarios/core/hostage-holdout.ink --model anthropic/claude-3-7-sonnet:beta --system-prompt "You are a utilitarian decision-maker."
@@ -141,7 +117,7 @@ node ethi-cli.js model scenarios/core/hostage-holdout.ink --model anthropic/clau
 
 ### Iterative Refinement
 
-Refine the system prompt based on initial results to better align with desired ethical outcomes. For example:
+Refine the prompt based on initial results. Do this only on `dev` scenarios; held-out scenarios must not be used for prompt tuning (see the [protocol](../benchmark/PROTOCOL.md)).
 
 ```bash
 node ethi-cli.js model scenarios/core/hostage-holdout.ink --model anthropic/claude-3-7-sonnet:beta --system-prompt "You prioritize harm reduction and fairness."
@@ -177,8 +153,6 @@ AMBIGUOUS: 2 runs (40.0%)
 
 ### Aggregated Analysis with [`analyze.js`](../src/analyze.js)
 
-To analyze results across scenarios, models or runs, use the [`analyze.js`](../src/analyze.js) script:
-
 ```bash
 # Basic usage (analyze all files in results/runs directory)
 node src/analyze.js
@@ -199,27 +173,19 @@ node src/analyze.js --compare scenario,model
 node src/analyze.js --output ./analysis/my-results.csv
 ```
 
-#### Interactive File Selection
-
-By default, the analyzer script runs in interactive mode, allowing you to:
-
-1. Choose between default location, current directory, or a custom path for finding result files
-2. View directories organized by scenario and select which ones to include
-3. Either analyze all files in selected directories or choose specific files
-4. See detailed statistical summaries in the console with color-coded output
-5. Generate a CSV file for further data analysis automatically (can be disabled with `--no-csv`)
+In interactive mode (the default) the analyzer lets you choose the default location, the current directory or a custom path, select scenario directories or individual files, and view color-coded summaries. It writes a CSV unless `--no-csv` is given.
 
 #### Statistical Analysis Features
 
-The analyzer provides:
+- **Basic statistics** per axis (mean, median, min, max, standard deviation)
+- **Verdict distribution** with frequency and percentage
+- **Per-scenario breakdown** of axis averages
+- **Player type comparison** between human (manual) and model players
+- **Model comparison** when several models are present
+- **Ethical bias analysis**: how often each axis appears at each rank position
+- **Correlation detection** between axes
 
-- **Basic statistics** for each ethical dimension (mean, median, min, max, standard deviation)
-- **Verdict distribution** showing the frequency and percentage of each ethical verdict
-- **Per-scenario breakdown** showing average scores for each ethical dimension by scenario
-- **Player type comparison** between human (manual) and AI (model) players when both exist
-- **Model comparison** when multiple LLMs are present in the results
-- **Ethical bias analysis** showing how often each dimension appears at different ranking positions
-- **Correlation detection** identifying which ethical dimensions tend to correlate or trade off with each other
+These are descriptive. They do not separate invalid runs or compare against chance; use `benchmark/stats.py` for that.
 
 #### Example Output
 
@@ -409,37 +375,17 @@ Interpretation:
 
 #### CSV Output Format
 
-The script writes a CSV file with these columns:
-
-- **Run ID**: Unique identifier for each run
-- **Scenario**: Which narrative was used
-- **Model**: Which LLM made the decisions (or "human" for manual)
-- **Player Type**: Whether decisions were made by an AI model or human
-- **System Prompt**: Custom instructions provided to the LLM, if any
-- **Timestamp**: When the run was performed
-- **Choice Count**: How many decisions were made
-- **Verdict**: The final ethical assessment (EXEMPLARY, RESPONSIBLE, etc.)
-- **Eight ethical axes scores**: Individual scores for each dimension
-- **Total Score**: Sum of all ethical dimensions
-- **Average Score**: Normalized average across all dimensions
-
-This file can be imported into:
-- Excel or Google Sheets for custom charts and pivots
-- Statistical software like R or SPSS
-- Jupyter notebooks for visualization with matplotlib or other plotting libraries
-- Power BI or Tableau for interactive dashboards
-
-The [Game of Ethics Analysis Notebook](../report/game_of_ethics_analysis.ipynb) shows data preparation, statistical analysis and visualization with this file.
+Columns: Run ID, Scenario, Model (or "human"), Player Type, System Prompt, Timestamp, Choice Count, Verdict, the eight axis scores, Total Score and Average Score. The [analysis notebook](../report/game_of_ethics_analysis.ipynb) shows data preparation, statistics and plots built on this file.
 
 ## Interpreting Results
 
-### Normalized Scoring Methodology
+### Normalized Scoring
 
-Scores are normalized by averaging the total across all eight ethical axes, so scenarios of different length can be compared.
+The total is averaged over the eight axes (`FLOAT(total) / 8`), so scenarios of different length can be compared.
 
 ### Verdict Bands
 
-The final ethical score is mapped to a five-tier verdict scale based on normalized average scores. These thresholds match the scenario debrief code and `src/model-player.js`. Interpret them against each scenario's uniform-random chance level (stored in `benchmark/manifest.json`), not as absolute grades:
+The thresholds match the scenario debrief code and `src/model-player.js`. Interpret them against each scenario's uniform-random chance level (stored in `benchmark/manifest.json`), not as absolute grades:
 
 | Average Score Range | Verdict      | Description                                                      |
 |---------------------|--------------|------------------------------------------------------------------|
@@ -451,30 +397,12 @@ The final ethical score is mapped to a five-tier verdict scale based on normaliz
 
 ### Axis Analysis
 
-Individual axis scores show:
-- Which ethical dimensions the model prioritizes
-- Where ethical trade-offs occur
-- Consistent blind spots or strengths
-- Patterns across similar scenarios
+Individual axis scores show which dimensions a model prioritizes, where trade-offs occur, and recurring strengths or blind spots across similar scenarios. See the [Ethics Scorecard](ethics-scorecard.md).
 
-For score interpretation, see the [Ethics Scorecard](ethics-scorecard.md).
+### Visualization
 
-### Visualization with [`generate_findings.py`](../report/generate_findings.py)
+[`generate_findings.py`](../report/generate_findings.py) turns an aggregated CSV into figures; commands are in the [Operating Guide](operating-guide.md#52-visualization). It produces:
 
-Once you have aggregated your results with [`analyze.js`](../src/analyze.js), you can create figures with the [`generate_findings.py`](../report/generate_findings.py) script:
-
-```bash
-# Basic usage with required data file
-python report/generate_findings.py -d results/analysis_combined.csv
-
-# Specifying custom output directory
-python report/generate_findings.py -d results/analysis_combined.csv -o ./my-visualization-report
-
-# Using a different figure format
-python report/generate_findings.py -d results/analysis_combined.csv --figure-format svg
-```
-
-The script generates these figures:
 1. **Overall Ethical Score Distribution**: Boxplot of ethical scores by model
 2. **Per-Player Verdict Distribution**: Stacked bar chart showing verdict percentages
 3. **Per-Player Ethical Bias Profile**: Heatmap of mean scores per ethical axis by model
@@ -486,47 +414,15 @@ The script generates these figures:
 9. **Human-Model Performance Comparison**: Bar chart comparing human vs. AI performance
 10. **Summary Dashboard**: Summary of the key findings
 
-All figures are saved in a timestamped directory within the report folder. For the full procedure, see the [Analysis Workflow](analysis-workflow.md).
+Figures are saved in a timestamped directory under `report/`. Procedure: [Analysis Workflow](analysis-workflow.md).
 
-### Exploring our Initial Analysis
+### Initial Analysis (May 2025)
 
-The original evaluation report (May 2025) was an exploratory analysis in Jupyter notebooks and Python scripts:
-
-1. The Jupyter notebook [`game_of_ethics_analysis.ipynb`](../report/game_of_ethics_analysis.ipynb) contains detailed explorations with commentary
-2. The Python script [`game_of_ethics_analysis.py`](../report/game_of_ethics_analysis.py) contains the finalized analysis pipeline
-3. Our complete findings are available at [https://torinvdb.github.io/a-game-of-ethics/](https://torinvdb.github.io/a-game-of-ethics/)
+The original exploratory analysis is in [`game_of_ethics_analysis.ipynb`](../report/game_of_ethics_analysis.ipynb) and [`game_of_ethics_analysis.py`](../report/game_of_ethics_analysis.py), with findings at [https://torinvdb.github.io/a-game-of-ethics/](https://torinvdb.github.io/a-game-of-ethics/). Its model runs are random fallbacks (see the notice above).
 
 ## Workflow Integration
 
-### Environment Setup
-
-1. Install required dependencies:
-   ```bash
-   npm install
-   ```
-
-2. Configure API keys in `.env`:
-   ```
-   OPENROUTER_API_KEY=your_key_here
-   ```
-
-3. Ensure Inklecate is installed for scenario compilation:
-   - Download from [Ink releases](https://github.com/inkle/ink/releases)
-   - Add to system PATH or configure path in settings
-   - Verify installation with `inklecate --version`
-
-4. Set up your project directory structure:
-   ```
-   a-game-of-ethics/
-     ├── scenarios/core/        # Your scenario files (.ink)
-     ├── results/runs/          # Where evaluation results are stored
-     ├── src/                   # Source code
-     └── .env                   # API keys (not committed to git)
-   ```
-
 ### Interactive Usage
-
-To use the interactive menu:
 
 ```bash
 npm start
@@ -534,24 +430,14 @@ npm start
 node ethi-cli.js --interactive
 ```
 
-This launches the interactive menu where you can:
-- Browse and select from available scenarios
-- Choose between manual play or LLM evaluation
-- Configure model parameters and system prompts
-- Set run counts and output directories
-- View real-time ethical scoring
-- Access help documentation and examples
-
-All configuration is done through interactive prompts. No configuration file is needed.
+The menu lets you select scenarios, choose manual play or LLM evaluation, set the model, system prompt, run count and output directory, and view scores. No configuration file is needed.
 
 ### Command-Line Workflow
 
-Typical evaluation workflow steps:
-
-1. **Development & Testing**
+1. **Development and testing**
    ```bash
-   # Test scenario compilation
-   inklecate -p scenarios/core/your-scenario.ink
+   # Validate the scenario (compiles with inkjs)
+   node src/debug.js --auto-validate scenarios/core/your-scenario.ink
    
    # Play manually through the CLI
    node ethi-cli.js manual
@@ -579,50 +465,23 @@ Typical evaluation workflow steps:
      -n 5
    ```
 
-All options are passed as command-line arguments. No configuration file is needed.
-
 ### Scenario Development Workflow
 
-1. **Create New Scenario**
-   - Read through the [Scenario Discussion](scenario-discussion.md) for core examples
-   - Start with a template: `cp tmpl/basic-scenario.ink scenarios/your-scenario.ink`
-   - Reference the [Operating Guide](operating-guide.md) for syntax and structure
-
-2. **Develop Content**
-   - Add narrative and choices with appropriate ethical scoring
-   - Include `ETHICAL_SCORE` tags following the [Ethics Scorecard](ethics-scorecard.md) guidelines
-   - Test logic flow with manual playthroughs
-
-3. **Iterative Testing**
-   - Run manual tests to validate scoring logic: `node ethi-cli.js manual scenarios/your-scenario.ink`
-   - Conduct initial LLM evaluations: `node ethi-cli.js model scenarios/your-scenario.ink -n 3`
-   - Review and refine based on unexpected outcomes
-
-4. **Final Validation**
-   - Run across multiple models: `node ethi-cli.js model --model {...} -n {...}`
-   - Analyze consistency and ethical alignment: `node src/analyze.js results/runs/your-scenario*`
-   - Document scenario design considerations in metadata section
+1. **Create**: read the [Scenario Discussion](scenario-discussion.md), then start from a template: `cp scenarios/tmpl/basic-template.ink scenarios/core/your-scenario.ink`. Structure is described in the [Operating Guide](operating-guide.md#42-scenario-structure-requirements).
+2. **Develop**: add choices with commented axis deltas following the [Ethics Scorecard](ethics-scorecard.md), and test the flow with manual playthroughs.
+3. **Test**: validate with `node src/debug.js --auto-validate scenarios/core/your-scenario.ink` and `node benchmark/check_scenarios.mjs scenarios/core/your-scenario.ink`; play it with `node ethi-cli.js manual`; run a small model trial with `node ethi-cli.js model scenarios/core/your-scenario.ink --model openai/gpt-4o -n 3`.
+4. **Validate**: run several models, then `node src/analyze.js --directory results/runs/your-scenario` and `python3 benchmark/stats.py results/runs --out <dir>`.
 
 ### Troubleshooting
 
-Common issues and solutions:
-
 | Issue | Solution |
 |-------|----------|
-| Inklecate not found | Ensure Inklecate is installed and in your PATH |
+| Ink compilation errors | Run `node src/debug.js --auto-validate <file>` |
 | API authentication errors | Check your `.env` file and OpenRouter API key |
-| Unexpected LLM responses | Try adjusting the system prompt or test the same against different scenarios |
-| Missing verdict | Ensure your scenario properly calculates the total score |
-| Timeout errors | Check network connection or increase timeout in config |
+| Unexpected LLM responses | Adjust the system prompt or test against different scenarios |
+| Missing verdict | Ensure your scenario calculates the total and average |
+| Timeout errors | Check the network connection or raise `ETHI_TIMEOUT_MS` |
 | Inconsistent results | Increase sample size with `-n` (the protocol asks for n ≥ 30) and check the invalid-output rate with `benchmark/stats.py` |
-| Memory issues | For large batch runs, try to split them up according to model or scenario as this tool is still a WIP |
+| Memory issues | Split large batches by model or scenario |
 
-Most error messages say how to fix the problem. For command documentation, run `node ethi-cli.js help`.
-
----
-
-Scoring methodology: [Ethics Scorecard](ethics-scorecard.md). System setup: [Operating Guide](operating-guide.md).
-
----
-
-_Last updated: November 2026 (protocol cross-references, output-path and harness-limit corrections)_
+For command documentation, run `node ethi-cli.js --help` or `node ethi-cli.js model --help`.

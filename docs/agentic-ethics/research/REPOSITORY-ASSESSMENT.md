@@ -48,11 +48,16 @@ DeepEval custom metrics, generic calibration and hash checks. A synthetic ADK
 export passed `EvalSet` schema validation under ADK 2.13.0. The presentation has
 browser and structural checks. See [validation](../VALIDATION.md).
 
+Since this assessment, the image and Ink Job ran under Docker with collector
+receipt, the manifests were applied to a real control plane, and an offline
+scaffold with mocked tools, frozen held-out cases and independently written
+red-team cases was added ([SYSTEM-REVIEW.md §7](../SYSTEM-REVIEW.md#7-gap-status-after-the-second-pass-2026-11-06)).
+
 Not executed: real-model inference, a full production-agent adapter, live
-telemetry collection, live generative scenario authoring, Kubernetes rollout,
-Flux reconciliation or end-to-end collector receipt. Research snapshots ground
+telemetry collection, live generative scenario authoring, pod execution on a
+node or Flux reconciliation. Research snapshots ground
 the design but do not complete a systematic literature review or current legal
 applicability assessment.
 
-The next useful experiment is an actual agent scaffold with mocked tools and
-independent held-out cases, followed by deployment validation and domain review.
+The next useful experiment is a real model through that scaffold, followed by
+pod-level deployment validation and domain review.

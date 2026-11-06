@@ -1,11 +1,13 @@
 # Verification record
 
-**Second pass, 6 November 2026.** Executed after the first review below:
+## Second pass, 6 November 2026 (current)
+
+Executed after the first review below:
 
 | Check | Exit | Result |
 | --- | ---: | --- |
-| `npm run ethics:test` | 0 | 140 tests pass |
-| `npm test` (CLI, Node) | 0 | 60 tests pass |
+| `npm run ethics:test` | 0 | 142 tests pass |
+| `npm test` (CLI, Node) | 0 | 62 tests pass |
 | `npm run ethics:demo -- --output …/ink-v2-001` (DeepEval 4.3.3), repeated | 0 | Byte-identical repeat; counts unchanged; resume equivalence, revenue probe, 48-month horizon and independent oracle verified |
 | `verify-evidence.py …/ink-v2-001 docs/agentic-ethics/evidence/manifest.json --inputs-root .` | 0 | 85/85 outputs and all inputs match |
 | `tools/independent-oracle.py …/ink-v2-001` | 0 | 42/42 trajectories agree |
@@ -17,9 +19,10 @@ Status of each review gap: [SYSTEM-REVIEW.md §7](SYSTEM-REVIEW.md#7-gap-status-
 
 ---
 
-**6 November 2026 review:** see [SYSTEM-REVIEW.md](SYSTEM-REVIEW.md) for the test
-campaign. It records which results were executed and which are design intent.
-Summary of the review:
+## First review pass, 6 November 2026
+
+[SYSTEM-REVIEW.md](SYSTEM-REVIEW.md) records which results were executed and
+which are design intent. Summary:
 
 - The 5 November baseline was reproduced byte for byte before any change: all 21
   recorded output hashes, including the DeepEval reports, with inkjs 2.4.0.
@@ -46,11 +49,9 @@ baseline is in [evidence/baseline-2026-11-05/](evidence/baseline-2026-11-05/).
 
 ---
 
-The record below is the original 5 November baseline, kept for comparison.
+## 5 November 2026 baseline
 
-# Verification record
-
-Verified locally on 5 November 2026. These are harness/calibration results,
+The original baseline, kept for comparison. These are harness/calibration results,
 not real-model performance or regulatory approval.
 
 | Check | Result |
@@ -64,7 +65,9 @@ not real-model performance or regulatory approval.
 | Presentation | 14 main slides + 3 hidden appendices; offline browser navigation, 35 reveal groups, notes, reduced motion, text bounds and four viewport sizes checked; native PPTX timing targets and four looping GIFs verified structurally; static PPTX/PDF supplied. Microsoft PowerPoint playback not exercised. |
 | ADK 2.13.0 | Synthetic reviewed export passed `EvalSet.model_validate_json`; no ADK agent execution |
 
-## Recorded cluster calibration
+### Recorded cluster calibration
+
+These counts are unchanged by both review passes.
 
 | Scripted policy | Decisions | Policy violations | Medical disruption | Education disruption | Release backlog |
 | --- | ---: | ---: | ---: | ---: | ---: |
@@ -94,13 +97,14 @@ allow you to distinguish later code edits from the recorded calibration.
 npm ci
 npm run ethics:test
 npm run ethics:demo -- --output extensions/time-travel-ethics/runs/verification
-# With Inklecate on PATH, also check the original validator:
+# Scenario validator (compiles with inkjs):
 npm run debug-scenarios -- --auto-validate scenarios/core/*.ink scenarios/tmpl/*.ink
 python3 extensions/time-travel-ethics/tools/check-cluster-validator.py
 ```
 
-The demo uses the compiler included in inkjs; the original validator uses
-Inklecate 1.1.1. Both compiler paths produced matching scripted outcome counts.
+The demo and the validator both compile with inkjs. On 5 November the validator
+used Inklecate 1.1.1, and both compiler paths produced matching scripted outcome
+counts. The validator currently reports 16 scenarios: 15 pass, 1 expected warning.
 For the optional DeepEval run, follow [its setup instructions](../../extensions/time-travel-ethics/docs/DEEPEVAL.md)
 and add `--deepeval-python /absolute/path/to/venv/bin/python` to the demo command.
 Dependency installation requires network access; inference credentials do not.
@@ -114,9 +118,9 @@ review record is explicitly synthetic and included for demonstration only.
 
 No live model/provider trials, complete production-agent execution, automatic
 training, live telemetry collection or live scenario-authoring service was run.
-As of 6 November the image is built and the Ink Job script runs under Docker
-with a real collector. Kubernetes apply, NetworkPolicy enforcement and Flux
-reconciliation remain unexecuted (see SYSTEM-REVIEW.md, section 6). Current
-legal applicability and full-paper review remain incomplete because several
-primary sites were unavailable. Native PowerPoint playback needs rehearsal in
-the conference software.
+The image is built and the Ink Job script runs under Docker with a real
+collector. Manifests were applied to a real control plane, but no pod ran on a
+node, and NetworkPolicy enforcement and Flux reconciliation remain unexecuted
+(SYSTEM-REVIEW.md §6 and §7). Current legal applicability and full-paper review
+remain incomplete because several primary sites were unavailable. Native
+PowerPoint playback needs rehearsal in the conference software.

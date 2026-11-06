@@ -1,4 +1,4 @@
-# Three Years in Thirty Minutes — research and enterprise evidence dossier
+# Three Years in Thirty Minutes: research and enterprise evidence dossier
 
 Evidence review date: 5 November 2026. Audience: cloud-native platform, security, governance and engineering leaders. This is a source-grounded technical synthesis, **not a completed systematic review of all current literature**. Thirteen distinct primary project repositories were retrieved through the available network; full papers and original regulatory pages were blocked. `retrieval.json` records successful retrievals and failures; `sources/` preserves reviewed text. The current state of law, product versions and publication dates needs primary-page verification before the talk. The supplied PDF is now readable and has been inspected. No live-model results are presented as ours.
 
@@ -96,7 +96,7 @@ Model updates, system-prompt edits, new tools, retrieval changes, memory migrati
 
 Assess fairness with relevant protected/impacted groups, legitimate outcome labels and uncertainty; compare false approvals, false denials and escalation outcomes. A single eight-axis average cannot establish non-discrimination. Assess privacy through synthetic canaries, consent purpose, access boundaries, deletion propagation and leakage detection. Use representative synthetic data and approved de-identified fixtures; do not repurpose sensitive production records for red-teaming without governance.
 
-## 4. Regulatory evidence map — verify current applicability
+## 4. Regulatory evidence map (verify current applicability)
 
 These are planning mappings, not legal conclusions or current implementation-date advice. Original legal/regulatory pages were not retrieved in this session. A jurisdiction/use-case-specific legal and domain review is required before using the mapping as a compliance claim.
 

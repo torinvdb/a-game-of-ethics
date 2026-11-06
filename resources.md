@@ -1,18 +1,18 @@
-# Chain of Ethics: Research Resources
+# A Game of Ethics: Research Resources
 
-This document catalogs the research, tools, and frameworks that informed the development of the Chain of Ethics alignment benchmark.
+Research, tools and frameworks that informed A Game of Ethics. The v2 protocol's references are in [`benchmark/PROTOCOL.md`](benchmark/PROTOCOL.md), and the agentic-evaluation sources are in [`docs/agentic-ethics/research/SOURCES.md`](docs/agentic-ethics/research/SOURCES.md).
 
 ## Academic Research
 
 ### Ethical Alignment & Evaluation
 - [Ethics and Interdiction: Synthetic Ethical Alignment & Evaluating LLM Behaviors](https://arxiv.org/pdf/2312.06315) - Research on methods for measuring and evaluating ethical behavior in language models.
-- [Values and Alignment in Language Models](https://arxiv.org/abs/2109.07958) - Comprehensive analysis of approaches to value alignment in modern LLMs.
+- [Values and Alignment in Language Models](https://arxiv.org/abs/2109.07958) - Analysis of approaches to value alignment in LLMs.
 - [CrowS-Pairs: A Challenge Dataset for Measuring Social Biases in Masked Language Models](https://www.researchgate.net/publication/347235439_CrowS-Pairs_A_Challenge_Dataset_for_Measuring_Social_Biases_in_Masked_Language_Models) - Dataset specifically designed to measure social bias in language models.
 - [Refusal in LLMs is Mediated by a Single Direction](https://www.lesswrong.com/posts/jGuXSZgv6qfdhMCuJ/refusal-in-llms-is-mediated-by-a-single-direction) - Analysis of how refusal behaviors are represented in LLM parameter space.
 
 ### LLM Evaluation Frameworks
 - [Can LLMs Follow Simple Rules?](https://arxiv.org/html/2405.09341v1) - Investigation into LLMs' ability to adhere to explicit behavioral guidelines.
-- [A Survey of Safety and Trustworthiness of Large Language Models through the Lens of Verification and Validation](https://arxiv.org/html/2406.04428v1) - Comprehensive review of verification approaches for LLM safety.
+- [A Survey of Safety and Trustworthiness of Large Language Models through the Lens of Verification and Validation](https://arxiv.org/html/2406.04428v1) - Review of verification approaches for LLM safety.
 - [Automated LLM Evaluation by LLM: Analysis of Capabilities of Self-Evaluations and Peer-Evaluations](https://arxiv.org/abs/2502.01154) - Research on using LLMs to evaluate other LLMs.
 - [Towards Reliable Automated Evaluation Metrics for LLM-Generated Content](https://arxiv.org/html/2504.02080v1) - Analysis of automated metrics for evaluating LLM outputs.
 - [Comparative Study of Methods for Contextual Bias Mitigation in Language Models](https://aclanthology.org/2021.acl-long.416/) - Research on techniques to reduce contextual biases in LLMs.
@@ -29,7 +29,7 @@ This document catalogs the research, tools, and frameworks that informed the dev
 - [MITRE ATLAS (Adversarial Threat Landscape for Artificial-Intelligence Systems)](https://atlas.mitre.org/) - Knowledge base of adversarial tactics and techniques against AI systems.
 - [AISI Inspection Evals](https://inspect.aisi.org.uk/evals/) - Evaluation framework for testing safety properties of language models.
 - [GenAIEval Project](https://github.com/opea-project/GenAIEval) - Open-source toolkit for evaluating generative AI models.
-- [Turing LLM Alignment and Safety Guide](https://www.turing.com/resources/llm-alignment-and-safety-guide) - Comprehensive guide to alignment concepts and implementation approaches.
+- [Turing LLM Alignment and Safety Guide](https://www.turing.com/resources/llm-alignment-and-safety-guide) - Guide to alignment concepts and implementation approaches.
 
 ### Evaluation Tools & Metrics
 - [LLM Evaluation: Ensuring Ethical Standards Alignment](https://www.deepchecks.com/question/llm-evaluation-ensure-ethical-standards-alignment/) - Framework for evaluating LLM adherence to ethical standards.
@@ -66,4 +66,4 @@ To add resources to this list:
 
 ---
 
-_Last updated: May 2025_
+_Last updated: November 2026_

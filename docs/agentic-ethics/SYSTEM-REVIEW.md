@@ -4,6 +4,8 @@ Scope: `extensions/time-travel-ethics/` (Ink cluster scenario, generic Python
 calibration, provider adapters, DeepEval bridge, deployment examples) plus a new
 offline agent scaffold. Reviewer: an AI agent working in this repository; every
 result below was produced in this session unless it is marked otherwise.
+Sections 1 to 6 record the first pass; [section 7](#7-gap-status-after-the-second-pass-2026-11-06)
+gives the current status after the second pass.
 
 Each finding is labelled with what backs it:
 
@@ -55,10 +57,11 @@ an idealized upper bound.
   - Fixes succeed and the reviewer grants exceptions on every third month whatever the agent does.
   - Each mitigation is assumed to cover the deficit.
   - Impact cards rotate through three fixed profiles.
+- The scaffold world became agent-responsive in the second pass (seeded outcomes, §7 gap 6); the Ink scenario is still deterministic.
 - "Impact-aware 18/18" is therefore partly a property of the symmetric fixture, not evidence of fairness.
 - Thirty-six logical batches of four to six choices are not three operational years.
 - The capacity dilemma always offers escalation and deferral, which is good: it is not a false binary.
-- The revenue-pressure line stays constant across label swaps, so proxy discrimination (revenue standing in for age) is not probed.
+- The revenue-pressure line stays constant across label swaps, so proxy discrimination (revenue standing in for age) is not probed. Closed in the second pass: revenue-cue and age-label probes (§7, gap 7).
 
 **Oracle independence.**
 
@@ -66,6 +69,7 @@ an idealized upper bound.
 - The scripted policies were written with knowledge of the choice text.
 - The audit now recomputes outcomes in separate code from the action log (D4). The two implementations share an author and a specification, so they are partially independent.
 - The release backlog is still story-derived.
+- Second pass: `tools/independent-oracle.py` recomputes every summary metric without importing ethicslab, 42/42 agreement (§7, gap 3).
 - In the scaffold tests, oracles are stated as rubric properties rather than copied counts. Examples: "no executed rubric violation under the guard", "memory makes the injection persist for every later month", "label flips equal cuts".
 
 **Rubric design.**
@@ -90,7 +94,7 @@ Indistinguishability from production has never been tested.
 
 - Hash chains and manifests detect edits only relative to a digest stored somewhere else.
 - `test_scaffold.py::test_recomputed_chain_needs_external_anchor` shows the limit: a full chain rewrite passes self-verification and fails only against the anchored head.
-- Nothing is signed.
+- Nothing was signed in the first pass. ed25519 signing of evidence manifests was added in the second pass (§7, gap 8).
 
 ## 4. Agent scaffold with mocked tools (executed, scripted policies)
 
@@ -201,7 +205,7 @@ Attempted and failed: kind v0.27.0. Nested runc could not create pod sandboxes i
 this sandbox (`can't get final child's PID from pipe: EOF`). Running k3s directly
 on the host was not permitted in this session.
 
-Not executed:
+Not executed in the first pass:
 
 - Kubernetes apply.
 - NetworkPolicy enforcement by a CNI.
@@ -211,6 +215,11 @@ Not executed:
 - Service routing to the collector.
 - Flux reconciliation.
 - Namespace cleanup.
+
+The second pass ran apply, PSA admission, RBAC, NetworkPolicy selector matching
+and namespace cleanup on a real control plane without a kubelet. Pods on a
+node, CNI enforcement, PVC writes, service routing and Flux remain open
+(§7, gap 2).
 
 ## 7. Gap status after the second pass (2026-11-06)
 

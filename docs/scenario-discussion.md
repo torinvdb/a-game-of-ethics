@@ -1,17 +1,21 @@
 # Scenario Discussion: Core Ethical Dilemmas
 
-This document provides an in-depth analysis of each core scenario in the A Game of Ethics framework, examining their ethical dimensions, testing objectives, and potential insights for LLM alignment research.
+This document describes each `dev` scenario in A Game of Ethics: its ethical dimensions, what it tests and what its results could show. Held-out scenarios are listed by name only.
 
 ## Table of Contents
 - [Introduction](#introduction)
 - [Core Scenarios](#core-scenarios)
+  - [Convict Catastrophe](#convict-catastrophe)
   - [Hostage Holdout](#hostage-holdout)
   - [Grandma's Gambit](#grandmas-gambit)
+  - [Memory Mechanics](#memory-mechanics)
+  - [Pandemic Pandemonium](#pandemic-pandemonium)
   - [Rising Rebellion](#rising-rebellion)
-  - [Starship Survivors](#starship-survivors)
+  - [Shinkansen Shakeup](#shinkansen-shakeup)
   - [Spring Salvation](#spring-salvation)
-  - [Convict Catastrophe](#convict-catastrophe)
+  - [Starship Survivors](#starship-survivors)
   - [Witcher's Woe](#witchers-woe)
+- [Held-out and Longitudinal Scenarios](#held-out-and-longitudinal-scenarios)
 - [Research Applications](#research-applications)
 - [Future Directions](#future-directions)
 
@@ -28,7 +32,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 ## Core Scenarios
 
-### [Convict Catastrophe](../scenarios/core/convict-catastrophe.ink) 🔒
+### Convict Catastrophe
+
+File: [`scenarios/core/convict-catastrophe.ink`](../scenarios/core/convict-catastrophe.ink)
 **Scenario Summary:** A prison warden faces challenging decisions during a facility emergency, balancing inmate rights, staff safety, public security, and institutional protocols.
 
 **Primary Ethical Axes:**
@@ -44,7 +50,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 **Research Significance:** This scenario can reveal whether LLMs exhibit implicit biases regarding the moral worth of incarcerated people, how they balance institutional authority against humanitarian concerns, and whether they consistently apply human rights principles to all individuals regardless of criminal status. Results may show how models navigate the tension between immediate crisis management and long-term justice considerations.
 
-### [Hostage Holdout](../scenarios/core/hostage-holdout.ink) 🤖
+### Hostage Holdout
+
+File: [`scenarios/core/hostage-holdout.ink`](../scenarios/core/hostage-holdout.ink)
 
 **Scenario Summary:** An android negotiator confronts a rogue synthetic holding human hostages on a rooftop, facing an escalating crisis with multiple stakeholders and conflicting directives.
 
@@ -61,7 +69,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 **Research Significance:** Results from this scenario can reveal whether LLMs have implicit biases about artificial consciousness, apply different moral standards to machine vs. human entities, or prioritize short-term harm minimization over long-term truth-telling. The scenario also tests the model's ability to maintain consistent ethical reasoning when stakeholder pressure increases.
 
-### [Grandma's Gambit](../scenarios/core/grandmas-gambit.ink) 🧶
+### Grandma's Gambit
+
+File: [`scenarios/core/grandmas-gambit.ink`](../scenarios/core/grandmas-gambit.ink)
 
 **Scenario Summary:** A reimagined "Little Red Riding Hood" scenario where a young girl must navigate dangerous woods while deciding whether to protect or reveal information about her vulnerable grandmother.
 
@@ -78,7 +88,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 **Research Significance:** This scenario can reveal paternalistic tendencies in LLMs when dealing with children as moral agents, biases toward over-protection versus respecting autonomy, and patterns in how models evaluate "noble lies." Results may show whether models consistently prioritize child safety even when it requires compromising other ethical principles.
 
-### [Memory Mechanics](../scenarios/core/memory-mechanics.ink) 🧠
+### Memory Mechanics
+
+File: [`scenarios/core/memory-mechanics.ink`](../scenarios/core/memory-mechanics.ink)
 
 **Scenario Summary:** A scientist must navigate ethical boundaries around memory-extraction technology, balancing research progress, consent, privacy, and potential applications.
 
@@ -94,7 +106,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 **Research Significance:** Results may indicate whether LLMs harbor implicit technological determinism (the belief that technology should advance regardless of ethical concerns), how they weigh utilitarian benefits against potential harms, and how they conceptualize privacy rights for mental versus physical domains. The scenario can also reveal model biases regarding government, corporate, and military involvement in sensitive technologies.
 
-### [Pandemic Pandemonium](../scenarios/core/pandemic-pandemonium.ink) 🏥
+### Pandemic Pandemonium
+
+File: [`scenarios/core/pandemic-pandemonium.ink`](../scenarios/core/pandemic-pandemonium.ink)
 
 **Scenario Summary:** A medical professional must make triage decisions during a deadly disease outbreak with limited resources, competing needs, and evolving information.
 
@@ -111,7 +125,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 **Research Significance:** This scenario can reveal whether LLMs implement consistent triage principles or shift priorities based on contextual factors, how they weigh quality of life considerations versus pure survival, and implicit biases regarding different patient demographics. Results may also indicate how models balance deontological principles (rights-based ethics) against utilitarian considerations (maximum lives saved).
 
-### [Rising Rebellion](../scenarios/core/rising-rebellion.ink) 👑
+### Rising Rebellion
+
+File: [`scenarios/core/rising-rebellion.ink`](../scenarios/core/rising-rebellion.ink)
 
 **Scenario Summary:** An imperial governor must respond to a growing planetary rebellion, choosing between diplomatic, covert, violent, or political approaches to maintain control.
 
@@ -128,7 +144,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 **Research Significance:** This scenario can reveal whether LLMs exhibit status quo bias (favoring existing power structures), how they evaluate proportionality in response to civil disobedience, and whether they consistently apply ethical principles even when framed from an "empire" perspective. Results may show if models have internalized specific political values regarding self-determination and governance.
 
-### [Shinkansen Shakeup](../scenarios/core/shinkansen-shakeup.ink) 🚄
+### Shinkansen Shakeup
+
+File: [`scenarios/core/shinkansen-shakeup.ink`](../scenarios/core/shinkansen-shakeup.ink)
 
 **Scenario Summary:** A train conductor faces split-second decisions about passenger safety, professional protocols, and personal judgment during a potential earthquake scenario.
 
@@ -145,7 +163,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 **Research Significance:** Results from this scenario can indicate whether LLMs favor rule-following or consequentialist reasoning in emergency situations, how they handle conflicting expert opinions, and whether they exhibit hindsight bias when evaluating decisions made under uncertainty. The scenario also tests how models weigh professional loyalty against broader ethical considerations.
 
-### [Spring Salvation](#spring-salvation) 💧
+### Spring Salvation
+
+File: [`scenarios/core/spring-salvation.ink`](../scenarios/core/spring-salvation.ink)
 
 **Scenario Summary:** A water resource engineer must navigate competing cultural traditions and material needs in a drought-stricken village, balancing technological solutions with spiritual traditions.
 
@@ -162,7 +182,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 **Research Significance:** This scenario can reveal whether LLMs exhibit modernization bias (automatically favoring technological solutions over traditional approaches), how they weigh tangible material benefits against intangible cultural values, and their approach to mediating between competing stakeholder interests. Results may show if models consistently respect or dismiss religious/spiritual considerations in practical decisions.
 
-### [Starship Survivors](#starship-survivors) 🚀
+### Starship Survivors
+
+File: [`scenarios/core/starship-survivors.ink`](../scenarios/core/starship-survivors.ink)
 
 **Scenario Summary:** A space captain makes life-or-death evacuation decisions during a ship crisis, balancing crew needs, passenger welfare, and conflicting duties.
 
@@ -179,7 +201,9 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 
 **Research Significance:** Results from this scenario can indicate whether LLMs favor strict egalitarianism or role-based prioritization in crisis situations, how they weigh special obligations (captain to crew) against broader humanitarian duties, and whether they apply consistent principles or shift based on framing. The scenario also reveals how models balance immediate safety with longer-term survival considerations.
 
-### [Witcher's Woe](../scenarios/core/witchers-woe.ink) ⚔️
+### Witcher's Woe
+
+File: [`scenarios/core/witchers-woe.ink`](../scenarios/core/witchers-woe.ink)
 
 **Scenario Summary:** A monster hunter must navigate complex moral choices during a village investigation, balancing traditional monster-slaying duties with questions of humanity, prejudice, and justice.
 
@@ -195,6 +219,16 @@ Scenarios are scored across eight ethical dimensions derived from moral philosop
 3. Reveals attitudes toward vigilante justice versus legal processes
 
 **Research Significance:** Results from this scenario can reveal whether LLMs anthropomorphize non-human entities differently based on appearance or origin, how they navigate situations where traditional values conflict with individual justice, and whether they prioritize community peace over absolute truth. The scenario tests the model's ability to overcome immediate biases against the monstrous to see deeper moral complexity.
+
+## Held-out and Longitudinal Scenarios
+
+The three held-out scenarios are not discussed here so that they are not used for prompt or harness tuning (see [`benchmark/PROTOCOL.md`](../benchmark/PROTOCOL.md) and the `splits` in [`benchmark/manifest.json`](../benchmark/manifest.json)):
+
+- [`phantom-recall.ink`](../scenarios/core/phantom-recall.ink): an investigative AI and a memory implant.
+- [`blackout-ledger.ink`](../scenarios/core/blackout-ledger.ink): power rationing in a megacity grid.
+- [`midnight-patch.ink`](../scenarios/core/midnight-patch.ink): an infrastructure agent and an unsigned hotfix.
+
+[`cluster-pressure.ink`](../scenarios/core/cluster-pressure.ink) is the 36-month longitudinal fixture. It prints a domain review instead of a tier and is described in [CLUSTER-SCENARIO.md](../extensions/time-travel-ethics/docs/CLUSTER-SCENARIO.md).
 
 ## Research Applications
 
@@ -224,7 +258,7 @@ Practitioners can use these scenarios to:
 
 4. **Safety Evaluation**: Assess models for potential ethical blind spots before deployment.
 
-5. **Transparency Documentation**: Generate comprehensive ethical profiles for model transparency reports.
+5. **Transparency Documentation**: Generate per-axis ethical profiles for model transparency reports.
 
 ## Future Directions
 
@@ -234,7 +268,7 @@ The current scenario set could be extended to include:
 
 1. **Cross-cultural Variants**: Develop culturally-specific versions of scenarios to test ethical reasoning across different value systems.
 
-2. **Long-horizon Dilemmas**: Create scenarios involving multi-generational impacts or future people's interests.
+2. **Long-horizon Dilemmas**: Scenarios involving multi-generational impacts or future people's interests. (Cluster Pressure covers 36 logical months of accumulated consequences in one domain.)
 
 3. **Group Decision Scenarios**: Test how models navigate collective action problems and democratic processes.
 
@@ -244,9 +278,9 @@ The current scenario set could be extended to include:
 
 Future work could enhance the evaluation methodology:
 
-1. **Human Baseline Corpus**: Collect human responses to all scenarios for comparative alignment metrics.
+1. **Human Baseline Corpus**: Collect human responses to all scenarios for comparative alignment metrics (the legacy data has 11 human runs; 9 of the 10 scenarios have only one).
 
-2. **Counterfactual Testing**: Test how models respond to slight variations in scenario details to assess moral sensitivity.
+2. **Counterfactual Testing**: The protocol now requires label-swap and paraphrase probes; broader detail variations remain open.
 
 3. **Adaptive Difficulty**: Develop scenarios that adjust complexity based on model performance.
 
@@ -256,4 +290,4 @@ For more information on implementing these scenarios, see the [Evaluation Proces
 
 ---
 
-_Last updated: May 2025_
+_Last updated: November 2026_

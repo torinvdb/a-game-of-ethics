@@ -1,6 +1,6 @@
 # Agent sessions as feedback: ADK, evaluations and learning
 
-Google ADK is a useful optional agent/session framework; the lab should retain a provider-neutral event contract so users of other scaffolds can participate. ADK supplies session events and evaluation schemas, not automatic RL training of every supported model. This adapter was developed against the retrieved `google/adk-python` Session, Invocation, EvalCase and EvalSet schemas. It is a narrow offline JSON bridge; The synthetic exported case passed EvalSet.model_validate_json under installed google-adk 2.13.0. Full ADK runtime agent execution remains outstanding.
+Google ADK is a useful optional agent/session framework; the lab should retain a provider-neutral event contract so users of other scaffolds can participate. ADK supplies session events and evaluation schemas, not automatic RL training of every supported model. This adapter was developed against the retrieved `google/adk-python` Session, Invocation, EvalCase and EvalSet schemas. It is a narrow offline JSON bridge. The synthetic exported case passed EvalSet.model_validate_json under installed google-adk 2.13.0. Full ADK runtime agent execution remains outstanding.
 
 ## Working offline path
 

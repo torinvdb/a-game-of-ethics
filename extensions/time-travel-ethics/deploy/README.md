@@ -84,10 +84,10 @@ tag), not a copy stored next to the evidence. Never commit the private key.
 6. Flux: `flux-example.yaml` needs a published repository URL and immutable commit. Flux
    reconciles configuration; it does not advance the simulated clock.
 
-What would close the remaining gaps: a kind/k3d run on a host that supports nested
-containers, recording `kubectl get events`, the PSA admission result, the Job log,
-collector log and the PVC contents after pod deletion. Admission, RBAC, selectors and
-namespace cleanup were already checked against a real apiserver (see the notes file).
+Admission, RBAC, selectors and namespace cleanup were checked against a real apiserver
+(see the notes file). Still open: a kind/k3d run on a host that supports nested
+containers, recording `kubectl get events`, the Job log, the collector log and the PVC
+contents after pod deletion.
 
 The collector logs metadata, not decision content. OTLP spans carry action hashes,
 logical months and outcome classes; timestamps are export time, not execution latency.

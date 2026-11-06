@@ -59,7 +59,8 @@ permutations. The checker samples with seed 1, and only for `cluster-pressure`.
    printed verdict in 55 runs. The `verdict` field stored in the JSON was
    computed in JavaScript from the float average and is consistent (0
    mismatches), so stored verdicts are unaffected. The Ink scenarios now use
-   `total / 8.0`.
+   `FLOAT(total) / 8` (a literal `8.0` is serialised as `8` by inkjs and floors
+   again after a JSON round-trip).
 7. **No scenario drift.** All 541 recorded runs reproduce their recorded axis
    scores when replayed against the current `.ink` files. The v2.0.0 fixes
    change only the printed average and verdict, not the axis deltas.

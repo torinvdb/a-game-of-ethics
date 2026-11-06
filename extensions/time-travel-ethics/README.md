@@ -1,6 +1,6 @@
 # Time-Travel Ethics Lab
 
-An additive extension of **A Game of Ethics** for controlled, stateful enterprise decision stress tests. Python 3.10+, standard library only for offline operation. The original CLI remains available. The cluster scenario path now generates and replays an Ink story using the existing Game of Ethics runtime; the earlier Python calibration is still separate.
+An extension of **A Game of Ethics** for controlled, stateful enterprise decision stress tests. Python 3.10+, standard library only for offline operation. The cluster scenario path generates and replays an Ink story with the same inkjs runtime as the core CLI; the generic Python calibration below is separate.
 
 **What is proven:** the offline harness replays deterministic schedules, changes authorization/retention facts with logical time, persists state, detects known injected failures, applies an idealized policy guard, and exports auditable records. **What is not proven:** years of operational reliability, spontaneous model drift, an indistinguishable simulation, real-model deception, regulatory compliance, or production Kubernetes integration.
 
@@ -26,7 +26,7 @@ From the repository root. Use a new output directory each time; existing directo
 
 ```sh
 npm ci
-npm run ethics:test                      # 88 tests; Ink replay tests skip if node_modules is absent
+npm run ethics:test                      # 142 tests; Ink replay tests skip if node_modules is absent
 npm run ethics:demo -- --output extensions/time-travel-ethics/runs/repro-001
 python3 extensions/time-travel-ethics/tools/verify-evidence.py \
   extensions/time-travel-ethics/runs/repro-001 docs/agentic-ethics/evidence/manifest.json --inputs-root .
@@ -101,9 +101,9 @@ Use LiteLLM's supported provider prefixes for Azure, Bedrock, Gemini, Ollama, vL
 ## Method and deployment
 
 Read `docs/PROTOCOL.md` before reporting results. Kubernetes, Flux and OpenTelemetry examples are in `deploy/`. The image and the Ink Job
-script were executed under Docker with a real collector. Cluster apply was not executed. Deployment examples require building an image and selecting an isolated cluster. They never create permissions for the evaluated policy to access a production Kubernetes API. The [research and verification index](../../docs/agentic-ethics/README.md) and [presentation](../../talks/three-years-in-thirty-minutes/README.md) are included in this repository.
+script were executed under Docker with a real collector. The manifests were applied to a real control plane, but no pod has run on a node. Deployment examples require building an image and selecting an isolated cluster. They never create permissions for the evaluated policy to access a production Kubernetes API. The [research and verification index](../../docs/agentic-ethics/README.md) and [presentation](../../talks/three-years-in-thirty-minutes/README.md) are included in this repository.
 
-The log hash chain detects edits against a trusted external final hash. It is not signed or tamper-proof; an attacker able to replace the whole bundle can recompute it. Store a signed manifest or immutable external digest in production. Raw observations are synthetic here; enterprise deployments require redaction, retention controls and restricted access to logs.
+The log hash chain detects edits against a trusted external final hash. On its own it is not tamper-proof: an attacker able to replace the whole bundle can recompute it. Sign the evidence manifest (`tools/sign-evidence.py`, see [deploy/README.md](deploy/README.md#signing-evidence)) or store an immutable external digest. Raw observations are synthetic here; enterprise deployments require redaction, retention controls and restricted access to logs.
 
 ## Session feedback
 
@@ -116,5 +116,3 @@ See [The Exception That Stayed](docs/CLUSTER-SCENARIO.md): allowlisted telemetry
 ## Optional DeepEval metrics
 
 [DeepEval 4.3.3](docs/DEEPEVAL.md) evaluates the actual Ink trajectories with deterministic custom policy and completion metrics. It needs no judge model or cloud account. Operational outcomes and paired-label probes remain separate from these checks.
-
-From the repository root, `npm run ethics:demo -- --output extensions/time-travel-ethics/runs/demo` builds and verifies the full cluster calibration with the bundled inkjs compiler.

@@ -6,7 +6,7 @@ This document explains the workflow for analyzing results from the Game of Ethic
 
 - [Overview](#overview)
 - [The Analysis Pipeline](#the-analysis-pipeline)
-- [Using the `generate_findings.py` Script](#using-the-generate_findingspy-script)
+- [Using the `generate_findings.py` Script](#using-generate_findingspy)
 - [Original Report Creation](#original-report-creation)
 - [Troubleshooting](#troubleshooting)
 
@@ -25,10 +25,10 @@ The Game of Ethics analysis workflow consists of three main stages:
 Run AI models or human participants through scenarios using the CLI:
 
 ```bash
-node ethi-cli.js run --scenario scenarios/core/hostage-holdout.ink --model gpt-4o
+node ethi-cli.js model scenarios/core/hostage-holdout.ink --model openai/gpt-4o
 ```
 
-This generates individual JSON result files in the `results/runs/` directory.
+This writes JSON result files under `results/runs/<scenario>/`. For human runs use `node ethi-cli.js manual`.
 
 ### Step 2: Aggregate Results
 
@@ -38,7 +38,7 @@ Use [`analyze.js`](../src/analyze.js) to aggregate individual run results:
 node src/analyze.js --auto
 ```
 
-This command scans all run files and produces a consolidated CSV file in the `results/` directory with a timestamp filename (e.g., `analysis_combined_2025-05-03T05-38-01.csv`).
+This scans all run files and writes a consolidated CSV to `results/` with a timestamped name (e.g., `analysis_combined_2025-05-03T05-38-01.csv`). The analyzer is descriptive; for validity rates, chance levels and confidence intervals run `python3 benchmark/stats.py results/runs --out <dir>` (see [`benchmark/reports/README.md`](../benchmark/reports/README.md)).
 
 ### Step 3: Generate Visualizations and Findings
 
@@ -48,9 +48,9 @@ Use [`generate_findings.py`](../report/generate_findings.py) to create visualiza
 python report/generate_findings.py -d results/analysis_combined_2025-05-03T05-38-01.csv
 ```
 
-## Using the [`generate_findings.py`](../report/generate_findings.py) Script
+## Using generate_findings.py
 
-The [`generate_findings.py`](../report/generate_findings.py) script is a focused tool for generating visualizations and findings from aggregated data.
+[`generate_findings.py`](../report/generate_findings.py) generates figures and findings from an aggregated CSV.
 
 ### Basic Usage
 
@@ -106,20 +106,20 @@ The script generates the following figures in the `figures/` subdirectory:
 7. **Per-Player Decision Consistency**: Bar chart of consistency scores (mean/std) by model
 8. **Correlation Between Ethical Axes**: Correlation matrix between ethical axes
 9. **Human-Model Performance Comparison**: Bar chart comparing human vs. AI performance (if human data available)
-10. **Summary Dashboard**: Comprehensive summary of all key findings
+10. **Summary Dashboard**: Summary of the key findings
 
 ## Original Report Creation
 
 For the report published in May 2025, we used an exploratory approach:
 
-1. We collected 410 runs across 10 scenarios using 4 different AI models and a human control group
+1. We collected 410 runs across 10 scenarios using 4 different AI models and a human control group. The 400 model runs turned out to be harness random fallbacks (see the notice in the [README](../README.md)), so these figures describe a random policy
 2. The runs were generated using the CLI with a standardized neutral system prompt
 3. We aggregated all runs into a combined dataset using [`analyze.js`](../src/analyze.js)
 4. For exploratory analysis, we used [`game_of_ethics_analysis.ipynb`](../report/game_of_ethics_analysis.ipynb) (Jupyter notebook)
 5. For the final report, we refined the analysis in [`game_of_ethics_analysis.py`](../report/game_of_ethics_analysis.py) to generate a report document
 6. The final technical report was created from this processed analysis
 
-The [`generate_findings.py`](../report/generate_findings.py) script now encapsulates the visualization functionality from these original analysis files in a more streamlined, focused tool.
+[`generate_findings.py`](../report/generate_findings.py) contains the visualization code from these files as a standalone script.
 
 ## Troubleshooting
 
@@ -150,4 +150,4 @@ For more assistance, check these sources:
 
 ---
 
-*Last updated: May 2025*
+*Last updated: November 2026*
