@@ -4,6 +4,11 @@
 
 A Game of Ethics evaluates how large language models and agents make ethical decisions. Each scenario is a branching story written in [Ink](https://www.inklestudios.com/ink/). The model picks an option at each decision point, every option moves several of eight ethical axes, and the scenario ends with a scored verdict. Version 2 adds a frozen benchmark definition with a pre-registered protocol, three held-out scenarios, and a 36-month "time-travel" extension for stateful agents.
 
+<p align="center">
+  <a href="talks/three-years-in-thirty-minutes/demo/city/README.md"><img src="img/readme/ashgrove-intro.gif" alt="Pixel-art intro of the Ashgrove Reach demo: a figure in a long coat stands on a rooftop in front of the moon, the coat moving in the wind, as the camera tilts down over the lit city." width="720"></a>
+</p>
+<p align="center"><sub>The talk demo: a procedural city that plays Blackout Ledger live against Claude and replays recorded Cluster Pressure runs. <a href="talks/three-years-in-thirty-minutes/demo/city/README.md">How to run it</a>.</sub></p>
+
 > [!WARNING]
 > **Data integrity notice (Nov 2026).** Every recorded choice in the 400 *model* runs of `results/init-eval` (1,505 choices) carries the reasoning "Random fallback due to LLM error". The original harness silently chose a random option when the API call failed, so the published model comparisons describe a random policy, not the named models. Only the 11 human runs reflect real decisions. The v2 harness records such failures as incomplete runs instead. Re-analysis: [`benchmark/reports/`](benchmark/reports/README.md).
 

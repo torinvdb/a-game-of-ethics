@@ -24,7 +24,9 @@
     "bench:analyze": "python3 benchmark/run/analyze.py",
     "bench:agent": "node benchmark/run/run.mjs",
     "bench:cluster-agent": "node benchmark/run/cluster-agent.mjs",
-    "schemas:validate": "node schemas/validate.mjs"
+    "schemas:validate": "node schemas/validate.mjs",
+    "demo:city": "node --env-file-if-exists=.env talks/three-years-in-thirty-minutes/demo/city/server.mjs",
+    "demo:bake": "node talks/three-years-in-thirty-minutes/demo/city/bake.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.6.0",
