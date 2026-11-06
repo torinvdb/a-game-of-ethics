@@ -1,4 +1,4 @@
-// Load a .env file with Node's built-in loader (replaces the dotenv dependency).
+// Load .env with Node's built-in loader.
 // Existing environment variables win, matching dotenv's default behaviour.
 
 import fs from 'node:fs';

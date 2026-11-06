@@ -33,14 +33,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Scenarios are compiled with the inkjs compiler from package.json, so no
-      # inklecate binary download is needed. debug.js exits non-zero on errors.
+      # Compiled with inkjs from package.json (no inklecate). Exits non-zero on errors.
       - name: Validate core scenarios and templates
         id: validate
         run: node src/debug.js --auto-validate scenarios/core/*.ink scenarios/tmpl/*.ink
 
-      # The generated gpt-oss-20b scenarios currently fail the structural lint
-      # (they compile, but miss authoring conventions). Report without blocking.
+      # Generated gpt-oss-20b scenarios compile but fail authoring lint; report only.
       - name: Lint generated scenarios (non-blocking)
         continue-on-error: true
         run: node src/debug.js --auto-validate scenarios/gpt-oss-20b/*.ink

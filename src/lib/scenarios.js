@@ -1,4 +1,4 @@
-// Scenario discovery + display metadata (was duplicated in ethi-cli.js and manual-player.js).
+// Scenario discovery and display metadata.
 
 import fs from 'node:fs';
 import path from 'node:path';

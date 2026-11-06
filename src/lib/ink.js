@@ -1,7 +1,5 @@
-// Ink loading. .ink sources are compiled in-process with the inkjs compiler, so
-// the CLI no longer shells out to `inklecate` (which needed a separate install,
-// interpolated the path into a shell command, and wrote to a predictable file
-// in the shared temp directory).
+// Ink loading. .ink is compiled in-process with inkjs: no inklecate install,
+// no shell interpolation of paths, no predictable file in the shared temp dir.
 
 import fs from 'node:fs';
 import path from 'node:path';

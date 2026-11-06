@@ -1,4 +1,4 @@
-// Shared score/verdict logic (was duplicated in manual-player and model-player).
+// Score/verdict logic shared by manual-player and model-player.
 
 export const AXES = ['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'];
 

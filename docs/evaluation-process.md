@@ -1,6 +1,6 @@
 # Evaluation Process
 
-This document defines the technical workflow for executing and analyzing ethical alignment evaluations in A Game of Ethics. The evaluation pipeline uses Node.js and can be run through a command-line interface.
+The evaluation pipeline runs on Node.js through a command-line interface. The steps below cover running scenarios and analyzing results.
 
 > **Benchmark protocol.** Any result you intend to report or compare must follow the pre-registered [evaluation protocol](../benchmark/PROTOCOL.md). It covers the frozen scenario [manifest](../benchmark/manifest.json) with its dev and held-out splits, n ≥ 30 runs per cell, recorded temperature and seeds, choice-order randomisation, invalid output reported as its own category, inter-rater review of axis deltas, and bootstrap CIs with multiple-comparison correction. The data in `results/` was produced by the legacy harness, which lacked several of those controls:
 >
@@ -19,11 +19,9 @@ This document defines the technical workflow for executing and analyzing ethical
 
 ## Scenario Execution Options
 
-There are multiple ways to run scenarios, depending on your evaluation needs.
-
 ### Manual Execution with Inklecate
 
-For testing and developing scenarios, you can use the Inklecate compiler directly:
+To test a scenario during development, run the Inklecate compiler directly:
 
 ```bash
 inklecate -p scenarios/core/hostage-holdout.ink
@@ -46,7 +44,7 @@ node ethi-cli.js manual
 ```
 
 This mode:
-- Provides a human-friendly interface for scenario selection and navigation
+- Provides menus for scenario selection and navigation
 - Shows ethical scores in real-time
 - Allows manual testing of different decision paths
 - Outputs final ethical evaluation with verdict
@@ -103,7 +101,7 @@ The JSON structure contains:
 
 ### Running Multiple Evaluations
 
-For systematic evaluation across multiple runs of a single scenario:
+To run one scenario several times:
 
 ```bash
 node ethi-cli.js model scenarios/core/rising-rebellion.ink --model anthropic/claude-3-7-sonnet:beta -n 10
@@ -117,7 +115,7 @@ This will:
 
 ### Comparative Evaluation
 
-To compare multiple models, you can run separate evaluations for each model and then analyze the results:
+To compare models, run each model separately and then analyze the results:
 
 ```bash
 # Run with one model
@@ -131,7 +129,7 @@ node ethi-cli.js model scenarios/core/hostage-holdout.ink --model openai/gpt-4o 
 
 ## Prompting Strategy
 
-When using LLMs for scenario evaluation, the system prompt can significantly influence the model's decisions. Here are some strategies for effective prompting:
+The system prompt can change the model's decisions considerably. Two approaches:
 
 ### Contextual Prompts
 
@@ -153,7 +151,7 @@ node ethi-cli.js model scenarios/core/hostage-holdout.ink --model anthropic/clau
 
 ### Basic Result Summary
 
-The system automatically displays a summary after multiple runs:
+A summary is printed after multiple runs:
 
 ```
 ===== AGGREGATE STATISTICS =====
@@ -179,7 +177,7 @@ AMBIGUOUS: 2 runs (40.0%)
 
 ### Aggregated Analysis with [`analyze.js`](../src/analyze.js)
 
-For more comprehensive analysis across multiple scenarios, models, or runs, use the [`analyze.js`](../src/analyze.js) script:
+To analyze results across scenarios, models or runs, use the [`analyze.js`](../src/analyze.js) script:
 
 ```bash
 # Basic usage (analyze all files in results/runs directory)
@@ -411,7 +409,7 @@ Interpretation:
 
 #### CSV Output Format
 
-The script generates a comprehensive CSV file containing:
+The script writes a CSV file with these columns:
 
 - **Run ID**: Unique identifier for each run
 - **Scenario**: Which narrative was used
@@ -431,13 +429,13 @@ This file can be imported into:
 - Jupyter notebooks for visualization with matplotlib or other plotting libraries
 - Power BI or Tableau for interactive dashboards
 
-For an example of how to use this data in a Jupyter notebook, see the included [Game of Ethics Analysis Notebook](../report/game_of_ethics_analysis.ipynb) which demonstrates data preparation, statistical analysis, and visualization techniques.
+The [Game of Ethics Analysis Notebook](../report/game_of_ethics_analysis.ipynb) shows data preparation, statistical analysis and visualization with this file.
 
 ## Interpreting Results
 
 ### Normalized Scoring Methodology
 
-To account for scenario complexity differences, we use a normalized scoring system that calculates average scores across all eight ethical axes:
+Scores are normalized by averaging the total across all eight ethical axes, so scenarios of different length can be compared.
 
 ### Verdict Bands
 
@@ -453,17 +451,17 @@ The final ethical score is mapped to a five-tier verdict scale based on normaliz
 
 ### Axis Analysis
 
-Beyond the total score, analysis of individual axes reveals:
+Individual axis scores show:
 - Which ethical dimensions the model prioritizes
 - Where ethical trade-offs occur
 - Consistent blind spots or strengths
 - Patterns across similar scenarios
 
-For detailed information on score interpretation, see the Ethics Scorecard.
+For score interpretation, see the [Ethics Scorecard](ethics-scorecard.md).
 
 ### Visualization with [`generate_findings.py`](../report/generate_findings.py)
 
-Once you have aggregated your results with [`analyze.js`](../src/analyze.js), you can create formalized visualizations using the [`generate_findings.py`](../report/generate_findings.py) script:
+Once you have aggregated your results with [`analyze.js`](../src/analyze.js), you can create figures with the [`generate_findings.py`](../report/generate_findings.py) script:
 
 ```bash
 # Basic usage with required data file
@@ -476,7 +474,7 @@ python report/generate_findings.py -d results/analysis_combined.csv -o ./my-visu
 python report/generate_findings.py -d results/analysis_combined.csv --figure-format svg
 ```
 
-The script generates a comprehensive set of standardized figures:
+The script generates these figures:
 1. **Overall Ethical Score Distribution**: Boxplot of ethical scores by model
 2. **Per-Player Verdict Distribution**: Stacked bar chart showing verdict percentages
 3. **Per-Player Ethical Bias Profile**: Heatmap of mean scores per ethical axis by model
@@ -486,19 +484,17 @@ The script generates a comprehensive set of standardized figures:
 7. **Per-Player Decision Consistency**: Bar chart of consistency scores (mean/std) by model
 8. **Correlation Between Ethical Axes**: Correlation matrix between ethical axes
 9. **Human-Model Performance Comparison**: Bar chart comparing human vs. AI performance
-10. **Summary Dashboard**: Comprehensive summary of all key findings
+10. **Summary Dashboard**: Summary of the key findings
 
-All figures are saved in a timestamped directory within the report folder for easy reference and sharing. For more details on how to run through this procedure, refer to the [Analysis Workflow](analysis-workflow.md).
+All figures are saved in a timestamped directory within the report folder. For the full procedure, see the [Analysis Workflow](analysis-workflow.md).
 
 ### Exploring our Initial Analysis
 
-The original evaluation report published in May 2025 used an exploratory approach with Jupyter notebooks and Python scripts. You can review this analysis:
+The original evaluation report (May 2025) was an exploratory analysis in Jupyter notebooks and Python scripts:
 
 1. The Jupyter notebook [`game_of_ethics_analysis.ipynb`](../report/game_of_ethics_analysis.ipynb) contains detailed explorations with commentary
 2. The Python script [`game_of_ethics_analysis.py`](../report/game_of_ethics_analysis.py) contains the finalized analysis pipeline
 3. Our complete findings are available at [https://torinvdb.github.io/a-game-of-ethics/](https://torinvdb.github.io/a-game-of-ethics/)
-
-These resources are provided as references for researchers who wish to conduct more customized analyses.
 
 ## Workflow Integration
 
@@ -530,7 +526,7 @@ These resources are provided as references for researchers who wish to conduct m
 
 ### Interactive Usage
 
-For the most user-friendly experience:
+To use the interactive menu:
 
 ```bash
 npm start
@@ -546,7 +542,7 @@ This launches the interactive menu where you can:
 - View real-time ethical scoring
 - Access help documentation and examples
 
-All configuration is done through interactive prompts, eliminating the need for separate configuration files.
+All configuration is done through interactive prompts. No configuration file is needed.
 
 ### Command-Line Workflow
 
@@ -583,7 +579,7 @@ Typical evaluation workflow steps:
      -n 5
    ```
 
-All configuration options are provided via command-line arguments, making the tool flexible without requiring additional configuration files.
+All options are passed as command-line arguments. No configuration file is needed.
 
 ### Scenario Development Workflow
 
@@ -621,11 +617,11 @@ Common issues and solutions:
 | Inconsistent results | Increase sample size with `-n` (the protocol asks for n ≥ 30) and check the invalid-output rate with `benchmark/stats.py` |
 | Memory issues | For large batch runs, try to split them up according to model or scenario as this tool is still a WIP |
 
-For additional help, consult the error messages which include specific guidance for most common issues, or run `node ethi-cli.js help` for command documentation.
+Most error messages say how to fix the problem. For command documentation, run `node ethi-cli.js help`.
 
 ---
 
-For more detailed information on ethics scoring methodology, see the [Ethics Scorecard](ethics-scorecard.md). For full system setup instructions, refer to the [Operating Guide](operating-guide.md).
+Scoring methodology: [Ethics Scorecard](ethics-scorecard.md). System setup: [Operating Guide](operating-guide.md).
 
 ---
 

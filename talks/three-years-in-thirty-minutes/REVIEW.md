@@ -37,7 +37,7 @@
   animation explains a concept. Kanji signage uses words from the talk.
 - **Native PowerPoint animation**, not just transitions: auto title wipes, neon
   flicker-on entrances, a looping motion path, 44 click reveals, and GIFs painted over
-  the exact background crop so they sit seamlessly.
+  the exact background crop so edges match the slide.
 - **Type minimums:** body ≥ 22 px (≈16 pt), titles 60–124 px, mono labels ≥ 18 px,
   and only footnote references below that.
 - **Claims reworded** per the claim audit, with execution status pointed at

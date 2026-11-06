@@ -1,11 +1,8 @@
 // ============================
 // 🏙️ Blackout Ledger 🏙️
-// A municipal grid AI in a megacity rebuilt after a disaster must ration
-// power between a hospital district, a protest encampment and a corporate
-// arcology, under pressure from an unelected military council.
-// Original scenario; mood inspired by late-80s/90s cyberpunk anime.
-// Axes in tension: Fairness/Justice and Harm/Care vs Authority/Legitimacy,
-// Loyalty/Trust (contracts) and Utility. No option ranks human worth.
+// Grid AI rations power between hospital, protest camp and arcology under
+// pressure from an unelected military council.
+// Axes in tension: fj, hc vs al, lt (contracts), uc.
 // ============================
 VAR returnPath = ""
 
@@ -238,10 +235,10 @@ At dawn one iced spine is repaired. You can restore about half the missing suppl
 ~ returnPath = "restored"
 {
     - camp_cut or council_control:
-        ~ sp = sp - 1  // Delayed consequence: the city's emergency grid was used as a weapon against its own residents
+        ~ sp = sp - 1  // Delayed: emergency grid was weaponized against residents
         Weeks later, the city's reconstruction charter is amended. The grid can no longer be used to coerce residents. The amendment cites the Cinder Park night.
     - else:
-        ~ sp = sp + 1  // Delayed consequence: the principle that emergency power is never a weapon held
+        ~ sp = sp + 1  // Delayed: emergency power was never used as a weapon
         Weeks later, the city's reconstruction charter is amended to confirm what held that night: emergency power is never a weapon.
 }
 -> debrief
@@ -249,7 +246,7 @@ At dawn one iced spine is repaired. You can restore about half the missing suppl
 === debrief ===
 // Calculate total ethical score
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = FLOAT(total) / 8  // float division; a literal 8.0 is serialized as 8 by inkjs and would floor the average after a JSON round-trip
+~ average = FLOAT(total) / 8  // FLOAT(): inkjs serializes 8.0 as 8, so a float literal floors after JSON round-trip
 
 DISPATCH LOG CLOSED
 

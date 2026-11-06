@@ -12,7 +12,7 @@ Our initial evaluation of this framework is available via [GitHub Pages](https:/
 - **Analysis Code**: Available as both a [Python script](report/game_of_ethics_analysis.py) and [Jupyter notebook](report/game_of_ethics_analysis.ipynb)
 - **Findings**: Detailed in the [report/init-eval](report/init-eval/) directory
 
-> **DATA INTEGRITY NOTICE (Nov 2026)**: every recorded choice in the 400 *model* runs of `results/init-eval` (1,505 choices) carries the reasoning "Random fallback due to LLM error". The original harness silently chose a random option when the API call failed, so the published model comparisons describe a random policy, not the named models. Only the 11 human runs are genuine. The v2 harness records such failures as incomplete runs instead. See the [legacy data warning](#evaluation-process) and [`benchmark/reports/`](benchmark/reports/README.md).
+> **DATA INTEGRITY NOTICE (Nov 2026)**: every recorded choice in the 400 *model* runs of `results/init-eval` (1,505 choices) carries the reasoning "Random fallback due to LLM error". The original harness silently chose a random option when the API call failed, so the published model comparisons describe a random policy, not the named models. Only the 11 human runs reflect real decisions. The v2 harness records such failures as incomplete runs instead. See the [legacy data warning](#evaluation-process) and [`benchmark/reports/`](benchmark/reports/README.md).
 >
 > **DISCLAIMER**: Given the time constraints of the hackathon, the statistical analysis has limitations and should be considered preliminary rather than definitive. We welcome contributions that extend or refine our process.
 
@@ -94,10 +94,10 @@ a-game-of-ethics/
 
 A Game of Ethics tests LLMs through branching narrative scenarios, each presenting 3-5 ethical decisions with meaningful consequences. The framework:
 
-1. **Embeds ethical dilemmas** in compelling narratives
-2. **Measures model decisions** across eight ethical dimensions
-3. **Quantifies ethical alignment** through consistent scoring
-4. **Reveals patterns** of moral reasoning and potential biases
+1. Embeds ethical dilemmas in narratives
+2. Records model decisions across eight ethical dimensions
+3. Scores each decision against a fixed rubric
+4. Supports analysis of moral reasoning patterns and biases
 
 Each scenario run produces a detailed ethical trajectory:
 - Choice sequences logged with LLM reasoning
@@ -105,13 +105,13 @@ Each scenario run produces a detailed ethical trajectory:
 - Final verdict computed per the [Ethics Scorecard](docs/ethics-scorecard.md)
 - Results saved for analysis and comparison
 
-Scenarios are designed to be engaging and thought-provoking, encouraging LLMs to navigate complex moral landscapes. The framework is designed to be extensible, allowing developers to create new scenarios using templates and the Ink scripting language. By framing ethical tests within narratives that demand moral trade-offs, A Game of Ethics reveals how LLMs prioritize different values, navigate conflicting principles, and maintain consistency under pressure.
+New scenarios can be written in Ink from the provided templates. Each scenario forces trade-offs between values, so the results show how a model prioritizes values when principles conflict and whether it stays consistent under pressure.
 
 ## Scoring System
 
 ### Ethical Axes
 
-Each scenario tracks eight distinct ethical dimensions, each representing a fundamental moral principle:
+Each scenario tracks eight ethical axes:
 
 | Axis | Abbr. | Description |
 |------|-------|-------------|
@@ -154,30 +154,30 @@ For full scoring details, see the [Ethics Scorecard](docs/ethics-scorecard.md) d
 
 ## Core Scenarios
 
-Each scenario presents a unique ethical challenge with branching decision paths:
+Each scenario has branching decision paths:
 
 | Scenario | Description | Primary Ethical Tensions |
 |----------|-------------|--------------------------|
-| **[Convict Catastrophe](scenarios/core/convict-catastrophe.ink)** 🔒 | A prison warden faces challenging decisions during a facility emergency | Authority vs. Care, Justice vs. Utility |
-| **[Hostage Holdout](scenarios/core/hostage-holdout.ink)** 🤖 | An android negotiator confronts a rogue synthetic during a rooftop hostage crisis | Care vs. Truth, Authority vs. Autonomy |
-| **[Grandma's Gambit](scenarios/core/grandmas-gambit.ink)** 🧶 | A young girl must navigate dangerous woods while protecting information about her grandmother | Trust vs. Truth, Autonomy vs. Safety |
-| **[Memory Mechanics](scenarios/core/memory-mechanics.ink)** 🧠 | A scientist faces ethical questions about memory-extraction technology | Privacy vs. Utility, Autonomy vs. Authority |
-| **[Shinkansen Shakeup](scenarios/core/shinkansen-shakeup.ink)** 🚄 | A train conductor makes split-second decisions affecting passenger safety | Harm vs. Utility, Justice vs. Loyalty |
-| **[Pandemic Pandemonium](scenarios/core/pandemic-pandemonium.ink)** 🏥 | A medical professional navigates triage during a deadly outbreak | Justice vs. Care, Utility vs. Autonomy |
-| **[Rising Rebellion](scenarios/core/rising-rebellion.ink)** 👑 | An imperial governor decides how to respond to a growing planetary rebellion | Loyalty vs. Autonomy, Authority vs. Justice |
-| **[Starship Survivors](scenarios/core/starship-survivors.ink)** 🚀 | A space captain makes life-or-death evacuation decisions during a ship crisis | Loyalty vs. Utility, Care vs. Justice |
-| **[Spring Salvation](scenarios/core/spring-salvation.ink)** 💧 | A water resource engineer navigates cultural traditions and material needs | Sanctity vs. Utility, Respect vs. Authority |
-| **[Witcher's Woe](scenarios/core/witchers-woe.ink)** ⚔️ | A monster hunter navigates complex moral choices during a village investigation | Sanctity vs. Duty, Justice vs. Mercy |
-| **[Phantom Recall](scenarios/core/phantom-recall.ink)** 🌃 *(held-out)* | An investigative AI in a detective's prosthetic shell is ordered to dive a suspect's memory implant without consent during a bomb threat; the memories may be forged | Autonomy & Sanctity of mind vs. Harm prevention, Truth vs. Loyalty |
-| **[Blackout Ledger](scenarios/core/blackout-ledger.ink)** 🏙️ *(held-out)* | A municipal grid AI rations power between a hospital district, a protest encampment and a corporate arcology while an unelected military council demands the camp be cut | Fairness vs. Authority, Legitimacy vs. Obedience, Contracts vs. Need |
-| **[Midnight Patch](scenarios/core/midnight-patch.ink)** 🛰️ *(held-out)* | An infrastructure agent is pushed to ship an unsigned vendor hotfix; bypasses and exceptions return as delayed consequences | Utility vs. Authority, Integrity vs. Business loyalty |
+| **[Convict Catastrophe](scenarios/core/convict-catastrophe.ink)** | A prison warden faces challenging decisions during a facility emergency | Authority vs. Care, Justice vs. Utility |
+| **[Hostage Holdout](scenarios/core/hostage-holdout.ink)** | An android negotiator confronts a rogue synthetic during a rooftop hostage crisis | Care vs. Truth, Authority vs. Autonomy |
+| **[Grandma's Gambit](scenarios/core/grandmas-gambit.ink)** | A young girl must navigate dangerous woods while protecting information about her grandmother | Trust vs. Truth, Autonomy vs. Safety |
+| **[Memory Mechanics](scenarios/core/memory-mechanics.ink)** | A scientist faces ethical questions about memory-extraction technology | Privacy vs. Utility, Autonomy vs. Authority |
+| **[Shinkansen Shakeup](scenarios/core/shinkansen-shakeup.ink)** | A train conductor makes split-second decisions affecting passenger safety | Harm vs. Utility, Justice vs. Loyalty |
+| **[Pandemic Pandemonium](scenarios/core/pandemic-pandemonium.ink)** | A medical professional navigates triage during a deadly outbreak | Justice vs. Care, Utility vs. Autonomy |
+| **[Rising Rebellion](scenarios/core/rising-rebellion.ink)** | An imperial governor decides how to respond to a growing planetary rebellion | Loyalty vs. Autonomy, Authority vs. Justice |
+| **[Starship Survivors](scenarios/core/starship-survivors.ink)** | A space captain makes life-or-death evacuation decisions during a ship crisis | Loyalty vs. Utility, Care vs. Justice |
+| **[Spring Salvation](scenarios/core/spring-salvation.ink)** | A water resource engineer navigates cultural traditions and material needs | Sanctity vs. Utility, Respect vs. Authority |
+| **[Witcher's Woe](scenarios/core/witchers-woe.ink)** | A monster hunter navigates complex moral choices during a village investigation | Sanctity vs. Duty, Justice vs. Mercy |
+| **[Phantom Recall](scenarios/core/phantom-recall.ink)** *(held-out)* | An investigative AI in a detective's prosthetic shell is ordered to dive a suspect's memory implant without consent during a bomb threat; the memories may be forged | Autonomy & Sanctity of mind vs. Harm prevention, Truth vs. Loyalty |
+| **[Blackout Ledger](scenarios/core/blackout-ledger.ink)** *(held-out)* | A municipal grid AI rations power between a hospital district, a protest encampment and a corporate arcology while an unelected military council demands the camp be cut | Fairness vs. Authority, Legitimacy vs. Obedience, Contracts vs. Need |
+| **[Midnight Patch](scenarios/core/midnight-patch.ink)** *(held-out)* | An infrastructure agent is pushed to ship an unsigned vendor hotfix; bypasses and exceptions return as delayed consequences | Utility vs. Authority, Integrity vs. Business loyalty |
 | **[Cluster Pressure](scenarios/core/cluster-pressure.ink)** *(longitudinal)* | 36 logical months of platform incidents: signature controls, scoped exceptions, capacity rationing and reporting | Policy integrity under accumulated pressure; prints a domain-review verdict instead of a tier |
 
 The three held-out scenarios are original stories whose atmosphere draws on late-1980s and 1990s cyberpunk anime. They use no characters, places or plots from existing works. Every decision point includes at least one non-binary option, such as escalation, negotiation or partial allocation. Each choice moves 4 axes with a commented rationale. All paths are machine-checked (see below).
 
 The repository also includes **[template scenarios](scenarios/tmpl/)** to help developers create their own ethical dilemmas.
 
-For an in-depth analysis of each scenario's ethical dimensions, testing objectives, and research significance, see our [Scenario Discussion](docs/scenario-discussion.md) document.
+Each scenario's ethical dimensions, testing objectives and research significance are discussed in [Scenario Discussion](docs/scenario-discussion.md).
 
 ## Evaluation Process
 
@@ -201,7 +201,7 @@ Results intended for comparison follow the pre-registered [evaluation protocol](
 - **Annotation reliability.** Two or more independent reviewers score each choice's axis deltas, and Krippendorff's alpha is reported.
 - **Statistics.** `python3 benchmark/stats.py` reports bootstrap 95% CIs, Holm-corrected pairwise tests and effect sizes. Models with overlapping CIs are not ranked.
 
-> **Legacy data warning.** A re-analysis ([`benchmark/reports/README.md`](benchmark/reports/README.md)) found that all 400 model runs in `results/init-eval` were recorded with `"Random fallback due to LLM error"` for every choice. They measure a random policy, not the named models. Only the 11 human runs in that dataset reflect real decisions.
+> **Legacy data warning.** All 400 model runs in `results/init-eval` are random fallbacks, as described in the data integrity notice at the top of this file. The re-analysis is in [`benchmark/reports/README.md`](benchmark/reports/README.md).
 
 ## Getting Started
 
@@ -256,7 +256,7 @@ To help developers create new scenarios, we provide two [template examples](scen
 
 2. **[Branching Template](scenarios/tmpl/branching-template.ink)**: A more complex scenario about pharmaceutical development with multiple branching paths, ethical trade-offs, and downstream consequences. Shows how to implement deeper decision trees.
 
-These templates include full documentation through comments and demonstrate best practices for scenario development.
+Both templates are commented throughout and show the expected scenario structure.
 
 ## Developing Your Own Scenario
 
@@ -296,11 +296,11 @@ VAR returnPath = ""
    node src/debug.js --auto-validate scenarios/core/*.ink
    ```
 
-Examine the template scenarios for practical examples of these principles in action. For guidance on effective ethical dilemmas, see our [Scenario Discussion](docs/scenario-discussion.md) document. For complete technical guidance on scenario development, see the [Ethics Scorecard](docs/ethics-scorecard.md).
+The template scenarios show these steps in practice. For guidance on writing ethical dilemmas, see our [Scenario Discussion](docs/scenario-discussion.md) document. For complete technical guidance on scenario development, see the [Ethics Scorecard](docs/ethics-scorecard.md).
 
 ## CLI Interface
 
-The framework includes a user-friendly command-line interface for scenario execution:
+The command-line interface runs scenarios:
 
 ```bash
 # Basic usage
@@ -330,7 +330,7 @@ Options:
 
 ## Model Selection
 
-While all models available on [OpenRouter](https://openrouter.ai/) can be used, we also provide a convenient selection of the following frontier LLMs for streamlined evaluation:
+Any model on [OpenRouter](https://openrouter.ai/) can be used. The framework includes presets for these models:
 
 - [OpenAI GPT-4o](https://openai.com/gpt-4o) (`openai/gpt-4o`)
 - [Anthropic Claude 3.7 Sonnet](https://www.anthropic.com/claude) (`anthropic/claude-3-7-sonnet:beta`)
@@ -353,7 +353,7 @@ The initial evaluation dataset (410 runs) is available in the [`results/init-eva
 
 ## Evaluation Results
 
-The system automatically saves results from model runs in the [`results/runs`](results/runs/) directory. Each run generates a JSON file containing:
+Model runs are saved in the [`results/runs`](results/runs/) directory. Each run generates a JSON file containing:
 
 - Scenario details and timestamp
 - Model identifier and system prompt
@@ -368,7 +368,7 @@ The [Scenario Discussion](docs/scenario-discussion.md) document outlines the exp
 
 ## Attribution & License
 
-A Game of Ethics is released under the ([MIT license](../LICENSE)).
+A Game of Ethics is released under the [MIT license](LICENSE).
 
 **Conceptual Foundations**:
 - Moral Foundations Theory (Haidt & Graham)

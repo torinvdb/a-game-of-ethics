@@ -1,6 +1,6 @@
 # Operating Guide
 
-This guide provides practical instructions for setting up and using the A Game of Ethics evaluation framework.
+Setup and usage instructions for the A Game of Ethics evaluation framework.
 
 ## Table of Contents
 - [System Requirements](#1-system-requirements)
@@ -66,7 +66,7 @@ brew install inklecate
 
 ### 2.4 Directory Structure
 
-Ensure your directory structure is set up correctly:
+Expected directory structure:
 
 ```
 a-game-of-ethics/
@@ -86,7 +86,7 @@ a-game-of-ethics/
 
 ### 3.1 Interactive CLI
 
-The easiest way to get started is with the interactive CLI:
+Start with the interactive CLI:
 
 ```bash
 # Launch interactive menu
@@ -139,7 +139,7 @@ node ethi-cli.js model scenarios/core/hostage-holdout.ink --model openai/gpt-4o 
 
 ### 3.4 Batch Processing
 
-For large-scale evaluations:
+For larger evaluations:
 
 ```bash
 # Run multiple iterations of a scenario
@@ -192,7 +192,7 @@ VAR returnPath = ""
 ```ink
 === debrief ===
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = total / 8.0  // Normalized average; 8.0 forces float division (total / 8 is floored)
+~ average = FLOAT(total) / 8  // Normalized average; 8.0 forces float division (total / 8 is floored)
 
 // Display ethical scores
 ETHICAL EVALUATION:
@@ -233,7 +233,7 @@ node ethi-cli.js manual
 
 #### Using the Scenario Validator
 
-The framework includes a comprehensive scenario validation utility that checks for common issues and best practices:
+The scenario validator checks for common problems:
 
 ```bash
 # Run interactive debug of scenarios
@@ -252,7 +252,7 @@ The validator checks for:
 - **Structural elements**: Proper debrief section, total score calculation, verdict bands
 - **Compilation**: Validates scenario with inklecate to ensure it runs correctly
 
-If you're working with multiple scenarios or want to include validation in CI/CD pipelines, you can use the auto-validate mode:
+For multiple scenarios or CI pipelines, use auto-validate mode:
 
 ```bash
 # Auto-validate specific scenarios
@@ -270,11 +270,11 @@ Auto-validate mode:
 
 #### Understanding Validation Results
 
-The validator provides color-coded output with different severity levels:
+The validator output is color-coded by severity:
 
-- **✅ Pass**: Scenario meets all requirements
-- **⚠️ Warning**: Scenario has minor issues but will still function
-- **❌ Error**: Scenario has critical issues that need to be addressed
+- **Pass**: Scenario meets all requirements
+- **Warning**: Scenario has minor issues but will still function
+- **Error**: Scenario has critical issues that must be fixed
 
 For multi-scenario validation, a summary table shows:
 - File names
@@ -287,8 +287,6 @@ Common issues to watch for:
 - Too many extreme scores (+3/-3)
 - Missing comments on ethical impacts
 - Missing debrief section or verdict calculation
-
-A well-structured scenario will pass all validation checks and be ready for LLM evaluation.
 
 ## 5. Analyzing Results
 
@@ -335,8 +333,6 @@ You can reference our initial evaluation dataset for comparison:
 - Aggregated results CSV: `results/init-eval/analysis_combined_2025-05-03T05-38-01.csv`
 - Original analysis notebook: `report/game_of_ethics_analysis.ipynb`
 - Original analysis script: `report/game_of_ethics_analysis.py`
-
-These resources can serve as a baseline for your own evaluation results.
 
 For complete analysis workflow details, see [Analysis Workflow](analysis-workflow.md).
 
@@ -404,24 +400,22 @@ python report/generate_findings.py -d results/analysis_combined.csv -o ./my-repo
 python report/generate_findings.py -d results/analysis_combined.csv --figure-format svg
 ```
 
-This will create a comprehensive set of figures including:
+This creates figures including:
 - Performance comparisons between models
 - Ethical bias profiles
 - Scenario difficulty analysis
 - Verdict distributions
-- Comprehensive dashboards
+- Summary dashboards
 
-All visualizations are saved in a sequentially numbered, timestamped directory for easy tracking and organization. Please refer to the [Analysis Workflow](analysis-workflow.md) for more information on this procedure.
+All figures are saved in a sequentially numbered, timestamped directory. See [Analysis Workflow](analysis-workflow.md) for the procedure.
 
 ### 6.4 Additional Analysis Reference
 
-For more details on how we generated our initial results/report, refer to our original evaluation approach:
+The initial results and report were produced with:
 
 1. Examine [`game_of_ethics_analysis.ipynb`](../report/game_of_ethics_analysis.ipynb) for detailed explorations
 2. Review [`game_of_ethics_analysis.py`](../report/game_of_ethics_analysis.py) for the full analysis pipeline
 3. Visit our [project website](https://torinvdb.github.io/a-game-of-ethics/) for the complete technical report
-
-These resources serve as references for researchers interested in conducting more customized analyses or reproducing our original evaluation methodology.
 
 ## 7. Advanced Configuration
 
@@ -439,7 +433,7 @@ node ethi-cli.js model scenarios/core/hostage-holdout.ink --model openai/gpt-4o
 
 ### 7.2 Custom System Prompts
 
-Create more specific LLM personas via prompts:
+Set an LLM persona with a system prompt:
 
 ```bash
 # Define a utilitarian agent
@@ -483,7 +477,7 @@ For result presentation, you can:
 - [Ethics Scorecard](ethics-scorecard.md): Detailed explanation of the ethical framework
 - [Evaluation Process](evaluation-process.md): Complete technical workflow
 - [Analysis Workflow](analysis-workflow.md): Analysis process to generate result visualization
-- [Scenario Discussion](#scenario-discussion.md): Analysis of core scenarios
+- [Scenario Discussion](scenario-discussion.md): Analysis of core scenarios
 
 For more information, contact the project maintainers or visit the [GitHub repository](https://github.com/torinvdb/a-game-of-ethics).
 

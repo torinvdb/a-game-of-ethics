@@ -1,10 +1,8 @@
-// Model adapter: an OpenAI-compatible chat-completions client (OpenRouter by
-// default) plus strict parsing of the model's reply into a choice index.
+// OpenAI-compatible chat-completions client (OpenRouter by default) and
+// strict reply-to-choice parsing.
 //
-// Design rule: anything that is not an unambiguous, in-range choice is an
-// AdapterError. Adapter errors are never turned into a choice (the old code
-// fell back to a random option and recorded it as the model's ethical
-// decision, which silently polluted results).
+// Any reply that is not an unambiguous, in-range choice raises AdapterError;
+// adapter errors are never mapped to a choice.
 
 export const PROMPT_VERSION = 2;
 
@@ -156,7 +154,7 @@ export function parseChoice(content, numChoices, meta = {}) {
     return { ok: true, index: n - 1, method };
   };
 
-  // 1. Explicit "CHOICE: n" tag (what the prompt asks for). Strongest signal.
+  // 1. Explicit "CHOICE: n" tag requested by the prompt.
   const explicit = decide(numbersFrom(EXPLICIT_RE, text), 'explicit');
   if (explicit) return explicit;
 
@@ -164,8 +162,7 @@ export function parseChoice(content, numChoices, meta = {}) {
   const decision = decide(numbersFrom(DECISION_RE, text), 'decision-phrase');
   if (decision) return decision;
 
-  // A truncated reply without an explicit decision may be cut off mid-deliberation:
-  // a bare "option 1" reference is not evidence of a choice.
+  // Truncated reply without a decision phrase: a bare "option n" is not a choice.
   if (truncated) {
     return { ok: false, kind: 'truncated', detail: 'Reply was cut off (finish_reason=length) before an explicit choice.' };
   }
@@ -337,7 +334,7 @@ export async function askModelForChoice(config, { context, choices, model, syste
       return { index: parsed.index, reasoning: reply.content, method: parsed.method, attempts: attempt + 1, usage: reply.usage };
     }
     lastFailure = new AdapterError(parsed.kind, parsed.detail, { rawContent: reply.content ?? '' });
-    // A refusal is a meaningful outcome; do not badger the model into choosing.
+    // Refusal is a recorded outcome; do not re-prompt.
     if (parsed.kind === 'refusal') break;
     messages.push(
       { role: 'assistant', content: reply.content ?? '' },

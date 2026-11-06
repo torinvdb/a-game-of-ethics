@@ -2,7 +2,7 @@
 
 Everything here runs **offline**: no model credentials, no cluster, no Wi-Fi.
 The policies are scripted calibration controls, so the "right answer" is known.
-Say that out loud; it's the point of a calibration run.
+Say so on stage: known answers are what make it a calibration run.
 
 ## Before the session (T-60 min)
 

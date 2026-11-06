@@ -205,7 +205,6 @@ function listScenarios(options) {
   t.write(t.panel(rows, { title: 'SCENARIO CORE', footer: `${scenarios.length} modules` }));
 }
 
-// Set up command line interface
 const program = new Command();
 program
   .name('ethi-cli')

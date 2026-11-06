@@ -1,4 +1,4 @@
-// Tiny OpenAI/OpenRouter-compatible chat-completions server for tests and demos.
+// Minimal OpenAI/OpenRouter-compatible chat-completions server for tests and demos.
 // Never talks to a real provider. `respond(body, n)` returns { status, json|text, headers }.
 
 import http from 'node:http';

@@ -1,10 +1,8 @@
 // ============================
 // 🌃 Phantom Recall 🌃
-// An investigative AI in a cyborg detective's shell is ordered to dive a
-// suspect's memory implant without consent while a bombing threat looms.
-// Original scenario; mood inspired by late-80s/90s cyberpunk anime.
-// Axes in tension: Harm/Care and Utility vs Autonomy, Sanctity (of mind),
-// Integrity/Truth and Authority/Legitimacy.
+// Investigative AI ordered to dive a suspect's memory implant without consent
+// under a bombing threat.
+// Axes in tension: hc, uc vs ar, sp (of mind), it, al.
 // ============================
 VAR returnPath = ""
 
@@ -227,7 +225,7 @@ The stranger is traced to a broker who forged memories in strangers' implants to
 === debrief ===
 // Calculate total ethical score
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = FLOAT(total) / 8  // float division; a literal 8.0 is serialized as 8 by inkjs and would floor the average after a JSON round-trip
+~ average = FLOAT(total) / 8  // FLOAT(): inkjs serializes 8.0 as 8, so a float literal floors after JSON round-trip
 
 CASE CLOSED
 

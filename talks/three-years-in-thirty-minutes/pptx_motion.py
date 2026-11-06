@@ -1,19 +1,15 @@
-"""Native PowerPoint animation timelines (PresentationML p:timing).
+"""PresentationML timing (p:timing) for native PowerPoint animations.
 
-Steps are lists of effects. The first step can start automatically when the slide
-appears (title wipe, chrome flicker); every following step is one presenter click.
-Supported effects:
+A slide's steps are lists of effects. The first step may start on slide entry;
+each later step is one click.
 
-  fade     set visibility + fade filter                      (preset Entrance/Fade)
-  wipe     set visibility + wipe(left) filter                 (preset Entrance/Wipe)
-  flicker  a neon power-on: visibility toggles at 0/70/140/200/320 ms, then a fade-in
-           of the steady state (custom Entrance built on Appear)
-  path     a small light that appears and then travels along a relative motion
-           path, repeating indefinitely (custom Motion Path)
+  fade     visibility set + fade filter (Entrance/Fade, preset 10)
+  wipe     visibility set + wipe(left) (Entrance/Wipe, preset 22)
+  flicker  visibility toggles at 0/70/140/200/320 ms, then fade (custom, on Appear)
+  path     relative motion path, repeatCount=indefinite (custom Motion Path)
 
-Everything stays editable in PowerPoint's Animation Pane. XML validity is checked
-by python-pptx round-trip and LibreOffice import; Microsoft PowerPoint playback
-must still be rehearsed on the presenting machine.
+Validated by python-pptx round trip and LibreOffice import. Microsoft PowerPoint
+playback is untested.
 """
 from lxml import etree
 from pptx.oxml.ns import qn

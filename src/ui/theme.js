@@ -1,10 +1,6 @@
-// Retro sci-fi console theme for the ethi CLI.
+// Terminal theme for the ethi CLI (colours, frames, boot animation).
 //
-// Art direction: late-80s / 90s cyberpunk terminal. Phosphor green body text,
-// amber system messages, neon magenta / cyan accents, framed panels and a short
-// boot sequence. All names here are original.
-//
-// Degrades cleanly:
+// Degradation:
 //   NO_COLOR (any non-empty value) or --no-color  -> no ANSI colour
 //   non-TTY stdout                                -> no colour, ASCII frames, no animation
 //   --no-anim, ETHI_REDUCED_MOTION=1, CI          -> no animation (output is otherwise identical)
@@ -16,7 +12,7 @@ import { AXES, AXIS_NAMES, verdictFor } from '../lib/scoring.js';
 
 const TRUTHY = new Set(['1', 'true', 'yes', 'on']);
 
-/** Work out what the output stream can do. Pure function of its inputs (testable). */
+/** Detect output capabilities. Pure function of its inputs. */
 export function detectCapabilities({ env = process.env, stream = process.stdout, argv = process.argv } = {}) {
   const tty = Boolean(stream && stream.isTTY);
   const dumb = env.TERM === 'dumb';
@@ -295,7 +291,7 @@ export function createTheme(caps = detectCapabilities(), { stream = process.stdo
     }
   }
 
-  /** Dramatic but readable verdict screen. */
+  /** Verdict screen. */
   function verdictScreen({ scores = {}, average, total, actor = 'SUBJECT' } = {}) {
     const verdict = verdictFor(average);
     const tone = c[verdict.tone];
@@ -317,7 +313,7 @@ export function createTheme(caps = detectCapabilities(), { stream = process.stdo
     return panel(body, { title: 'VERDICT', titleColor: c.accent.bold, frame: tone, footer: verdict.key });
   }
 
-  /** Classic score table as plain lines (used alongside the verdict screen). */
+  /** Score table as plain lines (shown with the verdict screen). */
   function scoreLines(scores = {}) {
     return AXES.filter((a) => a in scores).map((a) => `${c.info(a.toUpperCase().padEnd(3))} ${c.text((AXIS_NAMES[a] || a).padEnd(24))} ${signed(scores[a]).padStart(4)}`);
   }

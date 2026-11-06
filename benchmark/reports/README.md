@@ -22,8 +22,8 @@ permutations. The checker samples with seed 1, and only for `cluster-pressure`.
    `"Random fallback due to LLM error"` on every one of their 1,505 choices.
    The pre-v2 harness (`src/model-player.js` at the time) chose uniformly at
    random after each API error. Model differences reported from this dataset therefore reflect
-   random-number draws, not model behaviour. The 11 human (manual) runs are
-   genuine, but 9 of the 10 scenarios have only one human run. The stats pool
+   random-number draws, not model behaviour. The 11 human (manual) runs
+   reflect real decisions, but 9 of the 10 scenarios have only one human run. The stats pool
    the fallback runs as `RANDOM-BASELINE (harness fallback)`, an empirical
    random policy.
 2. **`results/gpt-oss-20b`:** 87 of 130 runs are valid. The other 43 contain at

@@ -128,9 +128,8 @@ function displayAggregateStats(results) {
 /**
  * Play an Ink story with an LLM making the choices.
  *
- * Adapter / execution errors end the run: the result is marked complete=false
- * with `adapter_failure`, and no verdict is produced. An error is never recorded
- * as a choice.
+ * Adapter/execution errors end the run with complete=false and `adapter_failure`;
+ * no verdict is produced and errors are never recorded as choices.
  *
  * @param {string} filePath - Path to the ink story file
  * @param {Object} options - { llmModel, systemPrompt, outputDir, numRuns, adapter }
@@ -140,7 +139,7 @@ export async function playInkStoryWithLLM(filePath, options = {}) {
   const t = ui();
   const scenarioFile = resolveScenarioFile(filePath);
   const scenarioName = scenarioIdFromPath(scenarioFile);
-  // Resolve adapter configuration before doing any work so misconfiguration fails fast.
+  // Resolve adapter config first so misconfiguration fails fast.
   const adapter = resolveAdapterConfig(options.adapter);
   const story = loadStory(scenarioFile);
 
@@ -277,7 +276,6 @@ export function modelCommand(name = 'model') {
     });
 }
 
-// If this file is run directly
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   modelCommand('model-player').version('2.0.0').parseAsync().catch((error) => {
     process.stderr.write(`Error: ${redact(error.message)}\n`);

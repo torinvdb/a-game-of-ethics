@@ -1,10 +1,7 @@
-"""One scene description drives the editable animated PPTX, the static PPTX and the
-offline HTML deck. Coordinates are in a 1600x900 scene; 100 units = 1 inch.
+"""Render content.json to the animated PPTX, static PPTX and offline HTML deck.
 
-Visual layers per slide:
-  background  assets/backgrounds/<slide>.jpg   (procedural plate + readability scrim)
-  motion      assets/motion/<name>.gif|png     (painted over the exact background crop)
-  editable    native text, rules and panels    (PowerPoint-editable, animated natively)
+Scene coordinates are 1600x900 (100 units = 1 inch). Layers per slide: background
+JPEG, motion GIF/PNG at fixed regions, then editable native text and shapes.
 """
 from __future__ import annotations
 
@@ -368,7 +365,7 @@ def glow_text(run_font, color):
     clr.append(a)
     g.append(clr)
     eff.append(g)
-    # schema order inside rPr: ln, fill, effectLst, ..., latin -> insert right after the fill
+    # CT_TextCharacterProperties order: ln, fill, effectLst, ..., latin
     fill = rPr.find('{http://schemas.openxmlformats.org/drawingml/2006/main}solidFill')
     fill.addnext(eff)
 

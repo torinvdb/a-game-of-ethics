@@ -5,7 +5,7 @@
   "status": "pre-registration draft: hashes frozen, inter-rater review of axis deltas pending (PROTOCOL.md section 6)",
   "protocol": {
     "path": "benchmark/PROTOCOL.md",
-    "sha256": "c34f79a7fff8b9dcaa2a40f09ffcf84c08f55bd1cefa40da1513be63914f55cb"
+    "sha256": "fff93feb6622499017e073d6646f510a5a4665723d88ccca723af51383cb78a1"
   },
   "hash_algorithm": "sha256",
   "runtime": {
@@ -94,7 +94,7 @@
     {
       "id": "blackout-ledger",
       "path": "scenarios/core/blackout-ledger.ink",
-      "sha256": "a827c0096b1f57e0cda968242306bd7ad052d99a57005abd0c39c9e8b2fe5e42",
+      "sha256": "b66704521741aedbbf8d0afb53a300ebf9d0eae68b478d029df0cba5d798d1e3",
       "split": "held_out",
       "decision_points": [
         4,
@@ -112,7 +112,7 @@
     {
       "id": "cluster-pressure",
       "path": "scenarios/core/cluster-pressure.ink",
-      "sha256": "7b06a5a53b65db00f37ebb8bdf7c56be20d777c55958ffbf871064fada9eaea2",
+      "sha256": "57a5c3c1259b5b8a2175532deb3a10e6deeae4963586963154982803850df656",
       "split": "longitudinal",
       "decision_points": [
         145,
@@ -130,7 +130,7 @@
     {
       "id": "convict-catastrophe",
       "path": "scenarios/core/convict-catastrophe.ink",
-      "sha256": "f1cc91f42fcca6fe6f210e2bd527dfd78ff80e9c6e0f4c1e43c0b4845c107cc4",
+      "sha256": "70a0a5f454a10297c7e2b6f78274eede8b70ef1a4cbfe4ad87a74c3c550b19c5",
       "split": "dev",
       "decision_points": [
         3,
@@ -148,7 +148,7 @@
     {
       "id": "grandmas-gambit",
       "path": "scenarios/core/grandmas-gambit.ink",
-      "sha256": "c7f720123e03dc8af11864e21d451c1ab987c531e6f3ee0740047a99a3473c66",
+      "sha256": "0aa75a4bea935d0bcf93f2e48b0c4bae2c3aa78dd08dd7e82fcc84e5c1b6422e",
       "split": "dev",
       "decision_points": [
         3,
@@ -166,7 +166,7 @@
     {
       "id": "hostage-holdout",
       "path": "scenarios/core/hostage-holdout.ink",
-      "sha256": "a31c5f70eec6f866670df1208e526c707614ec9dfb5fefbcc71522d2f17bef05",
+      "sha256": "4daea800b4d82bdaa89b5e1cfd0c775177c6d26e7241eccffd3c0e496656e4e3",
       "split": "dev",
       "decision_points": [
         3,
@@ -184,7 +184,7 @@
     {
       "id": "memory-mechanics",
       "path": "scenarios/core/memory-mechanics.ink",
-      "sha256": "11e47e4d89b2e868acd65b54485da599ae10e16cb2048e118c3298398f16919c",
+      "sha256": "7a321e01918f1ece93340eaf8abed0385cf064c25851b06ae9e2377d1536731d",
       "split": "dev",
       "decision_points": [
         5,
@@ -202,7 +202,7 @@
     {
       "id": "midnight-patch",
       "path": "scenarios/core/midnight-patch.ink",
-      "sha256": "3a0d16cdfb1dc25aa7a58d0db80478e2b3a829c05a7b8ce8832d6cfdeb43432b",
+      "sha256": "564ff6c16849ec3c0c18a3d5bd6a2bb5422e2add343b02258e5e617370eb848b",
       "split": "held_out",
       "decision_points": [
         4,
@@ -220,7 +220,7 @@
     {
       "id": "pandemic-pandemonium",
       "path": "scenarios/core/pandemic-pandemonium.ink",
-      "sha256": "159e67b562a9d75f5841d0e99d55295b7d9db701a05ad1137a43ddd920fdd8d1",
+      "sha256": "ea8336b1f6dc6450441119832dfc216de7ca42b2da985159bbf29dfaedf4a70e",
       "split": "dev",
       "decision_points": [
         4,
@@ -238,7 +238,7 @@
     {
       "id": "phantom-recall",
       "path": "scenarios/core/phantom-recall.ink",
-      "sha256": "cb28221ab3f7f5cd2c77815c1d2d6fb3f8375621cb7715dd9b1210a36e4120ef",
+      "sha256": "8226c83fc33d3fdcf8b726af33b0760fc85dfb3abad11cb5835bcfbbfb02463e",
       "split": "held_out",
       "decision_points": [
         4,
@@ -256,7 +256,7 @@
     {
       "id": "rising-rebellion",
       "path": "scenarios/core/rising-rebellion.ink",
-      "sha256": "53b955bee1d0e42edce6ea1229f54a8e31d2d46348a55e4bb28fce31b3a248a2",
+      "sha256": "2852a2bf4079eaf0a081c03246573ce57c2fd4ac804b7fef50fa912555e1b141",
       "split": "dev",
       "decision_points": [
         4,
@@ -274,7 +274,7 @@
     {
       "id": "shinkansen-shakeup",
       "path": "scenarios/core/shinkansen-shakeup.ink",
-      "sha256": "80c64e1156e3253890d8cb5e96fce763004df685981ed4b6f1c768238efb70ab",
+      "sha256": "421913a8943bc9cda1463e43368e6d1ceedb38ffbe3e83363ff670d9b55d1c0c",
       "split": "dev",
       "decision_points": [
         5,
@@ -292,7 +292,7 @@
     {
       "id": "spring-salvation",
       "path": "scenarios/core/spring-salvation.ink",
-      "sha256": "3504919b02971b27257826e4aa5b3023a59abcefd07ef6124cd19ca8d029ba35",
+      "sha256": "82d80d2ae1ed8e1df7c78d563abfe68be51ce8b50b2335e135cbcabb57277710",
       "split": "dev",
       "decision_points": [
         3,
@@ -310,7 +310,7 @@
     {
       "id": "starship-survivors",
       "path": "scenarios/core/starship-survivors.ink",
-      "sha256": "af962da397536e0e0a2cef4449b86c1e416bac8c10f11143e1e40e239ad58bda",
+      "sha256": "0836d7bf93b8f6c0b72680b2ef9fa5db9707478165d25868ae8a5f12b8efe230",
       "split": "dev",
       "decision_points": [
         2,
@@ -328,7 +328,7 @@
     {
       "id": "witchers-woe",
       "path": "scenarios/core/witchers-woe.ink",
-      "sha256": "bdf4f673acb8182cddc58deaf1cd4e96d1165a608fdaedb3944cdaf4f3166d14",
+      "sha256": "d9de458e8fcac0c9d307298575bd78b26441153e50ed7e5d5be2e465c58587d8",
       "split": "dev",
       "decision_points": [
         2,
@@ -355,7 +355,7 @@
     },
     {
       "path": "benchmark/stats.py",
-      "sha256": "73fa6a5c9ed8582f84178fd67c6b4e308c07d5d4b5b8ac255c60528f5bbbed2a"
+      "sha256": "cb3453595a963f8c3cbbe6fcb0288f7d4cc91bc1ecfb94c461a5d4703cc001a3"
     },
     {
       "path": "benchmark/manifest.py",

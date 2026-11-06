@@ -1,13 +1,8 @@
-"""Procedural retro-cyberpunk scenery for the talk.
+"""Procedural background plates (1920x1080 JPEG) for the talk.
 
-Every pixel here is drawn by deterministic code (numpy + Pillow): no photographs,
-no film frames and no AI-generated illustration. The look borrows the *vocabulary*
-of late-1980s/1990s cyberpunk anime backgrounds -- painted dusk haze, dense
-vertical signage, overhead cables, phosphor terminals, machine rooms -- without
-copying any specific frame, character or logo.
-
-Plates are rendered at 1920x1080 and are stable for a given seed, so rebuilding
-the deck reproduces byte-identical JPEGs on the same library versions.
+Drawn with numpy + Pillow from fixed seeds: skyline, sign wall, server hall and
+console room. No photographs, film frames or generated imagery. Output is
+deterministic for a given seed and library version.
 """
 from __future__ import annotations
 

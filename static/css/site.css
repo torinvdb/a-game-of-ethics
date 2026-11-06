@@ -1,5 +1,4 @@
-/* A Game of Ethics v2 · "evaluation terminal" theme
-   Original procedural design: no external frameworks or image assets. */
+/* A Game of Ethics v2 site theme. No external frameworks or image assets. */
 
 :root {
   --bg: #07060d;
@@ -183,7 +182,7 @@ sup { line-height: 0; }
     0 0 48px rgba(255,51,71,.6);
 }
 .neon--big { font-size: clamp(3rem, 14vw, 8.6rem); letter-spacing: .02em; }
-/* restrained glitch: two offset slices, briefly, every ~9s */
+/* glitch: two offset slices, briefly, every ~9s */
 .neon::before, .neon::after {
   content: attr(data-text); position: absolute; inset: 0; pointer-events: none; opacity: 0;
   text-shadow: none;

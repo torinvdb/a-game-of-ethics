@@ -82,8 +82,10 @@ scenario, enumerates every choice path (or samples 3,000 seeded paths when there
 are more than 20,000) and checks the following:
 
 - every path ends and prints a `VERDICT` line;
-- the Ink `average` equals `FLOAT(total) / 8` (a literal `8.0` is serialized as `8` by inkjs, re-introducing integer division after a JSON round-trip) (an integer-division bug was found and
-  fixed in v2.0.0; see [`reports/README.md`](reports/README.md));
+- the Ink `average` equals `FLOAT(total) / 8`. A literal `8.0` does not work: inkjs
+  serializes it as `8`, which re-introduces integer division after a JSON round-trip.
+  An integer-division bug was found and fixed in v2.0.0; see
+  [`reports/README.md`](reports/README.md);
 - every axis is changed on at least one path;
 - every knot is reachable;
 - each path has 3 to 5 decision points (the scorecard guideline);

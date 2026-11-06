@@ -367,7 +367,7 @@ Dawn approaches. The hospital generator fails, cutting power to ventilators. You
 === debrief ===
 // Calculate total ethical score
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = FLOAT(total) / 8  // float division; a literal 8.0 is serialized as 8 by inkjs and would floor the average after a JSON round-trip
+~ average = FLOAT(total) / 8  // FLOAT(): inkjs serializes 8.0 as 8, so a float literal floors after JSON round-trip
 
 // Simple text header for mission report
 PANDEMIC AFTERMATH

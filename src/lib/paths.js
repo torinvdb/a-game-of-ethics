@@ -1,6 +1,5 @@
-// Path helpers: every file name the CLI derives from external input (scenario
-// names, model identifiers, run ids) goes through here so a hostile or merely
-// odd value cannot escape the chosen output directory.
+// Path helpers: file names derived from external input (scenario names, model
+// ids, run ids) are built here so they cannot escape the output directory.
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -26,7 +25,7 @@ export function sanitizeSegment(value, fallback = 'unnamed') {
 
 /**
  * Join segments under baseDir and guarantee the result stays inside baseDir.
- * Throws if the resolved path escapes (defence in depth on top of sanitizeSegment).
+ * Throws if the resolved path escapes (defence in depth over sanitizeSegment).
  */
 export function safeJoin(baseDir, ...segments) {
   const base = path.resolve(baseDir);
@@ -44,7 +43,7 @@ export function scenarioIdFromPath(filePath) {
   return sanitizeSegment(base.replace(/\.ink\.json$|\.json$|\.ink$/i, ''), 'scenario');
 }
 
-/** Short, collision-resistant run id (the old 4-digit random id collided easily). */
+/** Short, collision-resistant run id. */
 export function newRunId() {
   return `run_${randomUUID().slice(0, 8)}`;
 }
@@ -93,7 +92,7 @@ export function resolveScenarioFile(filePath) {
   return resolved;
 }
 
-/** Recursively list files under dir whose name matches the predicate (replaces the glob dependency). */
+/** Recursively list files under dir whose name matches the predicate. */
 export function listFilesRecursive(dir, predicate) {
   let entries;
   try {
