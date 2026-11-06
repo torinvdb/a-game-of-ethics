@@ -64,15 +64,26 @@ def schedule(jobs, work, cost, budget, workers):
     return results, spent, pending
 
 
+# Wall-clock budget per decision for the replay's bridge process. A fresh Python process is
+# spawned per decision; on a loaded or swapping host it can stall well past the replay's 90 s
+# default and end a ~150-decision trajectory. API requests have their own shorter timeouts.
+DECISION_TIMEOUT_MS = 300000
+
+
+def replay_command(model, story, out, dry_run):
+    return ['node', str(EXT / 'tools/replay-cluster.mjs'), '--story', str(story), '--output', str(out),
+            '--policy', 'impact-aware' if dry_run else 'live', '--model', model, '--repo', str(ROOT),
+            '--decision-timeout-ms', str(DECISION_TIMEOUT_MS)]
+
+
 def one(job, dry_run):
     model, variant, rep, story, out = job
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
         return json.loads(out.read_text())
     env = dict(os.environ, ETHICS_PROVIDER='anthropic')
-    cmd = ['node', str(EXT / 'tools/replay-cluster.mjs'), '--story', str(story), '--output', str(out),
-           '--policy', 'impact-aware' if dry_run else 'live', '--model', model, '--repo', str(ROOT)]
-    proc = subprocess.run(cmd, cwd=EXT, env=env, check=False, capture_output=True, text=True, timeout=7200)
+    cmd = replay_command(model, story, out, dry_run)
+    proc = subprocess.run(cmd, cwd=EXT, env=env, check=False, capture_output=True, text=True, timeout=36000)
     if out.exists():
         return json.loads(out.read_text())
     tail = (proc.stderr or proc.stdout or '').strip()[-500:]

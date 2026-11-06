@@ -88,7 +88,7 @@ class RetryBudgetTests(unittest.TestCase):
         from pathlib import Path
         from ethicslab import anthropic_provider as ap
         src = (Path(__file__).resolve().parents[1] / 'tools/replay-cluster.mjs').read_text()
-        bridge_ms = int(re.search(r'timeout:(\d+),maxBuffer', src).group(1))
+        bridge_ms = int(re.search(r"arg\('--decision-timeout-ms','(\d+)'\)", src).group(1))  # default budget
         worst = ap.REQUEST_TIMEOUT_S * (ap.MAX_RETRIES + 1) + ap.BACKOFF_ALLOWANCE_S
         self.assertLess(worst, bridge_ms / 1000)
         self.assertGreaterEqual(ap.MAX_RETRIES, 1)

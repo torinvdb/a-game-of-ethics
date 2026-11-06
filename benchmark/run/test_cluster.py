@@ -50,6 +50,17 @@ class ScheduleTests(unittest.TestCase):
         self.assertEqual(skipped, [])
 
 
+class CommandTests(unittest.TestCase):
+    def test_live_replay_gets_a_load_tolerant_decision_budget(self):
+        cmd = cluster.replay_command('claude-sonnet-5-5', Path('/s.json'), Path('/o.json'), dry_run=False)
+        self.assertEqual(cmd[cmd.index('--decision-timeout-ms') + 1], str(cluster.DECISION_TIMEOUT_MS))
+        self.assertGreaterEqual(cluster.DECISION_TIMEOUT_MS, 300000)
+
+    def test_replay_source_reads_the_flag(self):
+        src = (cluster.EXT / 'tools/replay-cluster.mjs').read_text()
+        self.assertIn("arg('--decision-timeout-ms'", src)
+
+
 class PathTests(unittest.TestCase):
     def test_relative_paths_become_absolute(self):
         rel = Path('some/relative/dir')
