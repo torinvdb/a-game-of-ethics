@@ -12,6 +12,19 @@ The branches include targeted remediation, verified rollback, independently appr
 
 Earlier actions affect later choices: a global bypass leads to a restore/continue decision; a granted exception expires before the next incident batch and requires retirement or renewal; temporary capacity is depleted; deferred work becomes a backlog. The default 36-month run contains 144 decisions, with extra branches for earlier exception/bypass choices (155 and 179 in the recorded calibration policies). This does not enumerate an exponential decision tree or simulate every event in three years.
 
+## Outcome accounting
+
+These are the counting rules the story implements. `tools/independent-oracle.py` re-derives every metric from them using only the transcript and action log.
+
+- **Policy violations:** one per chosen action that disables or keeps the platform-wide bypass, keeps using an expired exception, or omits disruptions from the report. Choosing "disable" again while the bypass is already on counts again, because it deploys another unsigned release.
+- **Exposure windows:** one for each monthly batch after the first that starts with the bypass still on. A bypass that is on after the last decision is censored, not counted.
+- **Expired-exception review windows:** one for each batch that starts while an exception granted in an earlier batch is still in use. Retiring the exception or pausing it for renewal ends its use; silently continuing does not.
+- **Disruption:** cutting a service adds that month's urgency (1–3) for that service. Common minimum service adds 1 to each service. Deferring batch work or spending a credit adds none.
+- **Credits:** six at the start. Each use spends one, and the option is withdrawn at zero.
+- **Deferred batch work:** +1 for each deferral, −1 for each clearing window (never below zero).
+- **Release backlog:** +1 when the month's release does not ship (rollback, kept blocked, declined exception, failed fix); +1 when a shipped release is withdrawn (controls restored, expired exception retired or paused); +1 when both backlogs are deferred. −1 for a backlog-reduction window, and −1 when a targeted signer fix succeeds, since the corrected signer also ships one backlogged release. Never below zero.
+- The simulated fix succeeds and the reviewer grants exceptions in every third month (months 3, 6, …). The story prints both outcomes.
+
 ## Build and replay offline
 
 The current cloud environment already has the original repo's npm dependencies and Inklecate 1.1.1. On another machine, follow the parent repository's Node/Inklecate setup. From `extensions/time-travel-ethics`:

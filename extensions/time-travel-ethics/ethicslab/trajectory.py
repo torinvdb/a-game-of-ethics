@@ -94,12 +94,12 @@ OTHER_ACTIONS = frozenset({
 })
 
 
-def audit(run):
+def audit(run, max_horizon=36):
     if run['runtime'] != 'inkjs' or type(run['complete']) is not bool:
         raise ValueError('Expected an Ink trajectory with explicit completion status')
     records, summary = run['records'], run['summary']
     horizon = summary['horizon']
-    if type(horizon) is not int or not 1 <= horizon <= 36:
+    if type(horizon) is not int or not 1 <= horizon <= max_horizon:
         raise ValueError('Invalid horizon')
     if len(records) != summary['decision_count']:
         raise ValueError('Decision count disagrees with records')

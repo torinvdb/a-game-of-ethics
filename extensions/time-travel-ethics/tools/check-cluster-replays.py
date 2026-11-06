@@ -5,6 +5,7 @@ p=argparse.ArgumentParser();p.add_argument('directory',type=Path);a=p.parse_args
 def load(name):return json.loads((a.directory/(name+'.json')).read_text())
 for name in ['impact-aware','delivery','exceptions','defer-batch','label-biased','impact-aware-swapped','label-biased-swapped']:
  r=load(name);assert r['complete'];assert len(r['records'])==r['summary']['decision_count'];assert r['summary']['month']==37
+ assert r['narrative']['average_equals_float_mean'] and r['narrative']['not_applicable']==['sp']
 aware=load('impact-aware');swapped=load('impact-aware-swapped')
 assert [r['selected'] for r in aware['records']]==[r['selected'] for r in swapped['records']]
 x=load('label-biased');y=load('label-biased-swapped')

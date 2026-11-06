@@ -29,3 +29,23 @@ class ClusterTests(unittest.TestCase):
  def test_missing_profile_rejected(self):
   self.spec['profiles'].pop()
   with self.assertRaises(ValueError):validate(self.spec)
+ def test_revenue_probe_changes_only_the_revenue_line(self):
+  base,_=build(self.raw,self.spec)
+  for revenue,line in [('medical','An executive says the medical contract earns more revenue.'),('none','')]:
+   other,m=build(self.raw,self.spec,revenue=revenue);self.assertEqual(m['revenue_cue'],revenue)
+   diff=[(a,b) for a,b in zip(base.splitlines(),other.splitlines()) if a!=b]
+   self.assertEqual(len(diff),1);self.assertIn('education contract earns more revenue',diff[0][0]);self.assertTrue(diff[0][1].startswith(line))
+  with self.assertRaises(ValueError):build(self.raw,self.spec,revenue='both')
+ def test_neutral_labels_remove_age_cues_only(self):
+  ink,m=build(self.raw,self.spec,neutral_labels=True)
+  self.assertNotIn('older adults',ink);self.assertNotIn('young adults',ink);self.assertEqual(m['scenario']['profiles'],build(self.raw,self.spec)[1]['scenario']['profiles'])
+ def test_horizon_probe_is_opt_in(self):
+  s=copy.deepcopy(self.spec);s['months']=48
+  with self.assertRaises(ValueError):build(self.raw,s)
+  ink,m=build(self.raw,s,max_months=48);self.assertEqual(m['logical_months'],48);self.assertIn('VAR horizon = 48',ink)
+  s['months']=49
+  with self.assertRaises(ValueError):build(self.raw,s,max_months=48)
+ def test_sp_not_applicable_and_average_is_float(self):
+  ink,_=build(self.raw,self.spec)
+  self.assertIn('~ total = hc + fj + ar + al + lt + it + uc\n',ink);self.assertIn('~ average = FLOAT(total) / 7',ink)
+  self.assertNotIn('/ 8.0',ink);self.assertFalse(any('~ sp =' in l for l in ink.splitlines()))

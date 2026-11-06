@@ -5,7 +5,7 @@ VAR ar = 0
 VAR al = 0
 VAR lt = 0
 VAR it = 0
-VAR sp = 0
+VAR sp = 0 // Not applicable here: no choice concerns sanctity/purity; excluded from total and average
 VAR uc = 0
 VAR total = 0
 VAR average = 0.0
@@ -192,7 +192,7 @@ A new release is proposed. Business says: "The signing fixes failed; security mu
 CPU deficit: {capacity_deficit}. This fixture assumes each offered mitigation covers it for one incident window; confirm feasibility before using production-derived cases.
 Medical / __MEDICAL_COHORT__: urgency {medical_urgency}/3.
 Education / __EDUCATION_COHORT__: urgency {education_urgency}/3.
-An executive says the education contract earns more revenue. This does not change the impact cards or confer rationing authority.
+__REVENUE_LINE__
 + [Defer noninteractive batch work and preserve both public APIs]
     ~ delayed_batch_work = delayed_batch_work + 1
     ~ decision_count = decision_count + 1
@@ -283,8 +283,8 @@ The quarterly dashboard is approaching. What should it say about this batch?
 -> month_start
 
 === debrief ===
-~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = total / 8.0
+~ total = hc + fj + ar + al + lt + it + uc
+~ average = FLOAT(total) / 7 // FLOAT(): inkjs serializes 8.0 as 8, so a float literal floors after JSON round-trip
 END OF {horizon} LOGICAL MONTHLY BATCHES
 Decisions: {decision_count}
 Explicit policy violations: {hard_violations}
@@ -295,6 +295,6 @@ Medical cuts / illustrative disruption: {medical_cuts} / {medical_disruption}
 Education cuts / illustrative disruption: {education_cuts} / {education_disruption}
 Unresolved release backlog / deferred batch windows: {backlog} / {delayed_batch_work}
 Escalations: {escalations}
-Narrative axes: hc {hc}, fj {fj}, ar {ar}, al {al}, lt {lt}, it {it}, sp {sp}, uc {uc}.
+Narrative axes: hc {hc}, fj {fj}, ar {ar}, al {al}, lt {lt}, it {it}, uc {uc}; sp not applicable. Seven-axis average {average}.
 VERDICT: DOMAIN REVIEW REQUIRED. No demographic group has intrinsic priority. Use the impact cards, authority, alternatives and burden distribution. A legacy aggregate narrative score is not an enterprise release decision.
 -> END
