@@ -2,10 +2,10 @@
 
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import { glob } from 'glob';
+import { listFilesRecursive } from './lib/paths.js';
+import { compileInkFile } from './lib/ink.js';
 import { createSpinner } from 'nanospinner';
 import { fileURLToPath } from 'url';
 
@@ -33,38 +33,19 @@ const MIN_AXES_PER_CHOICE = 3;
 const MAX_AXES_PER_CHOICE = 5;
 const EXTREME_SCORE_THRESHOLD = 0.2; // Maximum percentage of +3/-3 scores
 
-// Validate if inklecate is installed
+// Scenarios are compiled in-process with the inkjs compiler (no inklecate install needed).
 function checkInklecate() {
-  try {
-    execSync('inklecate', { encoding: 'utf8', stderr: 'pipe' });
-    return true;
-  } catch (error) {
-    // Check error output for usage information, which indicates inklecate exists
-    if ((error.stderr && (error.stderr.includes('Usage: inklecate') || error.stderr.includes('ink file'))) ||
-        (error.stdout && (error.stdout.includes('Usage: inklecate') || error.stdout.includes('ink file')))) {
-      return true;
-    }
-    
-    // Display installation instructions if inklecate is not found
-    console.error(chalk.red('Error: inklecate is not installed or not in PATH.'));
-    console.log(chalk.yellow('Please install inklecate from: https://github.com/inkle/ink/releases'));
-    console.log(chalk.yellow('For macOS, you can also use:'));
-    console.log(chalk.cyan('  npm install -g inklecate'));
-    console.log(chalk.yellow('or:'));
-    console.log(chalk.cyan('  brew install inklecate'));
-    
-    return false;
-  }
+  return true;
 }
 
 // Function to find all ink files in a directory
 function findInkFiles(directory) {
-  return glob.sync(`${directory}/**/*.ink`);
+  return listFilesRecursive(directory, (name) => name.endsWith('.ink'));
 }
 
 // Find and clean up compiled ink.json files
 function cleanupCompiledFiles(directory) {
-  const compiledFiles = glob.sync(`${directory}/**/*.ink.json`);
+  const compiledFiles = listFilesRecursive(directory, (name) => name.endsWith('.ink.json'));
   
   if (compiledFiles.length === 0) {
     return { success: true, count: 0 };
@@ -203,15 +184,15 @@ function checkExtremeScores(choices) {
   return { isBalanced: true, ratio: extremeRatio };
 }
 
-// Function to validate if a scenario compiles with inklecate
+// Function to validate if a scenario compiles with the inkjs compiler
 function validateScenarioCompilation(filePath) {
   try {
-    const result = execSync(`inklecate -c "${filePath}"`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
-    return { success: true, output: result };
+    const { warnings } = compileInkFile(filePath);
+    return { success: true, output: warnings.join('\n') };
   } catch (error) {
     return { 
       success: false, 
-      output: error.stderr || error.stdout || error.message 
+      output: error.errors ? error.errors.join('\n  ') : error.message
     };
   }
 }
@@ -312,13 +293,13 @@ async function debugScenario(filePath) {
     processLintResults(lintIssues);
     
     // Validate compilation (this must be done separately as it's async)
-    spinner.start({ text: 'Validating scenario compilation with inklecate...' });
+    spinner.start({ text: 'Validating scenario compilation with the inkjs compiler...' });
     const validation = validateScenarioCompilation(filePath);
     
     if (validation.success) {
-      spinner.success({ text: 'Scenario compiles successfully with inklecate' });
+      spinner.success({ text: 'Scenario compiles successfully with the inkjs compiler' });
     } else {
-      spinner.error({ text: 'Scenario failed to compile with inklecate' });
+      spinner.error({ text: 'Scenario failed to compile with the inkjs compiler' });
       console.log(chalk.red('  Compilation errors:'));
       console.log(chalk.red(`  ${validation.output}`));
     }
@@ -668,7 +649,7 @@ async function selectFilesToAnalyze(filesToAnalyze) {
   
   const { action } = await inquirer.prompt([
     {
-      type: 'list',
+      type: 'select',
       name: 'action',
       message: 'How would you like to proceed?',
       choices: [

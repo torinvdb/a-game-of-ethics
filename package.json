@@ -12,21 +12,17 @@
     "analyze:auto": "node src/analyze.js --auto",
     "debug-scenarios": "node src/debug.js",
     "ethics:test": "cd extensions/time-travel-ethics && python3 -m unittest discover -s tests -v",
-    "ethics:demo": "python3 extensions/time-travel-ethics/tools/demo.py"
+    "ethics:demo": "python3 extensions/time-travel-ethics/tools/demo.py",
+    "test": "node --test \"test/**/*.test.js\""
   },
   "dependencies": {
-    "chalk": "^5.3.0",
-    "cli-table3": "^0.6.3",
-    "commander": "^11.1.0",
-    "csv-writer": "^1.6.0",
-    "dotenv": "^16.4.1",
-    "figlet": "^1.7.0",
-    "glob": "^10.3.10",
-    "inkjs": "^2.2.2",
-    "inquirer": "^9.2.12",
-    "lodash": "^4.17.21",
-    "nanospinner": "^1.1.0",
-    "node-fetch": "^3.3.2"
+    "chalk": "^6.0.1",
+    "cli-table3": "^0.6.5",
+    "commander": "^15.0.0",
+    "figlet": "^1.12.0",
+    "inkjs": "^2.4.0",
+    "inquirer": "^14.2.5",
+    "nanospinner": "^1.2.2"
   },
   "bin": {
     "ethi": "./ethi-cli.js"
@@ -45,5 +41,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/torinvdb/a-game-of-ethics.git"
+  },
+  "engines": {
+    "node": ">=22.13.0"
   }
 }

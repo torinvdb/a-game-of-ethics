@@ -5,11 +5,10 @@ import path from 'path';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Command } from 'commander';
-import { createObjectCsvWriter } from 'csv-writer';
-import { glob } from 'glob';
-import _ from 'lodash';
+import { listFilesRecursive } from './lib/paths.js';
 import { fileURLToPath } from 'url';
-import Table from 'cli-table3';
+import BaseTable from 'cli-table3';
+import { detectCapabilities } from './ui/theme.js';
 import { createSpinner } from 'nanospinner';
 
 // Get directory paths
@@ -31,6 +30,38 @@ const axisNames = {
 
 const ethicalAxes = ['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'];
 
+// cli-table3 colours borders/headers on its own; honour NO_COLOR / non-TTY.
+const COLOR = detectCapabilities().colorLevel > 0;
+chalk.level = COLOR ? chalk.level || 1 : 0;
+class Table extends BaseTable {
+  constructor(options = {}) {
+    super(COLOR ? options : { ...options, style: { ...(options.style || {}), head: [], border: [] } });
+  }
+}
+
+// Minimal replacements for the lodash helpers this file used (drops a dependency).
+const _ = {
+  groupBy: (items, key) =>
+    items.reduce((acc, item) => {
+      const k = String(item?.[key]);
+      (acc[k] ||= []).push(item);
+      return acc;
+    }, {}),
+  sum: (xs) => xs.reduce((a, b) => a + b, 0),
+  mean: (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN),
+  sortBy: (xs) => [...xs].sort((a, b) => a - b),
+  min: (xs) => (xs.length ? Math.min(...xs) : undefined),
+  max: (xs) => (xs.length ? Math.max(...xs) : undefined)
+};
+
+/** Escape one CSV field (RFC 4180) and neutralise spreadsheet formula injection. */
+export function csvField(value) {
+  if (value === undefined || value === null) return '';
+  let s = String(value);
+  if (/^[=+\-@\t\r]/.test(s) && !/^-?\d+(\.\d+)?$/.test(s)) s = `'${s}`;
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
 /**
  * Find all result JSON files in a directory
  * @param {string} directory - The directory to search in
@@ -38,8 +69,7 @@ const ethicalAxes = ['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'];
  */
 async function findResultFiles(directory) {
   try {
-    // Use glob for more efficient file discovery
-    return glob.sync(`${directory}/**/*.json`);
+    return listFilesRecursive(directory, (name) => name.endsWith('.json'));
   } catch (error) {
     console.error(chalk.red(`Error reading directory: ${error.message}`));
     return [];
@@ -56,8 +86,10 @@ async function isValidResultFile(filePath) {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     
     // Check for required structures using optional chaining and truthy checks
+    // Runs that ended in an adapter failure have no verdict and must not be scored.
+    if (data?.complete === false) return false;
     const hasSingleRunFormat = data?.choices?.length && typeof data?.scores === 'object';
-    const hasMultiRunFormat = data?.runs?.length > 0;
+    const hasMultiRunFormat = data?.runs?.some?.((run) => run?.complete !== false);
     
     return hasSingleRunFormat || hasMultiRunFormat;
   } catch (error) {
@@ -77,7 +109,7 @@ function parseRunFile(filePath) {
     
     // Handle multi-run files
     if (data.runs?.length) {
-      return data.runs.map((run, i) => ({
+      return data.runs.flatMap((run, i) => (run?.complete === false ? [] : [{
         file_path: filePath,
         run_id: `${data.run_id || 'batch'}-${i + 1}`,
         scenario: scenarioName,
@@ -88,7 +120,7 @@ function parseRunFile(filePath) {
         scores: run.scores || {},
         verdict: run.verdict || '',
         choice_count: run.choices?.length || 0
-      }));
+      }]));
     }
     
     // Handle single run files
@@ -371,10 +403,6 @@ async function generateCsvOutput(runs, outputPath) {
   header.push({ id: 'scores.total', title: 'Total Score' });
   header.push({ id: 'scores.average', title: 'Average Score' });
   
-  const csvWriter = createObjectCsvWriter({
-    path: outputPath,
-    header
-  });
   
   // Transform data for CSV format
   const records = runs.map(run => {
@@ -388,7 +416,11 @@ async function generateCsvOutput(runs, outputPath) {
     return record;
   });
   
-  await csvWriter.writeRecords(records);
+  const lines = [header.map((h) => csvField(h.title)).join(',')];
+  for (const record of records) {
+    lines.push(header.map((h) => csvField(record[h.id])).join(','));
+  }
+  fs.writeFileSync(outputPath, `${lines.join('\n')}\n`);
   console.log(chalk.green(`\nCSV file successfully written to ${outputPath}`));
 }
 
@@ -789,7 +821,7 @@ async function analyzeResults(options) {
     if (!options.auto) {
       const { directoryChoice } = await inquirer.prompt([
         {
-          type: 'list',
+          type: 'select',
           name: 'directoryChoice',
           message: 'Where would you like to find result files?',
           choices: [
@@ -853,7 +885,7 @@ async function analyzeResults(options) {
       // Let user select any JSON files
       const { fileSelection } = await inquirer.prompt([
         {
-          type: 'list',
+          type: 'select',
           name: 'fileSelection',
           message: 'How would you like to select files?',
           choices: [
@@ -1015,7 +1047,8 @@ async function analyzeResults(options) {
     }
     
     // Generate CSV output
-    if (!options.noCsv) {
+    // commander maps --no-csv to options.csv === false (options.noCsv never existed).
+    if (options.csv !== false) {
       let outputPath = options.output;
       
       if (!outputPath) {
@@ -1068,7 +1101,7 @@ async function main() {
 }
 
 // Run the main function if this script is executed directly
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   main().catch(error => {
     console.error(chalk.red(`Fatal error: ${error.message}`));
     process.exit(1);
