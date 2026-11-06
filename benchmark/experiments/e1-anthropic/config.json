@@ -92,7 +92,7 @@
   "stages": {
    "pilot": {
     "reps": 1,
-    "budget_usd": 8
+    "budget_usd": 14
    },
    "full": {
     "reps": 3,
