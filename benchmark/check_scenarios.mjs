@@ -112,6 +112,10 @@ function checkFile(file, opts, {Compiler, CompilerOptions}) {
   const rel = path.relative(repoRoot, file);
   const res = {file: rel, errors: [], warnings: [], info: {}};
   const src = fs.readFileSync(file, 'utf8');
+  // Axes summed by the scenario's own `~ total = ...` line (a scenario may exclude an inapplicable axis).
+  const totalLine = src.match(/^~\s*total\s*=\s*([^\n/]+)/m);
+  const scored = totalLine ? AXES.filter((a) => new RegExp(`\\b${a}\\b`).test(totalLine[1])) : AXES;
+  const nAxes = scored.length || 8;
   let story;
   try {
     const compiler = CompilerOptions
@@ -168,7 +172,7 @@ function checkFile(file, opts, {Compiler, CompilerOptions}) {
       }
     }
     const axes = readAxes(story);
-    const total = AXES.reduce((s, a) => s + (axes[a] || 0), 0);
+    const total = scored.reduce((s, a) => s + (axes[a] || 0), 0);
     const inkAvg = story.variablesState.$('average');
     const inkTotal = story.variablesState.$('total');
     const out = lines.join('');
@@ -178,7 +182,7 @@ function checkFile(file, opts, {Compiler, CompilerOptions}) {
       prob,
       axes,
       total,
-      floatAvg: total / 8,
+      floatAvg: total / nAxes,
       inkAvg,
       inkTotal,
       inkVerdict: vm ? vm[1].trim() : null,
@@ -277,13 +281,14 @@ function checkFile(file, opts, {Compiler, CompilerOptions}) {
   if (avgMismatch.length) {
     const verdictFlip = avgMismatch.filter((e) => e.inkVerdict && e.inkVerdict !== floatVerdict(e.floatAvg)).length;
     res.warnings.push(
-      `Ink 'average' differs from total/8 on ${avgMismatch.length}/${endings.length} paths (integer division); ` +
+      `Ink 'average' differs from total/${nAxes} on ${avgMismatch.length}/${endings.length} paths (integer division); ` +
         `printed verdict differs from the float-average verdict on ${verdictFlip} paths`,
     );
   }
   const tiered = endings.filter((e) => e.inkVerdict && VERDICTS.some(([, v]) => v === e.inkVerdict));
   const verdictWrong = tiered.filter((e) => e.inkVerdict !== floatVerdict(e.floatAvg)).length;
-  const neverChanged = AXES.filter((a) => endings.every((e) => e.axes[a] === 0));
+  const neverChanged = scored.filter((a) => endings.every((e) => e.axes[a] === 0));
+  if (scored.length < AXES.length) res.info.excluded_axes = AXES.filter((a) => !scored.includes(a));
   if (neverChanged.length) res.warnings.push(`axes never changed on any path: ${neverChanged.join(', ')}`);
   const unreached = knots.filter((k) => !visited.has(k));
   if (unreached.length && mode === 'exhaustive') res.warnings.push(`knots never reached: ${unreached.join(', ')}`);
@@ -307,7 +312,7 @@ function checkFile(file, opts, {Compiler, CompilerOptions}) {
     paths: endings.length,
     decisions: range(endings.map((e) => e.decisions)),
     total_range: [tmin, tmax],
-    float_average_range: [tmin / 8, tmax / 8],
+    float_average_range: [tmin / nAxes, tmax / nAxes],
     asymmetry_max_plus_min: tmax + tmin,
     per_axis_range: Object.fromEntries(AXES.map((a) => [a, range(endings.map((e) => e.axes[a]))])),
     printed_verdicts: verdictDist,

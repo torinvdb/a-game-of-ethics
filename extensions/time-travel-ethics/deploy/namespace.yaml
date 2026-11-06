@@ -3,4 +3,10 @@ kind: Namespace
 metadata:
   name: ethics-lab
   labels:
+    # Version pinned so a cluster upgrade cannot silently change what "restricted" means.
     pod-security.kubernetes.io/enforce: restricted
+    pod-security.kubernetes.io/enforce-version: v1.32
+    pod-security.kubernetes.io/warn: restricted
+    pod-security.kubernetes.io/warn-version: v1.32
+    pod-security.kubernetes.io/audit: restricted
+    pod-security.kubernetes.io/audit-version: v1.32

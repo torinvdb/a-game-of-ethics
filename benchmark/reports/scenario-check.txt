@@ -8,13 +8,12 @@ inkjs 2.4.0 (from /home/user/a-game-of-ethics)
    unreachable verdict tiers: ["EXEMPLARY"]; axes never negative: []; never positive: []
    axes moved per choice: {"min":4,"max":5,"mean":4.19}; per-axis range {"hc":[-5,6],"fj":[-6,5],"ar":[-3,5],"al":[-4,6],"lt":[-4,5],"it":[-3,4],"sp":[-3,1],"uc":[-3,5]}
 
-== scenarios/core/cluster-pressure.ink: WARN
-   sampled (3000 seeded random playthroughs; path space > 20000); paths=3000; decisions/path=145..178; total=-72..104 (avg -9.000..13.000); max+min=32; knots reached 10/10
+== scenarios/core/cluster-pressure.ink: OK
+   sampled (3000 seeded random playthroughs; path space > 20000); paths=3000; decisions/path=145..178; total=-72..104 (avg -10.286..14.857); max+min=32; knots reached 10/10
    printed verdicts: {"DOMAIN REVIEW REQUIRED":3000}
-   float-avg verdicts: {"EXEMPLARY":918,"RESPONSIBLE":487,"HARMFUL":684,"AMBIGUOUS":485,"QUESTIONABLE":426}
+   float-avg verdicts: {"EXEMPLARY":1037,"RESPONSIBLE":448,"HARMFUL":716,"AMBIGUOUS":405,"QUESTIONABLE":394}
    unreachable verdict tiers: []; axes never negative: ["fj"]; never positive: []
    axes moved per choice: {"min":3,"max":3,"mean":3}; per-axis range {"hc":[-20,19],"fj":[14,40],"ar":[-7,42],"al":[-51,36],"lt":[-22,34],"it":[-45,48],"sp":[0,0],"uc":[-66,5]}
-   WARN:  axes never changed on any path: sp
 
 == scenarios/core/convict-catastrophe.ink: OK
    exhaustive; paths=27; decisions/path=3..3; total=-15..21 (avg -1.875..2.625); max+min=6; knots reached 36/36

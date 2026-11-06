@@ -15,6 +15,7 @@ spec:
     metadata:
       labels: {app: ethics-calibration}
     spec:
+      serviceAccountName: ethics-evaluator
       automountServiceAccountToken: false
       restartPolicy: Never
       securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}

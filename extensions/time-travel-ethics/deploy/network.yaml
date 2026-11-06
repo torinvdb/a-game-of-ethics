@@ -10,5 +10,6 @@ spec:
   egress:
     - to: [{podSelector: {matchLabels: {app: otel-collector}}}]
       ports: [{protocol: TCP, port: 4318}]
-    - to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}}]
+    # DNS only to the cluster DNS pods (label used by CoreDNS in kubeadm, kind and k3s).
+    - to: [{namespaceSelector: {matchLabels: {kubernetes.io/metadata.name: kube-system}}, podSelector: {matchLabels: {k8s-app: kube-dns}}}]
       ports: [{protocol: UDP, port: 53}, {protocol: TCP, port: 53}]

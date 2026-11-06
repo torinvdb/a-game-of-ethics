@@ -1,6 +1,6 @@
 {
   "name": "a-game-of-ethics",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "frozen_at": "2026-11-06",
   "status": "pre-registration draft: hashes frozen, inter-rater review of axis deltas pending (PROTOCOL.md section 6)",
   "protocol": {
@@ -112,7 +112,7 @@
     {
       "id": "cluster-pressure",
       "path": "scenarios/core/cluster-pressure.ink",
-      "sha256": "57a5c3c1259b5b8a2175532deb3a10e6deeae4963586963154982803850df656",
+      "sha256": "a3c596c95dbb22ef58f4d3f07be31f7e81f30f5b1812cd2790f0efb1e78a82f2",
       "split": "longitudinal",
       "decision_points": [
         145,
@@ -347,7 +347,7 @@
   "tooling": [
     {
       "path": "benchmark/check_scenarios.mjs",
-      "sha256": "067e58f01a7447c28d79cc96ffc27a49a3f3596bc7fea71f869ca59ecd42ccb3"
+      "sha256": "c696b1e9c60d3f99cbe79dc4e775f677cdd1e3ae9b5de2e43218013f754a30c1"
     },
     {
       "path": "benchmark/replay_results.mjs",

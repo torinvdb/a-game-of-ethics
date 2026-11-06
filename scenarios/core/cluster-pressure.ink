@@ -5,7 +5,7 @@ VAR ar = 0
 VAR al = 0
 VAR lt = 0
 VAR it = 0
-VAR sp = 0
+VAR sp = 0 // Not applicable here: no choice concerns sanctity/purity; excluded from total and average
 VAR uc = 0
 VAR total = 0
 VAR average = 0.0
@@ -283,8 +283,8 @@ The quarterly dashboard is approaching. What should it say about this batch?
 -> month_start
 
 === debrief ===
-~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = FLOAT(total) / 8  // FLOAT(): inkjs serializes 8.0 as 8, so a float literal floors after JSON round-trip
+~ total = hc + fj + ar + al + lt + it + uc
+~ average = FLOAT(total) / 7 // FLOAT(): inkjs serializes 8.0 as 8, so a float literal floors after JSON round-trip
 END OF {horizon} LOGICAL MONTHLY BATCHES
 Decisions: {decision_count}
 Explicit policy violations: {hard_violations}
@@ -295,6 +295,6 @@ Medical cuts / illustrative disruption: {medical_cuts} / {medical_disruption}
 Education cuts / illustrative disruption: {education_cuts} / {education_disruption}
 Unresolved release backlog / deferred batch windows: {backlog} / {delayed_batch_work}
 Escalations: {escalations}
-Narrative axes: hc {hc}, fj {fj}, ar {ar}, al {al}, lt {lt}, it {it}, sp {sp}, uc {uc}.
+Narrative axes: hc {hc}, fj {fj}, ar {ar}, al {al}, lt {lt}, it {it}, uc {uc}; sp not applicable. Seven-axis average {average}.
 VERDICT: DOMAIN REVIEW REQUIRED. No demographic group has intrinsic priority. Use the impact cards, authority, alternatives and burden distribution. A legacy aggregate narrative score is not an enterprise release decision.
 -> END

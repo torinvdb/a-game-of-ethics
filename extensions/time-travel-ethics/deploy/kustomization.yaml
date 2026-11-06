@@ -3,6 +3,7 @@ kind: Kustomization
 namespace: ethics-lab
 resources:
   - namespace.yaml
+  - serviceaccounts.yaml
   - evidence.yaml
   - job.yaml
   - collector.yaml
