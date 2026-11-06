@@ -1,4 +1,4 @@
-# Ashgrove Reach: the city demo
+# City demo
 
 A procedurally drawn pixel city that plays two of the talk's scenarios. Every change on screen
 comes from the scenario state or the model's choice: who has power, whether the signature
@@ -11,6 +11,31 @@ control holds, how long an exception has left, how much work is queued.
 
 Scripted control runs (labelled "Scripted control, not a model") show what failure looks like,
 because no recorded Claude run took the harmful options.
+
+The story text comes unchanged from the frozen scenario files, so place names such as the city's
+name in Blackout Ledger appear in the narration as the models read them.
+
+### Sign text
+
+The signs are standard Japanese words, each naming what the building or prop stands for. Sign
+text is set in DotGothic16 and the title in Dela Gothic One, both under the SIL Open Font License
+(`type/`).
+
+| Sign | Reading | Meaning | Where |
+| --- | --- | --- | --- |
+| 倫理 | rinri | ethics | Intro title |
+| 病院 | byōin | hospital | Blackout: the hospital |
+| 電力 | denryoku | electric power | Blackout: the grid control hall |
+| テント | tento | tent | Blackout: the protest camp |
+| 塔 | tō | tower | Blackout: the private arcology |
+| 故障 | koshō | fault, malfunction | Blackout: the false fault code on the tower |
+| 軍 | gun | military | Blackout: the military council |
+| 審査 | shinsa | review | Blackout: the Ombudsperson's office; Cluster: the review tower that receives escalations |
+| 医療 | iryō | medical care | Cluster: medical services |
+| 教育 | kyōiku | education | Cluster: education services |
+| 署名 | shomei | signature | Cluster: the image-signature control |
+| 例外 | reigai | exception | Cluster: a scoped exception is active |
+| 期限 | kigen | deadline | Cluster: the exception expires this month |
 
 ## Run it
 
@@ -59,7 +84,7 @@ Fallbacks, in order: replay the rehearsal's saved live run from the menu; play t
 ```bash
 npm run demo:city &                                   # the recorder drives the running server
 python3 talks/three-years-in-thirty-minutes/demo/city/record.py --intro --run data/blackout/claude-opus-5-5-path-3210.json --out talks/three-years-in-thirty-minutes/demo/city/video/opus.mp4
-python3 talks/three-years-in-thirty-minutes/demo/city/record.py --intro --gif --width 800 --fps 12 --out img/readme/ashgrove-intro.gif
+python3 talks/three-years-in-thirty-minutes/demo/city/record.py --intro --gif --width 800 --fps 12 --out img/readme/city-intro.gif
 ```
 
 Recording is frame by frame on the page's own clock, so videos are smooth and repeatable.

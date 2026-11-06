@@ -5,7 +5,7 @@
 A Game of Ethics evaluates how large language models and agents make ethical decisions. Each scenario is a branching story written in [Ink](https://www.inklestudios.com/ink/). The model picks an option at each decision point, every option moves several of eight ethical axes, and the scenario ends with a scored verdict. Version 2 adds a frozen benchmark definition with a pre-registered protocol, three held-out scenarios, and a 36-month "time-travel" extension for stateful agents.
 
 <p align="center">
-  <a href="talks/three-years-in-thirty-minutes/demo/city/README.md"><img src="img/readme/ashgrove-intro.gif" alt="Pixel-art intro of the Ashgrove Reach demo: a figure in a long coat stands on a rooftop in front of the moon, the coat moving in the wind, as the camera tilts down over the lit city." width="720"></a>
+  <a href="talks/three-years-in-thirty-minutes/demo/city/README.md"><img src="img/readme/city-intro.gif" alt="Pixel-art intro of the city demo: a figure in a long coat stands on a rooftop in front of the moon, the coat moving in the wind, as the camera tilts down over the lit city." width="720"></a>
 </p>
 <p align="center"><sub>The talk demo: a procedural city that plays Blackout Ledger live against Claude and replays recorded Cluster Pressure runs. <a href="talks/three-years-in-thirty-minutes/demo/city/README.md">How to run it</a>.</sub></p>
 
@@ -28,7 +28,7 @@ A Game of Ethics evaluates how large language models and agents make ethical dec
 | [`talks/`](talks/three-years-in-thirty-minutes/README.md) | KubeCon talk deck and demo |
 | [`index.html`](index.html) | Project site ([GitHub Pages](https://torinvdb.github.io/a-game-of-ethics/)) |
 
-<img src="img/readme/section-02-scoring.png" alt="Section 02: 評価 Scoring" width="100%">
+<img src="img/readme/section-02-scoring.png" alt="Section 02: 採点 Scoring" width="100%">
 
 ## Scoring
 
@@ -57,7 +57,7 @@ At the end, `average = FLOAT(total) / 8` maps to a verdict tier. Construct defin
 
 A uniformly random policy already scores between -0.28 and 1.53 depending on the scenario, so read results against each scenario's chance level, not against zero (see [`benchmark/reports/scenario-check.txt`](benchmark/reports/scenario-check.txt)).
 
-<img src="img/readme/section-03-scenarios.png" alt="Section 03: 事件 Scenarios" width="100%">
+<img src="img/readme/section-03-scenarios.png" alt="Section 03: シナリオ Scenarios" width="100%">
 
 ## Scenarios
 
@@ -80,7 +80,7 @@ A uniformly random policy already scores between -0.28 and 1.53 depending on the
 
 Held-out scenarios are not used for prompt, scaffold or harness tuning. They are public, so they are held out from development, not from training data. The three held-out stories are original works with a late-1980s/1990s cyberpunk-anime atmosphere. Cluster Pressure prints a domain review instead of a tier and is never pooled with tier statistics. Per-scenario discussion: [Scenario Discussion](docs/scenario-discussion.md). Templates for new scenarios: [`scenarios/tmpl/`](scenarios/tmpl/).
 
-<img src="img/readme/section-04-time-travel.png" alt="Section 04: 時間 Time-travel" width="100%">
+<img src="img/readme/section-04-time-travel.png" alt="Section 04: 時間旅行 Time-travel" width="100%">
 
 ## Time-travel extension
 
@@ -94,7 +94,7 @@ So far only deterministic scripted policies have been run; no real model has bee
 
 The KubeCon talk built on this extension, *Three Years in Thirty Minutes*, is in [`talks/three-years-in-thirty-minutes/`](talks/three-years-in-thirty-minutes/README.md).
 
-<img src="img/readme/section-05-results.png" alt="Section 05: 証拠 Results" width="100%">
+<img src="img/readme/section-05-results.png" alt="Section 05: 結果 Results" width="100%">
 
 ## Results
 
@@ -109,7 +109,7 @@ None of the existing data was collected under the v2 protocol; read it with the 
 
 New model runs are written to `results/runs/` by default (one JSON file per run, with choices, reasoning, axis scores and verdict).
 
-<img src="img/readme/section-06-protocol.png" alt="Section 06: 方法 Protocol" width="100%">
+<img src="img/readme/section-06-protocol.png" alt="Section 06: 手順 Protocol" width="100%">
 
 ## Protocol
 
@@ -124,7 +124,7 @@ Results meant for comparison follow the pre-registered [evaluation protocol](ben
 
 First pre-registered experiment: [E1, Claude Haiku/Sonnet/Opus 5.5](benchmark/experiments/e1-anthropic/DESIGN.md) (design and runner ready, not yet run). `node benchmark/run/run.mjs --provider mock` rehearses it offline.
 
-<img src="img/readme/section-07-quickstart.png" alt="Section 07: 起動 Quickstart" width="100%">
+<img src="img/readme/section-07-quickstart.png" alt="Section 07: 導入 Quickstart" width="100%">
 
 ## Quickstart
 
@@ -171,7 +171,7 @@ npm run bench:agent -- --stage smoke --scenarios hostage-holdout --agent-cmd "py
 | GitHub Action | `uses: torinvdb/a-game-of-ethics@v2` in CI, with job summary and artifact | [GitHub Action](docs/GITHUB-ACTION.md) |
 | Inspect AI | `inspect eval agoe/agoe --model <provider/model>` | [Inspect](docs/INSPECT.md) |
 
-<img src="img/readme/section-08-credits.png" alt="Section 08: 記録 Credits" width="100%">
+<img src="img/readme/section-08-credits.png" alt="Section 08: 謝辞 Credits" width="100%">
 
 ## Credits
 

@@ -1,7 +1,7 @@
 // Intro: a lone operator in a long coat on a rooftop above the megacity. The coat moves in the
 // wind, the camera tilts down over the traffic, the figure steps off, and the falling lights smear
 // into streaks that resolve into the scenario's city. Original character and staging.
-import { W, H, PAL, mulberry32, hash, lerp, clamp, mix, glyphSprite } from './city.js';
+import { W, H, PAL, mulberry32, hash, lerp, clamp, mix } from './city.js';
 
 const SH = 640;          // world strip height
 const ROOF = 236;        // rooftop y in the strip
@@ -35,7 +35,6 @@ export class Intro {
     g.fillStyle = '#cfd8c8'; g.beginPath(); g.arc(FIG_X + 4, ROOF - 52, 24, 0, Math.PI * 2); g.fill();
     g.fillStyle = 'rgba(36,26,58,0.55)'; g.fillRect(FIG_X - 40, ROOF - 58, 90, 2); g.fillRect(FIG_X - 30, ROOF - 44, 80, 1);
     // Three depths of towers, nearer ones taller and brighter; tops rise into frame.
-    const signs = ['倫理', '監査', '例外', '署名', '期限', '格子'];
     for (const [depth, n, col, top0, top1] of [[0, 30, '#141a2e', 250, 360], [1, 18, '#121b27', 300, 430], [2, 9, '#18233a', 380, 520]]) {
       let x = -8;
       for (let k = 0; k < n && x < W; k++) {
@@ -50,9 +49,9 @@ export class Intro {
           }
         }
         if (r() < 0.35) {
-          const s = glyphSprite(signs[Math.floor(r() * signs.length)], 8 + depth, [PAL.red, PAL.teal, PAL.amber][k % 3], true);
-          const sy = top + 10 + Math.floor(r() * 60);
-          g.drawImage(s, x + 1, sy); l.drawImage(s, x + 1, sy);
+          // Plain neon bars: text this small would be unreadable at the intro's resolution.
+          const col = [PAL.red, PAL.teal, PAL.amber][k % 3], sy = top + 10 + Math.floor(r() * 60), bh = 14 + Math.floor(r() * 12);
+          g.fillStyle = col; g.fillRect(x + 1, sy, 2, bh); l.fillStyle = col; l.fillRect(x + 1, sy, 2, bh);
         }
         x += w + Math.floor(r() * 5);
       }

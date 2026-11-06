@@ -1,4 +1,4 @@
-// Player for the Ashgrove Reach demo: intro, run menu, recorded and live playback.
+// Player for the city demo: intro, run menu, recorded and live playback.
 // All waiting and typing runs on one clock. In capture mode (?capture) the recorder advances that
 // clock by a fixed step per frame through window.__cap, so a recording is deterministic.
 import { City, W, H } from './city.js';
@@ -40,6 +40,7 @@ function type(el, text, cps = 90) {
 // ---------------------------------------------------------------- view
 const canvas = $('city');
 const city = new City(canvas);
+city.attachSigns($('signs'));
 let intro = null;
 let mode = 'boot';
 let library = null;
@@ -62,7 +63,7 @@ function showMenu() {
   mode = 'menu';
   city.scene = null; city.dawn = 0;
   $('title').hidden = true; $('card').hidden = true; badge(null); setStatus(''); clearTerm();
-  $('scen').textContent = 'Ashgrove Reach'; $('clock').textContent = '';
+  $('scen').textContent = 'A Game of Ethics'; $('clock').textContent = '';
   const cols = $('menu-cols');
   cols.innerHTML = '';
   const live = library.live ?? { available: false };
@@ -256,8 +257,13 @@ function render() {
   if (mode === 'intro') {
     const it = clock.t - intro.t0;
     // After the white-out the falling lights resolve into the living city behind the title.
+    if (it < 11.4) city.clearSigns();
     const r = it < 11.4 ? intro.frame(city.g, city.e, it) : (city.frame(clock.t, 1 / 60), intro.frame(document.createElement('canvas').getContext('2d'), city.e, it));
-    if (it >= 11.4) { const k = Math.max(0, 1 - (it - 11.4) / 0.8); city.g.fillStyle = `rgba(232,236,214,${k.toFixed(3)})`; city.g.fillRect(0, 0, W, H); }
+    if (it >= 11.4) {
+      const k = Math.max(0, 1 - (it - 11.4) / 0.8), white = `rgba(232,236,214,${k.toFixed(3)})`;
+      city.g.fillStyle = white; city.g.fillRect(0, 0, W, H);
+      if (k > 0) city.flushSigns([white]);
+    }
     $('title').hidden = r.title <= 0;
     $('title').style.opacity = r.title;
   } else {
@@ -288,7 +294,7 @@ addEventListener('keydown', (e) => {
 });
 
 async function boot() {
-  await Promise.all([document.fonts.load('12px "Dela Gothic One"', '署名例外期限監査倫理病院野営塔軍格子医療教育障害灯火台帳'), document.fonts.load('20px VT323')]);
+  await Promise.all([document.fonts.load('12px "Dela Gothic One"', '倫理審査例外署名期限電力病院テント塔故障軍医療教育'), document.fonts.load('32px DotGothic16', '倫理審査例外署名期限電力病院テント塔故障軍医療教育'), document.fonts.load('20px VT323')]);
   try { library = await (await fetch('/api/library')).json(); } catch { library = await (await fetch('data/library.json')).json(); }
   // Only recordings shipped with the demo or saved by this server can be opened from the URL.
   const want = /^(data\/(blackout|cluster)|recordings)\/[\w.-]+\.json$/.test(params.get('run') ?? '') ? params.get('run') : null;

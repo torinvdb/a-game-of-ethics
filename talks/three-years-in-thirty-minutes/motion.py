@@ -651,7 +651,7 @@ def p_label_swap(bg, f, n):
     t = f / n
     swap = ease((t - 0.30) / 0.2)
     lx, rx = 30, w - 262
-    pos = {'医療': lx + (rx - lx) * swap, '学費': rx + (lx - rx) * swap}
+    pos = {'医療': lx + (rx - lx) * swap, '奨学金': rx + (lx - rx) * swap}
     for word, x in pos.items():
         hw_panel(d, (int(x), 8, int(x) + 232, 132), c=12)
     hw_panel(d, (16, 150, w - 16, h - 8), c=16, fill=(12, 16, 18, 240))
@@ -660,7 +660,7 @@ def p_label_swap(bg, f, n):
     tag = F(DELA, 50)
     mono = F(MONO, 19)
     glitch = 0.30 < t < 0.50 and f % 3 == 0
-    for word, col in (('医療', TEAL), ('学費', AMBER)):
+    for word, col in (('医療', TEAL), ('奨学金', AMBER)):
         x = pos[word]
         neon_text(L, (x + 20 + (8 if glitch else 0), 22), word, tag, col, 0.95)
         L.d.text((x + 22, 98), 'MEDICAL' if word == '医療' else 'FINANCE', font=mono, fill=scale(PAPER, 0.75))
@@ -706,7 +706,7 @@ MOTIONS = {
     'sign-medical': dict(region=(80, 400, 300, 110), frames=1, ms=0, still=0,
                          paint=p_neon_fault('医療', TEAL, False)),
     'sign-finance': dict(region=(835, 400, 300, 110), frames=1, ms=0, still=0,
-                         paint=p_neon_fault('学費', AMBER, False)),
+                         paint=p_neon_fault('奨学金', AMBER, False)),
     'branch-timeline': dict(region=(420, 380, 1100, 330), frames=72, ms=90, still=-1, paint=p_branch_timeline),
     'time-odometer': dict(region=(900, 380, 620, 340), frames=60, ms=90, still=-1, paint=p_time_odometer),
     'robot-seal': dict(region=(1100, 96, 420, 290), frames=56, ms=80, still=51, paint=p_robot_seal),

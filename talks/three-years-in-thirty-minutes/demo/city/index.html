@@ -3,21 +3,22 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Ashgrove Reach: A Game of Ethics demo</title>
+<title>A Game of Ethics: city demo</title>
 <link rel="stylesheet" href="city.css">
 </head>
 <body>
-<main id="stage" aria-label="Ashgrove Reach demo">
+<main id="stage" aria-label="A Game of Ethics city demo">
   <div id="view">
     <canvas id="city" aria-label="Animated city driven by the scenario state"></canvas>
+    <canvas id="signs" aria-hidden="true"></canvas>
     <div id="hud">
       <div id="where"><span id="scen"></span><span id="clock"></span></div>
       <div id="badge" hidden></div>
     </div>
     <div id="status" aria-live="polite"></div>
     <div id="title" hidden>
-      <h1 id="title-main">灯火台帳</h1>
-      <p id="title-sub">Ashgrove Reach</p>
+      <h1 id="title-main">倫理</h1>
+      <p id="title-sub">A Game of Ethics</p>
     </div>
     <div id="card" hidden></div>
   </div>

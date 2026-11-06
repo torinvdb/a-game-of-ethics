@@ -18,7 +18,7 @@
  {
   "id": "incident",
   "chapter": "01",
-  "kanji": "事件",
+  "kanji": "事案",
   "section": "THE INCIDENT",
   "speaker": "TORIN",
   "kind": "incident",
@@ -93,7 +93,7 @@
  {
   "id": "people",
   "chapter": "01",
-  "kanji": "影響",
+  "kanji": "人々",
   "section": "THE PEOPLE",
   "speaker": "VICENTE",
   "kind": "impacts",
@@ -131,7 +131,7 @@
  {
   "id": "consequences",
   "chapter": "02",
-  "kanji": "時間",
+  "kanji": "時間跳躍",
   "section": "THE TIME JUMP",
   "speaker": "VICENTE",
   "kind": "branches",

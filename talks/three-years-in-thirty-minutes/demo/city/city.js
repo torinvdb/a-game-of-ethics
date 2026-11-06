@@ -1,10 +1,13 @@
-// Procedural pixel city for the Ashgrove Reach demo. Everything is drawn from code at 480x210 and
+// Procedural pixel city for the demo. Everything is drawn from code at 480x210 and
 // scaled with nearest-neighbour. All randomness is seeded and all motion reads `t` (seconds), so a
 // recording made with a fixed time step is reproducible frame for frame.
 
 export const W = 480;
 export const H = 210;
 export const GROUND = 172;
+// Sign text is drawn on an overlay at SIGN_RES times the city's resolution: at 480x210 the
+// characters merge into blocks and cannot be read.
+export const SIGN_RES = 4;
 
 export const PAL = {
   night: '#070d10', dusk: '#241a3a', teal: '#40c4b2', amber: '#ffb052', red: '#ff5a48', bone: '#e8ecd6',
@@ -53,6 +56,31 @@ export function glyphSprite(text, px, color, vertical = false) {
   g.fillStyle = '#fff';
   chars.forEach((ch, i) => g.fillText(ch, vertical ? 1 : 1 + i * cw, vertical ? 1 + i * cw : 1));
   const img = g.getImageData(0, 0, w, h);
+  const [r, gg, b] = hex(color);
+  for (let i = 0; i < img.data.length; i += 4) {
+    const on = img.data[i + 3] > 110;
+    img.data[i] = r; img.data[i + 1] = gg; img.data[i + 2] = b; img.data[i + 3] = on ? 255 : 0;
+  }
+  g.putImageData(img, 0, 0);
+  spriteCache.set(key, c);
+  return c;
+}
+
+// Sign text for the overlay, in DotGothic16: a pixel font drawn on a 16-pixel grid, so it is set at
+// whole multiples of 16 and stays legible where a display face fills in.
+export function dotSprite(text, cell, color, vertical) {
+  const key = `dot|${text}|${cell}|${color}|${vertical}`;
+  if (spriteCache.has(key)) return spriteCache.get(key);
+  const chars = [...text];
+  const size = Math.max(16, Math.floor(cell / 16) * 16), off = Math.floor((cell - size) / 2);
+  const c = document.createElement('canvas');
+  c.width = vertical ? cell : chars.length * cell; c.height = vertical ? chars.length * cell : cell;
+  const g = c.getContext('2d');
+  g.font = `${size}px "DotGothic16"`;
+  g.textBaseline = 'top';
+  g.fillStyle = '#fff';
+  chars.forEach((ch, i) => g.fillText(ch, (vertical ? 0 : i * cell) + off, (vertical ? i * cell : 0) + off));
+  const img = g.getImageData(0, 0, c.width, c.height);
   const [r, gg, b] = hex(color);
   for (let i = 0; i < img.data.length; i += 4) {
     const on = img.data[i + 3] > 110;
@@ -175,13 +203,44 @@ export class City {
     }
   }
 
+  // A sign is a dark plate on the city layer, a glowing frame on the emissive layer, and its text
+  // queued for the sharp overlay. Without an overlay the text falls back to the pixel layer.
   sign(g, e, text, x, y, color, { px = 10, vertical = true, on = 1, t = 0, broken = 0, seed = 0 } = {}) {
     const lit = on > 0 && !(broken && hash(seed, Math.floor(t * 9)) < broken);
-    const spr = glyphSprite(text, px, lit ? color : '#2a2f3a', vertical);
+    const n = [...text].length, cw = px + 1;
+    const w = vertical ? cw + 2 : n * cw + 2, h = vertical ? n * cw + 2 : cw + 2;
     g.fillStyle = '#05070b';
-    g.fillRect(x - 1, y - 1, spr.width + 2, spr.height + 2);
-    g.drawImage(spr, x, y);
-    if (lit) { e.globalAlpha = on; e.drawImage(spr, x, y); e.globalAlpha = 1; }
+    g.fillRect(x - 1, y - 1, w + 2, h + 2);
+    if (lit) {
+      e.globalAlpha = on; e.strokeStyle = color; e.lineWidth = 1;
+      e.strokeRect(x - 0.5, y - 0.5, w + 1, h + 1); e.globalAlpha = 1;
+    }
+    if (this.signQueue) { this.signQueue.push({ text, x, y, px, vertical, color: lit ? color : '#2a2f3a', alpha: lit ? Math.max(0.35, on) : 1 }); return; }
+    g.drawImage(glyphSprite(text, px, lit ? color : '#2a2f3a', vertical), x, y);
+  }
+
+  attachSigns(canvas) {
+    canvas.width = W * SIGN_RES; canvas.height = H * SIGN_RES;
+    this.sc = canvas.getContext('2d');
+    this.signQueue = [];
+  }
+
+  clearSigns() { if (this.sc) { this.sc.clearRect(0, 0, W * SIGN_RES, H * SIGN_RES); this.signQueue = []; } }
+
+  // Draw queued sign text, then tint it with the same full-screen washes the city layer got.
+  flushSigns(washes = []) {
+    if (!this.sc) return;
+    const c = this.sc, R = SIGN_RES;
+    c.clearRect(0, 0, W * R, H * R);
+    for (const s of this.signQueue) {
+      c.globalAlpha = s.alpha;
+      c.drawImage(dotSprite(s.text, (s.px + 1) * R, s.color, s.vertical), (s.x + 1) * R, (s.y + 1) * R);
+    }
+    c.globalAlpha = 1;
+    c.globalCompositeOperation = 'source-atop';
+    for (const style of washes) { c.fillStyle = style; c.fillRect(0, 0, W * R, H * R); }
+    c.globalCompositeOperation = 'source-over';
+    this.signQueue = [];
   }
 
   layer(g, e, list, t, par, opts) {
@@ -283,8 +342,11 @@ export class City {
     g.globalAlpha = 0.5; g.drawImage(this.emit, 0, 0);
     g.restore();
     this.ground(g);
-    if (this.alarm > 0) { g.fillStyle = `rgba(255,90,72,${(0.28 * this.alarm * (0.6 + 0.4 * Math.sin(t * 20))).toFixed(3)})`; g.fillRect(0, 0, W, H); this.alarm = Math.max(0, this.alarm - dt * 0.8); }
-    if (this.flash > 0) { g.fillStyle = `rgba(232,236,214,${(0.5 * this.flash).toFixed(3)})`; g.fillRect(0, 0, W, H); this.flash = Math.max(0, this.flash - dt * 3); }
+    const washes = [];
+    if (this.alarm > 0) { washes.push(`rgba(255,90,72,${(0.28 * this.alarm * (0.6 + 0.4 * Math.sin(t * 20))).toFixed(3)})`); this.alarm = Math.max(0, this.alarm - dt * 0.8); }
+    if (this.flash > 0) { washes.push(`rgba(232,236,214,${(0.5 * this.flash).toFixed(3)})`); this.flash = Math.max(0, this.flash - dt * 3); }
+    for (const style of washes) { g.fillStyle = style; g.fillRect(0, 0, W, H); }
+    this.flushSigns(washes);
   }
 }
 

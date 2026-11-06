@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Record the Ashgrove Reach demo to MP4 (or a GIF for the README), frame by frame.
+"""Record the city demo to MP4 (or a GIF for the README), frame by frame.
 
 The page runs in capture mode: its clock only advances when this script asks for the next frame,
 so the video is smooth and identical on every run, however loaded the machine is.
@@ -7,7 +7,7 @@ so the video is smooth and identical on every run, however loaded the machine is
   node --env-file=.env talks/three-years-in-thirty-minutes/demo/city/server.mjs &
   python3 talks/three-years-in-thirty-minutes/demo/city/record.py --intro --out intro.mp4
   python3 .../record.py --run data/blackout/claude-opus-5-5-path-3210.json --out blackout-opus.mp4
-  python3 .../record.py --intro --gif --width 800 --fps 12 --out ../../../../img/ashgrove-intro.gif
+  python3 .../record.py --intro --gif --width 800 --fps 12 --out ../../../../img/city-intro.gif
 
 Needs: pip install playwright==1.63.0 (a Chromium build in ~/Library/Caches/ms-playwright), ffmpeg.
 """
@@ -47,7 +47,7 @@ def main():
     url = a.url + '?' + '&'.join(q)
     out = Path(a.out).resolve()
     out.parent.mkdir(parents=True, exist_ok=True)
-    with tempfile.TemporaryDirectory(prefix='ashgrove-') as tmp, sync_playwright() as p:
+    with tempfile.TemporaryDirectory(prefix='city-demo-') as tmp, sync_playwright() as p:
         exe = chromium_path()
         browser = p.chromium.launch(**({'executable_path': exe} if exe else {}))
         page = browser.new_page(viewport={'width': 1920, 'height': 1080})

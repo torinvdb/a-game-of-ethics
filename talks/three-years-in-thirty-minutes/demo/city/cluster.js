@@ -3,7 +3,7 @@
 //   署名 shield     controls_enabled (signature control)      例外 sign + 期限  waiver_active / waiver_expires
 //   release gate    deployment_blocked                        cargo pods       backlog
 //   battery cells   temporary_capacity_credits                dark windows     medical_ / education_disruption
-//   audit beam      escalations                               red alarm        hard_violations
+//   審査 beam          escalations                               red alarm        hard_violations
 import { W, GROUND, PAL, beam, lerp, clamp, hash, text3 } from './city.js';
 
 const X = { med: 26, core: 196, edu: 380, audit: 140 };
@@ -122,7 +122,7 @@ export class Cluster {
 
     // Audit tower: escalations and exception requests travel here.
     city.building(g, e, X.audit, GROUND - 70, 14, 70, { body: '#151d2b', lit: 0.35, seed: 81, rim: '#3a4a63', t });
-    city.sign(g, e, '監査', X.audit + 2, GROUND - 62, PAL.teal, { px: 10, on: 0.9, t });
+    city.sign(g, e, '審査', X.audit + 2, GROUND - 62, PAL.teal, { px: 10, on: 0.9, t });
     for (const b of this.beams) { b.k += dt * 0.7; beam(g, e, cx, cy - 4, X.audit + 7, GROUND - 72, b.color, b.k); }
     this.beams = this.beams.filter((b) => b.k < 1);
 

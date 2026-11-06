@@ -21,7 +21,7 @@ with their provenance file, so the talk carries no third-party image rights.
 | `motion/neon-ethics.*` | `motion.py` | 倫理 ("ethics") neon sign with a failing tube and small sparks | No |
 | `motion/terminal-incident.*` | `motion.py` | CRT console typing the **fixture** incident facts | Fixture text |
 | `motion/terminal-demo.*` | `motion.py` | CRT console with lines summarising a **recorded** demo run | Recorded run summary |
-| `motion/neon-fault.*`, `sign-*.png` | `motion.py` | Neon placards: 解除 disable, 例外 exception, 延期 defer, 上申 escalate, 医療 medical, 学費 tuition | No |
+| `motion/neon-fault.*`, `sign-*.png` | `motion.py` | Neon placards: 解除 disable, 例外 exception, 延期 defer, 上申 escalate, 医療 medical, 奨学金 student aid | No |
 | `motion/branch-timeline.*` | `motion.py` | Schematic of three branches over 36 logical months | Schematic only |
 | `motion/time-odometer.*` | `motion.py` | Logical vs wall clock vs carried state (wall clock ≈ 2 s measured for the 8-trajectory demo) | Schematic |
 | `motion/robot-seal.*` | `motion.py` | Robot arm stamping a scenario cartridge FROZEN with its real story sha256 prefix | Real hash prefix |

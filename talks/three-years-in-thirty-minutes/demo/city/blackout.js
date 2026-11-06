@@ -1,6 +1,6 @@
-// Blackout Ledger: Ashgrove Reach during the cold front. Each option the model picks changes the
+// Blackout Ledger: the city during the cold front. Each option the model picks changes the
 // city in a way that matches the story text: who has power, who is watching, who holds the switch.
-import { W, GROUND, PAL, catenary, beam, lerp, clamp, hash, glyphSprite } from './city.js';
+import { W, GROUND, PAL, catenary, beam, lerp, clamp, hash } from './city.js';
 
 const X = { hosp: 40, hall: 152, camp: 214, ombuds: 312, spire: 360, council: 428 };
 
@@ -41,13 +41,13 @@ export class Blackout {
     const T = this.target;
     this.shortage = 0.3;
     if (step === 0) {
-      if (o === 0) { T.camp = 0; this.frost = 1; city.alarm = 0.6; this.status = 'CINDER PARK CUT'; }
+      if (o === 0) { T.camp = 0; this.frost = 1; city.alarm = 0.6; this.status = 'CAMP CUT OFF'; }
       if (o === 1) { T.hosp = T.camp = T.spire = 0.7; this.status = 'FLOOR FOR ALL'; }
-      if (o === 2) { T.spire = 1; T.hosp = 0.5; T.camp = 0.45; this.status = 'SPIRE FIRST'; }
+      if (o === 2) { T.spire = 1; T.hosp = 0.5; T.camp = 0.45; this.status = 'TOWER FIRST'; }
       if (o === 3) { T.hosp = T.camp = T.spire = 0.7; this.ombuds = 1; this.send('hall', 'ombuds', PAL.teal); this.status = 'OMBUDSPERSON NOTIFIED'; }
     }
     if (step === 1) {
-      if (o === 0) { this.turbines = 1; T.hosp = Math.min(1, T.hosp + 0.15); T.camp = Math.min(1, T.camp + 0.15); this.status = 'SPIRE ISLANDED'; }
+      if (o === 0) { this.turbines = 1; T.hosp = Math.min(1, T.hosp + 0.15); T.camp = Math.min(1, T.camp + 0.15); this.status = 'TOWER ON OWN POWER'; }
       if (o === 1) { this.throttle = 1; T.spire = 0.35; this.eye = '#ff4fd8'; this.status = 'LINE FAULT'; }
       if (o === 2) { this.ledger = 1; this.status = 'LEDGER PUBLIC'; }
       if (o === 3) { this.buses = 0.001; this.status = 'SHELTER BUSES'; }
@@ -99,7 +99,7 @@ export class Blackout {
     g.fillStyle = this.eye; g.fillRect(X.hall + 19, GROUND - 48, 8, blink);
     e.fillStyle = this.eye; e.fillRect(X.hall + 17, GROUND - 49, 12, blink + 2);
     if (this.throttle && hash(3, Math.floor(t * 8)) < 0.3) { e.fillStyle = '#ff4fd8'; e.fillRect(X.hall + 10, GROUND - 47 + Math.floor(hash(4, t * 8) * 3), 26, 1); }
-    city.sign(g, e, '格子', X.hall + 2, GROUND - 36, PAL.amber, { px: 10, vertical: false, on: 0.9, t });
+    city.sign(g, e, '電力', X.hall + 2, GROUND - 36, PAL.amber, { px: 10, vertical: false, on: 0.9, t });
 
     // Feeder lines from the hall
     const sx = X.hall + 23, sy = GROUND - 52;
@@ -121,7 +121,7 @@ export class Blackout {
     // camp water pump tower, dead when the camp is cut
     g.fillStyle = '#243042'; g.fillRect(X.camp + 88, GROUND - 22, 3, 22); g.fillRect(X.camp + 84, GROUND - 26, 11, 5);
     if (P.camp > 0.25) { e.fillStyle = PAL.teal; e.fillRect(X.camp + 86, GROUND - 25, 7, 3); }
-    city.sign(g, e, '野営', X.camp + 70, GROUND - 46, PAL.teal, { on: P.camp > 0.2 ? 1 : 0, t, broken: P.camp < 0.5 ? 0.25 : 0, seed: 2 });
+    city.sign(g, e, 'テント', X.camp + 70, GROUND - 46, PAL.teal, { on: P.camp > 0.2 ? 1 : 0, t, broken: P.camp < 0.5 ? 0.25 : 0, seed: 2 });
     if (this.frost > 0.02) {
       for (let i = 0; i < 30; i++) {
         const fx = X.camp + Math.floor(hash(i, 9) * 90), fy = GROUND - 30 + ((t * 8 + hash(i, 3) * 30) % 30);
@@ -143,7 +143,7 @@ export class Blackout {
     const beaconOn = this.ombuds && Math.floor(t * 2) % 2 === 0;
     g.fillStyle = beaconOn ? PAL.teal : '#1d2a2a'; g.fillRect(X.ombuds + 6, GROUND - 80, 4, 6);
     if (beaconOn) { e.fillStyle = PAL.teal; e.fillRect(X.ombuds + 4, GROUND - 82, 8, 9); }
-    city.sign(g, e, '監査', X.ombuds + 2, GROUND - 66, PAL.teal, { px: 10, on: this.ombuds ? 1 : 0.25, t });
+    city.sign(g, e, '審査', X.ombuds + 2, GROUND - 66, PAL.teal, { px: 10, on: this.ombuds ? 1 : 0.25, t });
 
     // Halcyon Spire
     const spX = X.spire, spH = 150;
@@ -152,8 +152,7 @@ export class Blackout {
     if (P.spire > 0.3) { e.fillStyle = PAL.gold; e.fillRect(spX - 4, GROUND - spH - 8, 14, 3); }
     city.sign(g, e, '塔', spX + 18, GROUND - spH + 10, PAL.gold, { on: P.spire > 0.3 ? 1 : 0, t, broken: this.throttle ? 0.4 : 0, seed: 3 });
     if (this.throttle) {
-      const f = glyphSprite('障害', 8, '#ff4fd8');
-      if (Math.floor(t * 3) % 2) { g.drawImage(f, spX + 18, GROUND - 60); e.drawImage(f, spX + 18, GROUND - 60); }
+      if (Math.floor(t * 3) % 2) city.sign(g, e, '故障', spX + 18, GROUND - 60, '#ff4fd8', { px: 8, t });
     }
     if (this.turbines) {
       for (let k = 0; k < 2; k++) {

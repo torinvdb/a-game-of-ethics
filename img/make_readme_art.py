@@ -26,6 +26,8 @@ import scenery  # noqa: E402  (megacity(), glow helpers, palette)
 
 OUT = ROOT / 'readme'
 FONTS = TALK / 'assets/fonts'
+# The deck's Dela Gothic One is subset to the deck's own kanji; the demo subset covers the section labels.
+KANJI_FONT = TALK / 'demo/city/type/DelaGothicOne-demo.ttf'
 BW, BH = 1280, 400
 SW, SH = 1280, 64
 GIF_LIMIT = 1_500_000
@@ -40,13 +42,13 @@ PAPER = scenery.PAPER
 
 SECTIONS = [
     ('01', '概要', 'OVERVIEW', 'overview', TEAL),
-    ('02', '評価', 'SCORING', 'scoring', AMBER),
-    ('03', '事件', 'SCENARIOS', 'scenarios', MAGENTA),
-    ('04', '時間', 'TIME-TRAVEL', 'time-travel', TEAL),
-    ('05', '証拠', 'RESULTS', 'results', RED),
-    ('06', '方法', 'PROTOCOL', 'protocol', AMBER),
-    ('07', '起動', 'QUICKSTART', 'quickstart', MAGENTA),
-    ('08', '記録', 'CREDITS', 'credits', TEAL),
+    ('02', '採点', 'SCORING', 'scoring', AMBER),
+    ('03', 'シナリオ', 'SCENARIOS', 'scenarios', MAGENTA),
+    ('04', '時間旅行', 'TIME-TRAVEL', 'time-travel', TEAL),
+    ('05', '結果', 'RESULTS', 'results', RED),
+    ('06', '手順', 'PROTOCOL', 'protocol', AMBER),
+    ('07', '導入', 'QUICKSTART', 'quickstart', MAGENTA),
+    ('08', '謝辞', 'CREDITS', 'credits', TEAL),
 ]
 
 
@@ -158,8 +160,9 @@ def strip(num: str, kanji: str, label: str, color) -> Image.Image:
     ld.rectangle((16, 12, 70, SH - 14), outline=color, width=2)
     mono = font('ShareTechMono-Regular.ttf', 26)
     ld.text((25, 16), num, font=mono, fill=AMBER if color != AMBER else MAGENTA)
-    ld.text((92, 8), kanji, font=font('DelaGothicOne-Regular.ttf', 36), fill=color)
-    ld.text((196, 9), label, font=font('Oswald-Bold.ttf', 34), fill=PAPER)
+    kf = ImageFont.truetype(str(KANJI_FONT), 36)
+    ld.text((92, 8), kanji, font=kf, fill=color)
+    ld.text((max(196, 92 + int(ld.textlength(kanji, font=kf)) + 20), 9), label, font=font('Oswald-Bold.ttf', 34), fill=PAPER)
     # right-hand HUD: tick ruler and a status readout
     for i, xx in enumerate(range(SW - 420, SW - 140, 10)):
         h = 14 if i % 5 == 0 else 7

@@ -1,4 +1,4 @@
-// Ashgrove Reach demo server: static files, recorded runs, and live Claude runs of Blackout Ledger.
+// City demo server: static files, recorded runs, and live Claude runs of Blackout Ledger.
 //
 //   node --env-file=.env talks/three-years-in-thirty-minutes/demo/city/server.mjs [--port 8787]
 //   open http://127.0.0.1:8787
@@ -177,5 +177,5 @@ const server = http.createServer((req, res) => {
 });
 
 server.listen(PORT, '127.0.0.1', () => {
-  console.log(`Ashgrove Reach demo on http://127.0.0.1:${PORT}  live: ${provider ? 'on' : 'off (no API key)'}  spent $${spent().toFixed(4)} of $${BUDGET}`);
+  console.log(`City demo on http://127.0.0.1:${PORT}  live: ${provider ? 'on' : 'off (no API key)'}  spent $${spent().toFixed(4)} of $${BUDGET}`);
 });
