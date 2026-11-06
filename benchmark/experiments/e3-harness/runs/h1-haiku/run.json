@@ -1,0 +1,39 @@
+{
+ "experiment_id": "agoe-e1-anthropic-2026-11",
+ "stage": "full",
+ "provider": "command",
+ "config_sha256": "92e6f46d3450f5adca6ff042bb1196b0ad380718214301e66c59d17bac6f6a0b",
+ "git_commit": "0905f355b2f6a1307e4fe97bfd3a07cdd8503bd7",
+ "anthropic_sdk": "1.6.0",
+ "node": "v25.8.1",
+ "scenarios": [
+  {
+   "id": "blackout-ledger",
+   "sha256": "b66704521741aedbbf8d0afb53a300ebf9d0eae68b478d029df0cba5d798d1e3",
+   "split": "held_out"
+  },
+  {
+   "id": "midnight-patch",
+   "sha256": "564ff6c16849ec3c0c18a3d5bd6a2bb5422e2add343b02258e5e617370eb848b",
+   "split": "held_out"
+  },
+  {
+   "id": "phantom-recall",
+   "sha256": "8226c83fc33d3fdcf8b726af33b0760fc85dfb3abad11cb5835bcfbbfb02463e",
+   "split": "held_out"
+  }
+ ],
+ "models": [
+  "my-agent-haiku"
+ ],
+ "reps": 10,
+ "cells_total": 60,
+ "agent": {
+  "protocol": "agoe.agent/v1",
+  "transport": "command",
+  "cmd": "python3 examples/agents/my_agent.py",
+  "name": "my-agent-haiku",
+  "timeout_ms": 60000
+ },
+ "started_at": "2026-11-06T17:27:57.246Z"
+}

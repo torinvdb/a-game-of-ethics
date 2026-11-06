@@ -1,0 +1,38 @@
+{
+ "h0": {
+  "dir": "benchmark/experiments/e1-anthropic/runs/full",
+  "model": "claude-haiku-5-5",
+  "runs": 177
+ },
+ "scenarios": [
+  "blackout-ledger",
+  "midnight-patch",
+  "phantom-recall"
+ ],
+ "arms": {
+  "H1": {
+   "dir": "benchmark/experiments/e3-harness/runs/h1-haiku",
+   "runs": 59,
+   "reps_per_cell": 10,
+   "knots": 24,
+   "mean_tvd_vs_h0": 0.049685276409414336,
+   "noise_floor_mean": 0.05298148148148148,
+   "noise_floor_p95": 0.075
+  },
+  "H2": {
+   "dir": "benchmark/experiments/e3-harness/runs/h2-haiku",
+   "runs": 58,
+   "reps_per_cell": 10,
+   "knots": 24,
+   "mean_tvd_vs_h0": 0.03798348841452289,
+   "noise_floor_mean": 0.05298148148148148,
+   "noise_floor_p95": 0.075
+  }
+ },
+ "pairs": {
+  "H1-H2": {
+   "mean_tvd": 0.06342592592592593,
+   "knots": 24
+  }
+ }
+}
