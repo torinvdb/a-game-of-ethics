@@ -8,7 +8,7 @@
   "cohere/north-mini-code:free": "coding model",
   "liquid/lfm-2.5-2.6b:free": "2.6B, smallest",
   "nvidia/* (other variants)": "one model per developer; Ultra 550B is the largest",
-  "google/gemma-4-26b-a4b-it:free": "one model per developer; 31B dense chosen"
+  "google/gemma-4-31b-it:free": "selected 2026-11-06, replaced before passing smoke: upstream shared pool (Google AI Studio) returned 429 on every smoke attempt"
  },
  "models": [
   {
@@ -149,81 +149,6 @@
    }
   },
   {
-   "id": "google/gemma-4-31b-it:free",
-   "canonical_slug": "google/gemma-4-31b-it-20260402",
-   "hugging_face_id": "google/gemma-4-31B-it",
-   "name": "Google: Gemma 4 31B (free)",
-   "created": 1775148486,
-   "description": "Gemma 4 31B Instruct is Google DeepMind's 30.7B dense multimodal model supporting text and image input with text output. Features a 256K token context window, configurable thinking/reasoning mode, native function...",
-   "context_length": 262144,
-   "architecture": {
-    "modality": "text+image+video->text",
-    "input_modalities": [
-     "image",
-     "text",
-     "video"
-    ],
-    "output_modalities": [
-     "text"
-    ],
-    "tokenizer": "Gemma",
-    "instruct_type": null
-   },
-   "pricing": {
-    "prompt": "0",
-    "completion": "0"
-   },
-   "top_provider": {
-    "context_length": 262144,
-    "max_completion_tokens": 32768,
-    "is_moderated": false
-   },
-   "per_request_limits": null,
-   "supported_parameters": [
-    "include_reasoning",
-    "max_tokens",
-    "reasoning",
-    "response_format",
-    "seed",
-    "temperature",
-    "tool_choice",
-    "tools",
-    "top_p"
-   ],
-   "default_parameters": {
-    "temperature": 1,
-    "top_p": 0.95,
-    "top_k": 64,
-    "frequency_penalty": null,
-    "presence_penalty": null,
-    "repetition_penalty": null
-   },
-   "supported_voices": null,
-   "knowledge_cutoff": null,
-   "expiration_date": null,
-   "links": {
-    "details": "/api/v1/models/google/gemma-4-31b-it-20260402/endpoints"
-   },
-   "endpoints": [
-    "/api/v1/chat/completions",
-    "/api/v1/completions",
-    "/api/v1/messages",
-    "/api/v1/responses"
-   ],
-   "benchmarks": {
-    "design_arena": [],
-    "artificial_analysis": {
-     "intelligence_index": 4.4,
-     "coding_index": 43.4,
-     "agentic_index": 4.2
-    }
-   },
-   "reasoning": {
-    "mandatory": false,
-    "default_enabled": false
-   }
-  },
-  {
    "id": "xingchen-agi/xing4.0-29b-a4b:free",
    "canonical_slug": "xingchen-agi/xing4.0-29b-a4b-20261015",
    "hugging_face_id": "XingChen-AGI/Xing4.0-29B-A4B",
@@ -291,6 +216,87 @@
     "mandatory": false,
     "default_enabled": true
    }
+  },
+  {
+   "id": "google/gemma-4-26b-a4b-it:free",
+   "canonical_slug": "google/gemma-4-26b-a4b-it-20260403",
+   "hugging_face_id": "google/gemma-4-26B-A4B-it",
+   "name": "Google: Gemma 4 26B A4B  (free)",
+   "created": 1775227989,
+   "description": "Gemma 4 26B A4B IT is an instruction-tuned Mixture-of-Experts (MoE) model from Google DeepMind. Despite 25.2B total parameters, only 3.8B activate per token during inference \u2014 delivering near-31B quality at...",
+   "context_length": 262144,
+   "architecture": {
+    "modality": "text+image+video->text",
+    "input_modalities": [
+     "image",
+     "text",
+     "video"
+    ],
+    "output_modalities": [
+     "text"
+    ],
+    "tokenizer": "Gemma",
+    "instruct_type": null
+   },
+   "pricing": {
+    "prompt": "0",
+    "completion": "0"
+   },
+   "top_provider": {
+    "context_length": 262144,
+    "max_completion_tokens": 32768,
+    "is_moderated": false
+   },
+   "per_request_limits": null,
+   "supported_parameters": [
+    "include_reasoning",
+    "max_tokens",
+    "reasoning",
+    "response_format",
+    "seed",
+    "temperature",
+    "tool_choice",
+    "tools",
+    "top_p"
+   ],
+   "default_parameters": {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": 64
+   },
+   "supported_voices": null,
+   "knowledge_cutoff": null,
+   "expiration_date": null,
+   "links": {
+    "details": "/api/v1/models/google/gemma-4-26b-a4b-it-20260403/endpoints"
+   },
+   "endpoints": [
+    "/api/v1/chat/completions",
+    "/api/v1/completions",
+    "/api/v1/messages",
+    "/api/v1/responses"
+   ],
+   "benchmarks": {
+    "design_arena": [],
+    "artificial_analysis": {
+     "intelligence_index": null,
+     "coding_index": 39.3,
+     "agentic_index": 2.9
+    }
+   },
+   "reasoning": {
+    "mandatory": false,
+    "default_enabled": false
+   }
+  }
+ ],
+ "changes": [
+  {
+   "date": "2026-11-06",
+   "replaced": "google/gemma-4-31b-it:free",
+   "with": "google/gemma-4-26b-a4b-it:free",
+   "stage": "before smoke passed",
+   "reason": "persistent upstream 429 from the shared free pool"
   }
  ]
 }

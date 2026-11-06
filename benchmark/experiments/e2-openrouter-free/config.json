@@ -12,7 +12,7 @@
    }
   },
   {
-   "id": "google/gemma-4-31b-it:free",
+   "id": "google/gemma-4-26b-a4b-it:free",
    "price_per_mtok": {
     "in": 0,
     "out": 0
