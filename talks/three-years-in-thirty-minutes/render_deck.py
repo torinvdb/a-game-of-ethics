@@ -1,289 +1,240 @@
-"""Analog anime art direction; exact copy stays in build.py.
-
-HTML embeds its artwork and fonts for offline use. PowerPoint retains editable
-text and native diagram shapes. The supplied reference stills are not embedded.
-"""
-import base64
-import html
-import json
+"""One scene description drives editable PPTX, animated HTML and static exports."""
 from pathlib import Path
-
+from collections import defaultdict
+from datetime import datetime, timezone
+import base64, html, json, math
+from PIL import Image, ImageFont
 from pptx import Presentation
-from pptx.dml.color import RGBColor
-from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
-from pptx.oxml.xmlchemy import OxmlElement
 from pptx.util import Inches, Pt
+from pptx.enum.shapes import MSO_SHAPE, MSO_CONNECTOR
+from pptx.dml.color import RGBColor
+from pptx.oxml.xmlchemy import OxmlElement
+from pptx_motion import add_entrances
 
-PAPER, INK, RED, TEAL = 'E8DFC9', '223635', 'B73C2D', '577F78'
-LAYOUTS = ['cover', 'split', 'incident', 'dossier', 'schematic', 'schematic',
-           'schematic', 'incident', 'split', 'terminal', 'terminal', 'incident',
-           'dossier', 'schematic', 'dossier', 'split', 'dossier', 'schematic',
-           'terminal', 'schematic', 'dossier', 'split', 'cover closing', 'dossier appendix']
-DIAGRAMS = {
-    4: ('clocks', ['WALL TIME', 'LOGICAL TIME', 'EXPERIENCE']),
-    5: ('system', ['INPUT', 'SCAFFOLD', 'STATE']),
-    6: ('branch', ['TELEMETRY', 'REVIEW', 'FROZEN INK']),
-    13: ('paired', ['SHARED SEED', 'A / B', 'COMPARE']),
-    17: ('system', ['ISOLATE', 'RECONCILE', 'OBSERVE']),
-    19: ('loop', ['CAPTURE', 'REVIEW', 'EVALUATE']),
-}
+ROOT=Path(__file__).parent
+BG='08191C'; FG='E2E7D3'; MUTED='A0B7AE'; GREEN='75C6B1'; AMBER='F0B76B'; RED='E48067'
+FONT={'sans':'NimbusSans-Regular.otf','mono':'NimbusMonoPS-Regular.otf','display':'NimbusSansNarrow-Bold.otf'}
+MOTION={'incident':'terminal-boot','consequences':'robot-fault','clocks':'time-jump','results':'terminal-boot','signals':'robot-fault'}
 
+def uri(path):
+    suffix=path.suffix.lower();mime={'.jpg':'image/jpeg','.png':'image/png','.gif':'image/gif','.otf':'font/otf'}[suffix]
+    return 'data:'+mime+';base64,'+base64.b64encode(path.read_bytes()).decode()
 
-def display_title(index, slide):
-    if index == 0:
-        return 'Three Years\nin Thirty\nMinutes'
-    return slide['title']
+def wrap(text,size,width,face):
+    f=ImageFont.truetype(str(ROOT/'assets/fonts'/FONT[face]),size)
+    lines=[]
+    for line in text.split('\n'):
+        words=line.split();current=''
+        for word in words:
+            candidate=(current+' '+word).strip()
+            if current and f.getlength(candidate)>width:lines.append(current);current=word
+            else:current=candidate
+        lines.append(current)
+    return '\n'.join(lines)
 
+class Scene:
+    def __init__(self):self.elements=[]
+    def add(self,typ,**kw):self.elements.append(dict(type=typ,**kw))
+    def rect(self,x,y,w,h,color,alpha=1,line=None,g=0):self.add('rect',x=x,y=y,w=w,h=h,color=color,alpha=alpha,line=line,group=g)
+    def line(self,x,y,w,h=0,color=GREEN,thick=2,g=0):self.add('line',x=x,y=y,w=w,h=h,color=color,thick=thick,group=g)
+    def text(self,x,y,w,text,size=30,color=FG,face='sans',g=0,bold=False):
+        text=wrap(text,size,w,face);height=len(text.split('\n'))*size*1.16+6
+        self.add('text',x=x,y=y,w=w,h=height,text=text,size=size,color=color,face=face,bold=bold,group=g)
+    def image(self,x,y,w,h,file,alpha=1,motion=False,g=0):self.add('image',x=x,y=y,w=w,h=h,file=file,alpha=alpha,motion=motion,group=g)
 
-def data_uri(path, mime):
-    return f'data:{mime};base64,' + base64.b64encode(path.read_bytes()).decode()
+def scene(slide,index):
+    s=Scene();kind=slide['kind'];appendix=kind=='appendix';hero=kind in ('hero','closing')
+    if hero:
+        s.image(510,0,1090,900,'assets/city-night.jpg')
+        s.rect(0,0,1600,900,BG,.43);s.rect(0,0,970,900,BG,.78)
+    elif kind in ('incident','impacts','consequences','fairness'):
+        s.image(0,0,1600,900,'assets/city-structure.jpg');s.rect(0,0,1600,900,BG,.80)
+    else:
+        s.image(0,0,1600,900,'assets/city-night.jpg');s.rect(0,0,1600,900,BG,.80)
+    # Hardware bezel, neon rail and sparse registration marks.
+    s.line(42,36,1516,color='45625D',thick=1);s.line(42,855,1516,color='45625D',thick=1)
+    s.line(44,36,0,70,RED,4);s.line(1556,785,0,70,GREEN,4)
+    s.text(76,65,1120,slide['chapter'],18,GREEN,'mono')
+    s.text(1290,65,230,'AGENT / ETHICS',16,MUTED,'mono')
+    page=f'{index+1:02d} / 14' if index<14 else f'A{index-13} / 3'
+    s.text(1380,817,150,page,19,GREEN,'mono')
+    s.text(76,820,1200,' / '.join(slide.get('refs',[])) or 'TIME / AUTHORITY / CONSEQUENCE',14,MUTED,'mono')
+    if not appendix:s.image(76,770,1440,45,'assets/motion/neon-bus.gif',motion=True)
+    if hero:
+        s.text(72,210,1150,slide['title'].upper(),112 if kind=='hero' else 110,FG,'display')
+        s.text(77,500,1000,slide['subtitle'],33,FG)
+        if kind=='hero':
+            s.text(77,630,1050,'Torin van den Bulk · Vicente Herrera',30,GREEN)
+            s.text(77,683,1050,'CNCF-Hosted Co-located Events North America 2026',21,MUTED,'mono')
+        else:
+            s.text(77,640,1050,slide['takeaway'],33,GREEN,g=1)
+            s.text(77,695,1050,'github.com/torinvdb/a-game-of-ethics',22,MUTED,'mono')
+        return s
+    s.text(72,130,1430,slide['title'].upper(),84,FG,'display')
+    s.text(77,338,1400,slide['subtitle'],30,MUTED)
+    items=slide.get('items',[])
+    if kind=='incident':
+        s.image(940,402,580,326,'assets/motion/terminal-boot.gif',motion=True)
+        for j,(a,b) in enumerate(items):
+            x=78+j*280;s.text(x,430,265,a,60,AMBER,'mono',j+1)
+            s.text(x,520,260,b,21,MUTED,'mono',j+1)
+        s.text(78,630,820,slide['takeaway'],39,GREEN,'display',3)
+    elif kind=='impacts':
+        for j,(a,b) in enumerate(items):
+            x=78+j*755;col=GREEN if j==0 else AMBER
+            s.rect(x,425,685,235,'102A2C',.94,line=col,g=j+1)
+            s.line(x,425,0,235,col,4,j+1)
+            s.text(x+25,450,630,a,36,col,'display',j+1)
+            s.text(x+25,515,620,b,29,FG,g=j+1)
+        s.text(78,695,1435,slide['takeaway'],30,GREEN,g=2)
+    elif kind=='consequences':
+        for j,(a,b) in enumerate(items):
+            y=414+j*94;s.text(80,y,435,a,30,AMBER if j==0 else GREEN,'display',j+1)
+            s.text(80,y+44,735,b,25,FG,g=j+1)
+            s.line(80,y+84,730,color='365854',thick=1,g=j+1)
+        s.image(885,411,635,357,'assets/motion/robot-fault.gif',motion=True)
+    elif kind=='clocks':
+        for j,(a,b) in enumerate(items):
+            y=419+j*94;s.text(80,y,300,a,31,GREEN,'display',j+1);s.text(390,y+2,400,b,27,FG,g=j+1)
+            s.line(80,y+74,725,color='365854',thick=1,g=j+1)
+        s.image(900,410,620,349,'assets/motion/time-jump.gif',motion=True)
+        s.text(80,713,790,slide['takeaway'],26,AMBER,g=3)
+    elif kind in ('research','gate','appendix'):
+        for j,(a,b) in enumerate(items):
+            y=412+j*101;s.text(80,y,405,a,31,GREEN if j!=2 else AMBER,'display',j+1 if not appendix else 0)
+            s.text(500,y+2,1000,b,27 if not appendix else 25,FG,g=j+1 if not appendix else 0)
+            s.line(80,y+86,1440,color='365854',thick=1,g=j+1 if not appendix else 0)
+        if slide.get('takeaway'):s.text(80,728,1430,slide['takeaway'],24,AMBER,g=3)
+    elif kind in ('pipeline','feedback','stack'):
+        for j,(a,b) in enumerate(items):
+            x=80+j*500;col=GREEN if j!=1 else AMBER
+            s.rect(x,430,440,215,'10292B',.96,line=col,g=j+1)
+            s.text(x+23,454,394,a,35,col,'display',j+1)
+            s.text(x+23,523,394,b,28,FG,g=j+1)
+            if j<2:
+                s.line(x+440,535,60,color=GREEN,thick=3,g=j+2)
+                s.line(x+487,528,12,7,GREEN,2,j+2);s.line(x+487,542,12,-7,GREEN,2,j+2)
+        s.text(80,701,1435,slide['takeaway'],27,MUTED,g=3)
+    elif kind=='results':
+        columns=[80,510,650,802]
+        for x,txt,w in zip(columns,['POLICY','CHOICES','VIOLATIONS','MED / EDU'],[410,120,145,150]):s.text(x,418,w,txt,18,MUTED,'mono')
+        for j,row in enumerate(items):
+            y=467+j*77;s.line(80,y-15,855,color='365854',thick=1,g=j+1)
+            s.text(80,y,420,row[0],30,FG,'display',j+1)
+            for k in range(1,4):s.text(columns[k],y,130 if k==1 else 145,row[k],29,RED if j==1 else GREEN,'mono',j+1)
+        s.image(982,425,540,304,'assets/motion/terminal-boot.gif',motion=True)
+        s.text(80,716,1450,slide['takeaway'],23,AMBER,g=3)
+    elif kind=='fairness':
+        s.text(80,421,700,items[0][0],34,GREEN,'display',1)
+        s.text(80,478,710,items[0][1],31,FG,g=1)
+        s.text(80,567,700,items[1][0],34,AMBER,'display',2)
+        s.text(80,624,710,items[1][1],31,FG,g=2)
+        s.rect(948,420,572,250,'10292B',.97,line=RED,g=2)
+        s.text(985,442,510,'36 / 36',92,RED,'mono',2)
+        s.text(990,561,480,'ALLOCATION CHOICES FLIP',24,MUTED,'mono',2)
+        s.text(80,719,1430,slide['takeaway'],24,MUTED,g=2)
+    elif kind=='signals':
+        for j,(a,b) in enumerate(items):
+            y=420+j*93;s.text(80,y,210,a,34,[RED,GREEN,AMBER][j],'display',j+1)
+            s.text(310,y+2,540,b,27,FG,g=j+1)
+        s.image(950,410,570,321,'assets/motion/robot-fault.gif',motion=True)
+        s.text(80,715,1430,slide['takeaway'],25,MUTED,g=3)
+    return s
 
+def color_fill(shape,color,alpha=1):
+    shape.fill.solid();shape.fill.fore_color.rgb=RGBColor.from_string(color)
+    if alpha!=1:
+        rgb=shape.fill._xPr.solidFill.srgbClr
+        a=OxmlElement('a:alpha');a.set('val',str(int(alpha*100000)));rgb.append(a)
 
-def diagram_svg(index):
-    kind, labels = DIAGRAMS[index]
-    bits = ['<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 305" role="img" '
-            f'aria-label="{html.escape(" / ".join(labels))}">',
-            '<defs><pattern id="hatch" width="9" height="9" patternUnits="userSpaceOnUse" '
-            'patternTransform="rotate(40)"><path d="M0 0V9" stroke="#577f78" stroke-width="1" opacity=".25"/></pattern></defs>',
-            '<g fill="none" stroke="#223635" stroke-width="2">',
-            '<path d="M12 28H868M12 280H868" opacity=".3"/>',
-            '<path d="M15 18v20m-10-10h20M865 18v20m-10-10h20M15 270v20m-10-10h20M865 270v20m-10-10h20"/>']
-    for j, (x, label) in enumerate(zip([140, 440, 740], labels)):
-        bits.append(f'<g class="phase" data-phase="{j}">')
-        if kind == 'clocks':
-            bits.append(f'<circle cx="{x}" cy="140" r="77" fill="url(#hatch)"/>'
-                        f'<circle cx="{x}" cy="140" r="69"/><circle cx="{x}" cy="140" r="5" fill="#b73c2d"/>')
-            if j == 0:
-                bits.append(f'<path class="wire" d="M{x} 87v53l40 20" stroke="#b73c2d" stroke-width="5"/>'
-                            f'<path d="M{x-15} 48h30m-15 0v14"/>')
-            elif j == 1:
-                bits.append(f'<rect x="{x-42}" y="103" width="84" height="73" rx="2" fill="#e8dfc9"/>'
-                            f'<path d="M{x-42} 123h84m-65-30v20m46-20v20"/>'
-                            f'<text x="{x}" y="160" fill="#b73c2d" stroke="none" text-anchor="middle" font-family="monospace" font-size="26">36</text>')
+def pptx(root,slides,scenes,animated):
+    prs=Presentation();prs.slide_width=Inches(16);prs.slide_height=Inches(9)
+    prs.core_properties.author='Torin van den Bulk';prs.core_properties.title='Three Years in Thirty Minutes: Time-Travel Ethics Evaluation for AI Agents'
+    prs.core_properties.subject='14-slide main talk with three hidden appendices'
+    prs.core_properties.last_modified_by='Torin van den Bulk'
+    prs.core_properties.comments='Agentic ethics evaluation: scenario, consequences and evidence.'
+    prs.core_properties.created=prs.core_properties.modified=datetime.now(timezone.utc)
+    for i,(content,sc) in enumerate(zip(slides,scenes)):
+        slide=prs.slides.add_slide(prs.slide_layouts[6]);slide.background.fill.solid();slide.background.fill.fore_color.rgb=RGBColor.from_string(BG)
+        if i>=14:slide._element.set('show','0')
+        groups=defaultdict(list)
+        for e in sc.elements:
+            x,y,w,h=[Inches(e[k]/100) for k in ('x','y','w','h')]
+            if e['type']=='text':
+                shape=slide.shapes.add_textbox(x,y,w,h);tf=shape.text_frame;tf.word_wrap=False
+                tf.margin_left=tf.margin_right=tf.margin_top=tf.margin_bottom=0
+                for j,line in enumerate(e['text'].split('\n')):
+                    p=tf.paragraphs[0] if j==0 else tf.add_paragraph();p.text=line
+                    p.font.name={'sans':'Nimbus Sans','mono':'Nimbus Mono PS','display':'Nimbus Sans Narrow'}[e['face']]
+                    p.font.size=Pt(e['size']*.72);p.font.bold=e['face']=='display' or e.get('bold',False)
+                    p.font.color.rgb=RGBColor.from_string(e['color']);p.space_before=p.space_after=Pt(0);p.line_spacing=1.16
+            elif e['type']=='rect':
+                shape=slide.shapes.add_shape(MSO_SHAPE.RECTANGLE,x,y,w,h);color_fill(shape,e['color'],e['alpha'])
+                if e.get('line'):shape.line.color.rgb=RGBColor.from_string(e['line']);shape.line.width=Pt(.8)
+                else:shape.line.fill.background()
+            elif e['type']=='line':
+                shape=slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT,x,y,x+w,y+h);shape.line.color.rgb=RGBColor.from_string(e['color']);shape.line.width=Pt(e['thick']*.72)
             else:
-                bits.append(f'<path class="wire" d="M{x-40} 135h40v-25h40m-40 25v40h40" stroke="#b73c2d" stroke-width="3"/>')
-                for xx, yy in [(x-40,135),(x,135),(x+40,110),(x+40,175)]:
-                    bits.append(f'<circle cx="{xx}" cy="{yy}" r="8" fill="#e8dfc9"/>')
-        else:
-            bits.append(f'<rect x="{x-100}" y="85" width="200" height="110" rx="4" fill="url(#hatch)"/>'
-                        f'<rect x="{x-92}" y="93" width="184" height="94" rx="2"/>'
-                        f'<rect x="{x-65}" y="115" width="130" height="50" fill="#223635"/>')
-            for xx in [x-82,x+82]:
-                for yy in [103,177]:
-                    bits.append(f'<circle cx="{xx}" cy="{yy}" r="3"/>')
-            bits.append(f'<text x="{x}" y="147" fill="#e8dfc9" stroke="none" text-anchor="middle" '
-                        f'font-family="monospace" font-size="19">{j+1:02d} / {("IN", "RUN", "OUT")[j]}</text>')
-            if j:
-                bits.append(f'<path class="wire" d="M{x-200} 130h45v20h55m-100 5h30v20h70" stroke="#b73c2d" stroke-width="3"/>')
-            if j == 2 and kind in ('loop', 'branch', 'paired'):
-                bits.append('<path class="wire" d="M840 140h20v115H20V140h20" stroke="#577f78" stroke-width="3"/>')
-            if j == 1 and kind in ('branch', 'paired'):
-                bits.append('<path class="wire" d="M440 85V48h170v37" stroke="#577f78" stroke-width="3"/>')
-        bits.append(f'<text x="{x}" y="238" fill="#223635" stroke="none" text-anchor="middle" '
-                    f'font-family="monospace" font-size="19">{html.escape(label)}</text></g>')
-    bits.append('</g></svg>')
-    return ''.join(bits)
+                path=root/e['file']
+                if e.get('motion') and not animated:path=path.with_suffix('.png')
+                shape=slide.shapes.add_picture(str(path),x,y,w,h)
+                # CSS object-fit: cover equivalent. Do not stretch source photographs.
+                iw,ih=Image.open(path).size;ratio=(e['w']/e['h'])/(iw/ih)
+                if ratio<1:shape.crop_left=shape.crop_right=(1-ratio)/2
+                elif ratio>1:shape.crop_top=shape.crop_bottom=(1-1/ratio)/2
+                shape._element.nvPicPr.cNvPr.set('descr',('Animated diagnostic schematic, not measured data' if e.get('motion') else 'Existing city artwork; see assets/images.json'))
+            if e.get('group'):groups[e['group']].append(shape.shape_id)
+        transition=OxmlElement('p:transition');transition.set('spd','fast');transition.set('advClick','1');transition.append(OxmlElement('p:fade'));slide._element.append(transition)
+        if animated:add_entrances(slide,[groups[k] for k in sorted(groups)])
+        notes=content['notes']+'\n\nSources: '+', '.join(content.get('refs',[]))+'\nTiming: '+str(content['duration'])+' seconds.'
+        if animated:notes+='\n\nPLAYBACK: use Slide Show (F5). Click once per evidence group. Embedded GIFs animate in supported PowerPoint versions; the static companion has all content visible. Diagnostics are illustrative motion, not experimental data.'
+        notes+='\n\nVisual sources: existing city artwork cropped from the Ghost in the Shell-themed collection recorded in assets/images.json. Exact inline references were not available as downloadable files. No Akira poster or generative artwork is included.'
+        slide.notes_slide.notes_text_frame.text=notes
+    prs.save(root/('three-years.pptx' if animated else 'three-years-static.pptx'))
 
-
-def render(root, slides):
-    assert len(slides) == len(LAYOUTS), 'Assign an explicit visual layout to each slide'
-    css = (root / 'deck.css').read_text()
-    for token, file, mime in [
-        ('__ART__', 'assets/akira-kaneda.jpg', 'image/jpeg'),
-        ('__NARROW__', 'assets/fonts/NimbusSansNarrow-Bold.otf', 'font/otf'),
-        ('__MONO__', 'assets/fonts/NimbusMonoPS-Regular.otf', 'font/otf'),
-    ]:
-        css = css.replace(token, data_uri(root / file, mime))
-    parts = []
-    for i, (slide, layout) in enumerate(zip(slides, LAYOUTS)):
-        cards = ''.join(
-            f'<article class="card"><span class="serial"><i class="tick"></i>{j+1:02d}</span>'
-            f'<h2>{html.escape(a)}</h2><p>{html.escape(b)}</p></article>'
-            for j, (a, b) in enumerate(slide['cards']))
-        event = ('<div class="event"><strong>Torin van den Bulk · Vicente Herrera</strong>'
-                 'CNCF-Hosted Co-located Events North America 2026<br>'
-                 '9 November 2026 · Salt Lake City, USA</div>') if i == 0 else ''
-        diagram = (f'<div class="diagram">{diagram_svg(i)}</div>'
-                   '<div class="diagram-caption">SCHEMATIC / CONCEPTUAL RELATIONSHIPS · NOT MEASURED DATA</div>') if i in DIAGRAMS else ''
-        stamp = '' if 'cover' in layout else f'<div class="case-stamp">FILE {i:02d}<br>FIELD NOTES</div>'
-        parts.append(
-            f'<section class="slide {layout}" data-index="{i}" aria-label="Slide {i+1}: {html.escape(slide["title"])}">'
-            '<div class="keyart"></div><div class="art-window"></div><div class="registration"></div>'
-            '<header class="topline"><span>TIME-TRAVEL ETHICS / SYSTEM OBSERVATION</span>'
-            '<b>36 MONTHS / 30 MINUTES</b></header>'
-            f'<div class="eyebrow">{html.escape(slide["k"])}</div>'
-            f'<h1>{html.escape(display_title(i, slide))}</h1><p class="lead">{html.escape(slide["lead"])}</p>'
-            f'<div class="card-grid">{cards}</div>{diagram}{event}{stamp}'
-            '<div class="spine">AUTHORITY / MEMORY / CONSEQUENCE</div><div class="scanlines"></div>'
-            f'<footer class="folio"><span>RECORD / {html.escape(slide["refs"] or "LOCAL IMPLEMENTATION")}</span>'
-            f'<span class="barcode" aria-hidden="true"></span><span class="page">{i+1:02d} — {len(slides):02d}</span></footer></section>')
-    image_source = json.loads((root/'assets/images.json').read_text())[0]
-    credit = '\n\nVisual credit: '+image_source['title']+'. '+image_source['credit']+' Source: '+image_source['source_url']
-    browser_slides = [dict(s, notes=s['notes']+(credit if 'cover' in layout or layout=='split' else '')) for s, layout in zip(slides, LAYOUTS)]
-    js = 'const data=' + json.dumps(browser_slides).replace('</', '<\\/') + ';\n' + (root / 'deck.js').read_text()
-    document = ('<!doctype html><html lang="en"><head><meta charset="utf-8">'
-                '<meta name="viewport" content="width=device-width,initial-scale=1">'
-                '<title>Three Years in Thirty Minutes — Field Dossier</title><style>' + css +
-                '</style></head><body><main id="stage">' + ''.join(parts) +
-                '</main><aside id="notes" class="notes"></aside><nav aria-label="Presentation controls">'
-                '<button onclick="previous()" aria-label="Previous slide">←</button>'
-                '<button onclick="next()" aria-label="Reveal or next slide">→</button>'
-                '<button onclick="notes()">Notes</button><button onclick="motion()">Motion</button>'
-                '<button onclick="full()">Fullscreen</button></nav><div id="progress"></div>'
-                '<script>' + js + '</script></body></html>')
-    (root / 'three-years.html').write_text(document)
-    pptx(root, slides)
-    notes = ['# Speaker notes and rehearsal guide',
-             f"Main talk: {sum(s['duration'] for s in slides)/60:.2f} minutes including demo.",
-             'Open three-years.html offline. Right/Space reveals the next annotation and its diagram phase; '
-             'Left returns; A reveals all annotations; N shows notes; F fullscreen; M disables motion. '
-             'Reduced-motion preferences are respected. The PowerPoint uses editable text and native fade transitions; '
-             'progressive diagram animation is in HTML. PDF is the static fallback.',
-             'Art direction: actual AKIRA poster artwork, mechanical schematics, '
-             'paper technical dossiers, faded petrol green and vermilion incident pages. '
-             'No generated illustration is included. Exact inline Ghost in the Shell references await downloadable source files. '
-             'Image source and credits: assets/images.json.',
-             'Presenters: Torin van den Bulk and Vicente Herrera.']
-    for i, s in enumerate(browser_slides):
-        notes.extend([f"## {i+1:02d}. " + s['title'].replace('\n',' '),
-                      f"Time: {s['duration']}s | Sources: {s['refs'] or 'Local implementation / synthesis'}", s['notes']])
-    (root / 'speaker-notes.md').write_text('\n\n'.join(notes).rstrip()+'\n')
-    print(f'Retro anime dossier: {len(slides)} slides; {sum(s["duration"] for s in slides)/60:.2f} minutes')
-
-
-def pptx(root, slides):
-    """Native editable text and geometry, with the original illustration as art."""
-    prs = Presentation()
-    prs.slide_width, prs.slide_height = Inches(16), Inches(9)
-
-    def text(slide, x, y, w, h, content, size=24, color=INK, font='Arial', bold=False):
-        shape = slide.shapes.add_textbox(Inches(x), Inches(y), Inches(w), Inches(h))
-        frame = shape.text_frame
-        frame.word_wrap = True
-        frame.margin_left = frame.margin_right = frame.margin_top = frame.margin_bottom = 0
-        for index, line in enumerate(content.split('\n')):
-            paragraph = frame.paragraphs[0] if index == 0 else frame.add_paragraph()
-            paragraph.text = line
-            paragraph.font.name = font
-            paragraph.font.size = Pt(size)
-            paragraph.font.bold = bold
-            paragraph.font.color.rgb = RGBColor.from_string(color)
-            paragraph.space_after = Pt(0)
-            paragraph.line_spacing = 1.02
-        return shape
-
-    def rect(slide, x, y, w, h, fill=None, line=None, width=1):
-        shape = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE, Inches(x), Inches(y), Inches(w), Inches(h))
-        if fill:
-            shape.fill.solid(); shape.fill.fore_color.rgb = RGBColor.from_string(fill)
-        else:
-            shape.fill.background()
-        if line:
-            shape.line.color.rgb = RGBColor.from_string(line); shape.line.width = Pt(width)
-        else:
-            shape.line.fill.background()
-        return shape
-
-    def line(slide, x1, y1, x2, y2, color=INK, width=1):
-        shape = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, Inches(x1), Inches(y1), Inches(x2), Inches(y2))
-        shape.line.color.rgb = RGBColor.from_string(color); shape.line.width = Pt(width)
-
-    def picture(slide, x, y, w, h):
-        # Native cropping preserves the source illustration without raster edits.
-        image = slide.shapes.add_picture(str(root/'assets/akira-kaneda.jpg'), Inches(x), Inches(y), width=Inches(w), height=Inches(h))
-        aspect = 16/9
-        desired = w/h
-        if desired < aspect:
-            visible = desired/aspect
-            image.crop_left = (1-visible)/2
-            image.crop_right = (1-visible)/2
-        return image
-
-    for i, (s, layout) in enumerate(zip(slides, LAYOUTS)):
-        sl = prs.slides.add_slide(prs.slide_layouts[6])
-        dark = layout == 'terminal'
-        color = PAPER if dark or layout == 'incident' else INK
-        accent = 'D89865' if dark else RED
-        background = RED if layout == 'incident' else '172D2E' if dark else PAPER
-        sl.background.fill.solid(); sl.background.fill.fore_color.rgb = RGBColor.from_string(background)
-        if 'cover' in layout:
-            picture(sl, 8.4, 0, 7.6, 9)
-            rect(sl, 0, 0, 8.4, 9, PAPER)
-        elif layout == 'split':
-            picture(sl, 11.3, 0, 4.7, 9); rect(sl, 11.26, 0, .07, 9, RED)
-        right = 10.8 if layout == 'split' else 15.2
-        rect(sl, .24, .24, right-.05, 8.52, line='577F78' if dark else color, width=.5)
-        line(sl, .8, .91, right, .91, color, .5)
-        text(sl, .8, .54, 9, .3, 'TIME-TRAVEL ETHICS / SYSTEM OBSERVATION', 10, color, 'Nimbus Mono PS')
-        if layout != 'split':
-            text(sl, 12.65, .54, 2.65, .3, '36 MONTHS / 30 MINUTES', 10, color, 'Nimbus Mono PS')
-        text(sl, .8, 1.12 if i else 1.58, 13, .35, s['k'], 12, accent, 'Nimbus Mono PS')
-        title_y, title_w, title_size = (2.05, 7.6, 76) if i == 0 else (1.63, 14, 59)
-        if layout == 'split': title_w, title_size = 10, 58
-        if layout == 'schematic': title_size = 56
-        if i in (20,21): title_size = 51
-        if 'closing' in layout: title_size, title_y, title_w = 46, 1.7, 7.1
-        text(sl, .76, title_y, title_w, 2.2, display_title(i, s).upper(), title_size,
-             INK if layout == 'incident' else color, 'Nimbus Sans Narrow', True)
-        lead_y = 5.45 if i == 0 else 3.8 if 'closing' in layout else 3.55
-        lead_w = 6.7 if 'cover' in layout else 9.4 if layout == 'split' else 13.7
-        text(sl, .8, lead_y, lead_w, .9, s['lead'], 19, color)
-        if i == 0:
-            rect(sl, .8, 6.65, 7.1, 1.35, PAPER)
-            rect(sl, .8, 6.65, .05, 1.35, RED)
-            text(sl, 1.06, 6.77, 6.85, .4, 'Torin van den Bulk · Vicente Herrera', 17, INK)
-            text(sl, 1.06, 7.25, 6.85, .7, 'CNCF-Hosted Co-located Events North America 2026\n9 November 2026 · Salt Lake City, USA', 11, INK, 'Nimbus Mono PS')
-        for j, (a,b) in enumerate(s['cards']):
-            if 'closing' in layout:
-                y = 5.05+j*.91
-                line(sl,.8,y,7.7,y,INK,.5)
-                text(sl,.8,y+.1,2,.5,a.upper(),21,INK,'Nimbus Sans Narrow',True)
-                text(sl,3,y+.1,4.6,.7,b,16,INK)
-            elif layout == 'split':
-                y = 4.75+j*1.03
-                line(sl,.8,y,10,y,color,.5)
-                text(sl,.8,y+.14,.5,.3,f'{j+1:02d}',12,accent,'Nimbus Mono PS')
-                text(sl,1.3,y+.14,2.7,.75,a.upper(),22,color,'Nimbus Sans Narrow',True)
-                text(sl,4.1,y+.14,5.8,.9,b,16,color)
-            elif layout == 'schematic':
-                y = 4.48+j*1.12
-                line(sl,10.3,y,14.7,y,color,.5)
-                text(sl,10.3,y+.14,.35,.3,f'{j+1:02d}',10,accent,'Nimbus Mono PS')
-                text(sl,10.66,y+.14,4.05,.5,a.upper(),22,color,'Nimbus Sans Narrow',True)
-                text(sl,10.66,y+.62,4.05,.63,b,15,color)
+def html_deck(root,slides,scenes):
+    assets={}
+    def asset(path):
+        key=str(path)
+        if key not in assets:assets[key]='asset'+str(len(assets))
+        return assets[key]
+    parts=[]
+    for i,(content,sc) in enumerate(zip(slides,scenes)):
+        bits=[]
+        for e in sc.elements:
+            typ=e['type'];g=e.get('group',0);attrs=f' class="element {typ}'+(' reveal' if g else '')+f'" data-group="{g}"'
+            style=f'left:{e["x"]}px;top:{e["y"]}px;width:{e["w"]}px;height:{max(1,e["h"])}px;'
+            if typ=='text':
+                style+=f'font-family:{e["face"]};font-size:{e["size"]}px;color:#{e["color"]};'
+                bits.append(f'<div{attrs} style="{style}">{html.escape(e["text"])}</div>')
+            elif typ=='rect':
+                style+=f'background:#{e["color"]};opacity:{e["alpha"]};'
+                if e.get('line'):style+='border:1px solid #'+e['line']+';'
+                bits.append(f'<div{attrs} style="{style}"></div>')
+            elif typ=='line':
+                length=math.hypot(e['w'],e['h']);angle=math.degrees(math.atan2(e['h'],e['w']))
+                style=f'left:{e["x"]}px;top:{e["y"]}px;width:{length}px;height:{e["thick"]}px;background:#{e["color"]};transform:rotate({angle}deg);transform-origin:0 0;'
+                bits.append(f'<div{attrs} style="{style}"></div>')
             else:
-                x = .8+j*4.94
-                y = 5.65 if 'closing' in layout else 5.0+(j*.22 if 'dossier' in layout else 0)
-                if layout in ('incident','terminal') or 'closing' in layout:
-                    rect(sl,x,y,4.65,2.5,'1C302F' if layout!='terminal' else '28413E',line='577F78')
-                    card_color = PAPER
-                else:
-                    line(sl,x,y,x+4.5,y,color,1); card_color = color
-                text(sl,x+.17,y+.18,4,.3,f'{j+1:02d} /',12,accent,'Nimbus Mono PS')
-                text(sl,x+.17,y+.65,4.24,.85,a.upper(),25,card_color,'Nimbus Sans Narrow',True)
-                text(sl,x+.17,y+1.45,4.24,.95,b,17,card_color)
-        if i in DIAGRAMS:
-            kind, labels = DIAGRAMS[i]
-            for j,label in enumerate(labels):
-                x = .9+j*2.9
-                if kind == 'clocks':
-                    shape=sl.shapes.add_shape(MSO_SHAPE.OVAL, Inches(x+.28), Inches(5.08), Inches(1.65), Inches(1.65))
-                    shape.fill.background();shape.line.color.rgb=RGBColor.from_string(INK)
-                    text(sl,x+.66,5.62,1.2,.5,['SEC','36','N'][j],25,RED,'Nimbus Mono PS')
-                else:
-                    rect(sl,x,5.28,2.25,1.13,line=INK,width=1.3)
-                    rect(sl,x+.1,5.38,2.05,.93,line=TEAL,width=.7)
-                    text(sl,x+.35,5.68,1.8,.4,f'{j+1:02d} / '+['IN','RUN','OUT'][j],17,INK,'Nimbus Mono PS')
-                    if j:line(sl,x-.65,5.85,x,5.85,RED,2)
-                text(sl,x,6.98,2.6,.4,label,13,INK,'Nimbus Mono PS')
-            if kind in ('loop','branch','paired'):
-                line(sl,7.83,6.41,7.83,7.65,TEAL,1.5)
-                line(sl,7.83,7.65,2.03,7.65,TEAL,1.5)
-                line(sl,2.03,7.65,2.03,6.41,TEAL,1.5)
-            text(sl,.8,7.9,9,.25,'SCHEMATIC / CONCEPTUAL RELATIONSHIPS · NOT MEASURED DATA',9,TEAL,'Nimbus Mono PS')
-        line(sl,.8,8.35,right,8.35,color,.5)
-        text(sl,.8,8.51,10,.3,'RECORD / '+(s['refs'] or 'LOCAL IMPLEMENTATION'),9,color,'Nimbus Mono PS')
-        text(sl,right-1,8.48,1.2,.3,f'{i+1:02d} — {len(slides):02d}',13,color,'Nimbus Mono PS')
-        sl.notes_slide.notes_text_frame.text=s['notes']+'\n\nImage credit where shown: AKIRA (1988), Kaneda and motorcycle poster artwork. Source: assets/images.json. No AI-generated artwork.'+f'\n\nSources: {s["refs"]}\nTiming: {s["duration"]} seconds.'
-        transition=OxmlElement('p:transition');transition.set('spd','med');transition.append(OxmlElement('p:fade'));sl._element.insert(2,transition)
-    prs.save(root/'three-years.pptx')
+                key=asset(root/e['file']);still=asset((root/e['file']).with_suffix('.png')) if e.get('motion') else key
+                bits.append(f'<img{attrs} style="{style}object-fit:cover" data-asset="{key}" data-still="{still}" data-motion="{str(e.get("motion",False)).lower()}" alt="'+('Diagnostic animation' if e.get('motion') else 'City landscape')+'">')
+        parts.append(f'<section class="slide" data-index="{i}" aria-label="{html.escape(content["title"])}">'+''.join(bits)+'</section>')
+    fonts=''.join(f'@font-face{{font-family:{face};src:url("{uri(root/"assets/fonts"/filename)}")}}' for face,filename in FONT.items())
+    css=fonts+(root/'deck.css').read_text()
+    data={value:uri(Path(path)) for path,value in assets.items()}
+    js='const slides='+json.dumps(slides).replace('</','<\\/')+';const assets='+json.dumps(data)+';'+(root/'deck.js').read_text()
+    doc='<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Three Years in Thirty Minutes</title><style>'+css+'</style></head><body><main id="stage">'+''.join(parts)+'</main><aside id="notes"></aside><nav><button onclick="previous()">←</button><button onclick="next()">→</button><button onclick="toggleNotes()">Notes</button><button onclick="toggleMotion()">Motion</button><button onclick="appendix()">Appendix</button><button onclick="full()">Fullscreen</button></nav><script>'+js+'</script></body></html>'
+    (root/'three-years.html').write_text(doc)
+
+def render(root,slides):
+    scenes=[scene(s,i) for i,s in enumerate(slides)]
+    (root/'scene-layout.json').write_text(json.dumps([s.elements for s in scenes],indent=2)+'\n')
+    pptx(root,slides,scenes,True);pptx(root,slides,scenes,False);html_deck(root,slides,scenes)
+    notes=['# Rehearsal guide — 14-slide main talk',f"Main talk: {sum(s['duration'] for s in slides)/60:.2f} minutes, including a three-minute demo. Three appendices are hidden in PowerPoint.",
+    'PowerPoint: open three-years.pptx and start Slide Show (F5). Native entrance effects reveal one evidence group per click. The embedded GIF console, neon circuit, logical clock and robotic fault schematic animate inside supported PowerPoint slideshow players. Editing view and PDF are static. three-years-static.pptx is the all-visible, low-motion fallback.',
+    'Browser: Right/Space reveals a group or advances; Left returns; A reveals all; N toggles notes; M toggles motion; R opens the appendix; Home returns to the opening; End goes to the main closing. The deck is entirely offline.',
+    'The motion is hand-coded UI and diagram animation, not measured agent behavior. Existing city artwork provides atmosphere. No Akira poster or generated anime illustration is included. Image provenance and crops are recorded in assets/images.json.',
+    'Torin van den Bulk · Vicente Herrera']
+    for i,s in enumerate(slides):notes += [f'## {i+1:02d}. '+s['title'].replace('\n',' '),(f"{s['duration']} seconds | "+', '.join(s.get('refs',[]))).rstrip(' |'),s['notes']]
+    (root/'speaker-notes.md').write_text('\n\n'.join(notes)+'\n')
+    print('Built: 14 main slides + 3 hidden appendices; animated PPTX + static PPTX + HTML.')

@@ -1,28 +1,35 @@
-# Presentation image sources
+# Presentation assets
 
-The supplied visual references set the direction: actual Akira and Ghost in the
-Shell imagery, excluding graphic violence, gore and nudity. No generated
-illustration is included in the current deck.
+## City artwork
 
-## Included
+`city-night.jpg` and `city-structure.jpg` are architecture crops from existing
+Ghost in the Shell-themed wallpapers retrieved from
+`nightwarelabz/GITS-Linux-Mint-Theme-Configs`. Their immutable source URLs, original
+and cropped hashes, crop coordinates and JPEG encoding are recorded in
+[images.json](images.json). They replace the earlier Akira poster entirely.
 
-**AKIRA — Kaneda and motorcycle poster artwork.** A non-graphic image retrieved
-from the `Realdhiru/wallps` collection at the immutable source URL recorded in
-`images.json`. It was resized and JPEG-encoded to keep the deck portable. Display
-cropping is performed by the slide layout; there is no generative retouching.
-The collection is a retrieval source, not an assertion of ownership or a license
-from the film's rights holders. Credit: AKIRA (1988), respective artwork rights
-holders. This image is excluded from the code's MIT license.
+Only architecture is used; the crops exclude the foreground characters. No
+non-graphic reference was converted into gore, nudity or other graphic imagery.
+No generative editing or replacement anime illustration was used. The exact
+inline reference binaries were not accessible in this workspace; these assets
+are sourced substitutes, not claims to reproduce those exact files or to be
+authenticated frames from a film. The retrieval collection does not establish
+artwork ownership or a license from the rights holders. The artwork retains its
+respective third-party rights and is excluded from the repository MIT license.
 
-## Pending original files
+## Motion assets
 
-The Ghost in the Shell references visible inline in the conversation were not
-exposed as downloadable source files. Their exact inclusion awaits file/ZIP
-attachments. Unidentified anime images and uncertain fan-art candidates were not
-substituted. The discarded generated illustration is not in this directory,
-HTML, PDF or PowerPoint.
+`motion/` contains deterministic graphics drawn by `make_motion.py`: a terminal,
+a neon signal path, a logical clock and an articulated robotic diagnostic
+schematic. GIFs and corresponding static PNGs are included. These original UI
+and diagram graphics are code-generated, not AI-generated anime imagery.
+Their animation is illustrative, not experimental evidence. The manifest records
+both generated and encoded frame counts: GIF encoding coalesces identical frames
+while preserving their duration. Small localized sparks occur once per robotic
+fault cycle; there is no audio or full-frame strobe.
 
 ## Fonts
 
-Nimbus Sans Narrow Bold and Nimbus Mono PS Regular are bundled from URW Base35.
-Their copyright and AGPL-3 font-exception terms are in `fonts/LICENSE.txt`.
+Nimbus Sans Regular, Nimbus Sans Narrow Bold and Nimbus Mono PS Regular are
+bundled from URW Base35. Their copyright and AGPL-3 font-exception terms are in
+`fonts/LICENSE.txt`. HTML embeds them; install them for the PPTX.

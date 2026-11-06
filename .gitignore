@@ -46,3 +46,4 @@ __pycache__/
 .deepeval/
 .deepeval_telemetry.txt
 talks/three-years-in-thirty-minutes/*-preview.png
+talks/three-years-in-thirty-minutes/preview-frames/

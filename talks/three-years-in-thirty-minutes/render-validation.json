@@ -1,8 +1,34 @@
 {
-  "slides": 24,
+  "main_slides": 14,
+  "hidden_appendices": 3,
+  "duration_seconds": 1330,
   "js_errors": [],
   "external_requests": [],
   "layout_issues": [],
+  "native_pptx": {
+    "slides": 17,
+    "hidden_appendices": 3,
+    "click_groups": 35,
+    "entrance_shapes": 135,
+    "animated_media": {
+      "ppt/media/image2.gif": {
+        "frames": 60,
+        "loop": 0
+      },
+      "ppt/media/image4.gif": {
+        "frames": 58,
+        "loop": 0
+      },
+      "ppt/media/image5.gif": {
+        "frames": 36,
+        "loop": 0
+      },
+      "ppt/media/image6.gif": {
+        "frames": 37,
+        "loop": 0
+      }
+    }
+  },
   "viewports": [
     "1600x900",
     "1280x720",
@@ -10,11 +36,20 @@
     "1920x1080"
   ],
   "checks": [
-    "navigation",
-    "annotation and diagram reveals",
-    "notes",
+    "group reveals",
+    "appendix boundary",
+    "speaker notes",
     "motion toggle",
-    "reduced motion",
-    "offline assets"
+    "reduced-motion static assets",
+    "offline image decoding",
+    "text bounds and overlaps",
+    "static PDF 17 pages",
+    "PPTX timing targets and unique IDs",
+    "four multiframe GIFs",
+    "static PPTX without animation"
+  ],
+  "not_verified": [
+    "Microsoft PowerPoint slideshow playback",
+    "PowerPoint rendering on conference hardware"
   ]
 }

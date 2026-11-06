@@ -11,7 +11,7 @@ not real-model performance or regulatory approval.
 | Offline guard | Python DNS attempt rejected before network access; forged zero-violation summary rejected |
 | Original Inklecate validator | 12 core/template scenarios pass; new cluster scenario has zero errors and one expected warning about conventional verdict bands |
 | Validator regressions | Reusable choices accepted; bookkeeping-only impacts and no-choice stories rejected |
-| Presentation | 24 slides; browser navigation/reveals/notes/motion checked; no JS errors or layout overflow at 1600×900; editable PPTX and PDF structure/names checked |
+| Presentation | 14 main slides + 3 hidden appendices; offline browser navigation, 35 reveal groups, notes, reduced motion, text bounds and four viewport sizes checked; native PPTX timing targets and four looping GIFs verified structurally; static PPTX/PDF supplied. Microsoft PowerPoint playback not exercised. |
 | ADK 2.13.0 | Synthetic reviewed export passed `EvalSet.model_validate_json`; no ADK agent execution |
 
 ## Recorded cluster calibration

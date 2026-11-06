@@ -1,0 +1,34 @@
+{
+  "kind": "deterministic UI/diagram animation",
+  "not_experimental_data": true,
+  "assets": [
+    {
+      "name": "terminal-boot",
+      "generated_frames": 80,
+      "encoded_frames": 58,
+      "loop_duration_ms": 8000,
+      "loop": 0
+    },
+    {
+      "name": "robot-fault",
+      "generated_frames": 72,
+      "encoded_frames": 36,
+      "loop_duration_ms": 7200,
+      "loop": 0
+    },
+    {
+      "name": "time-jump",
+      "generated_frames": 80,
+      "encoded_frames": 37,
+      "loop_duration_ms": 8000,
+      "loop": 0
+    },
+    {
+      "name": "neon-bus",
+      "generated_frames": 60,
+      "encoded_frames": 60,
+      "loop_duration_ms": 6000,
+      "loop": 0
+    }
+  ]
+}

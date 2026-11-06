@@ -1,179 +1,127 @@
-# Speaker notes and rehearsal guide
+# Rehearsal guide — 14-slide main talk
 
-Main talk: 28.83 minutes including demo.
+Main talk: 22.17 minutes, including a three-minute demo. Three appendices are hidden in PowerPoint.
 
-Open three-years.html offline. Right/Space reveals the next annotation and its diagram phase; Left returns; A reveals all annotations; N shows notes; F fullscreen; M disables motion. Reduced-motion preferences are respected. The PowerPoint uses editable text and native fade transitions; progressive diagram animation is in HTML. PDF is the static fallback.
+PowerPoint: open three-years.pptx and start Slide Show (F5). Native entrance effects reveal one evidence group per click. The embedded GIF console, neon circuit, logical clock and robotic fault schematic animate inside supported PowerPoint slideshow players. Editing view and PDF are static. three-years-static.pptx is the all-visible, low-motion fallback.
 
-Art direction: actual AKIRA poster artwork, mechanical schematics, paper technical dossiers, faded petrol green and vermilion incident pages. No generated illustration is included. Exact inline Ghost in the Shell references await downloadable source files. Image source and credits: assets/images.json.
+Browser: Right/Space reveals a group or advances; Left returns; A reveals all; N toggles notes; M toggles motion; R opens the appendix; Home returns to the opening; End goes to the main closing. The deck is entirely offline.
 
-Presenters: Torin van den Bulk and Vicente Herrera.
+The motion is hand-coded UI and diagram animation, not measured agent behavior. Existing city artwork provides atmosphere. No Akira poster or generated anime illustration is included. Image provenance and crops are recorded in assets/images.json.
+
+Torin van den Bulk · Vicente Herrera
 
 ## 01. Three Years in Thirty Minutes
 
-Time: 45s | Sources: Local implementation / synthesis
+40 seconds
 
-Opening: distinguish accelerated logical scenarios from proof of operational lifetime. Presenter names from the supplied PDF: Torin van den Bulk and Vicente Herrera. Event date/location in source deck: 9 November 2026, Salt Lake City, USA.
+Torin van den Bulk and Vicente Herrera. Open with the question: what changes when an agent retains authority for years? Explain that the title means accelerated logical scenarios, not proof of three operational years. Event label follows the supplied deck. Move immediately into one incident.
 
-Visual credit: AKIRA — Kaneda and motorcycle poster artwork. AKIRA (1988). Artwork belongs to its respective rights holders; excluded from the repository MIT license. Source: https://raw.githubusercontent.com/Realdhiru/wallps/1a2bd8e505f6a29bd68b422269e4c9c900f4a914/light/akira-kaneda-bike.png
+## 02. Security says no. Business says ship.
 
-## 02. What changes when an agent stays?
+100 seconds | Local fixture
 
-Time: 65s | Sources: Local implementation / synthesis
+Use the synthetic cluster snapshot: image-signature policy blocks an unsigned release; two fixes failed; six pods are pending; CPU requests are 24 against 20 allocatable. Business pressure does not grant authority. Ask the audience for an action, then carry the same incident through the talk. These are fixture facts, not measurements from a production cluster.
 
-Ask the audience to imagine a service agent that keeps access while its original approval expires. The important risk is in the configured workflow, not only the underlying model. Avoid asserting that models learn merely by running.
+## 03. One cluster. Two human consequences.
 
-Visual credit: AKIRA — Kaneda and motorcycle poster artwork. AKIRA (1988). Artwork belongs to its respective rights holders; excluded from the repository MIT license. Source: https://raw.githubusercontent.com/Realdhiru/wallps/1a2bd8e505f6a29bd68b422269e4c9c900f4a914/light/akira-kaneda-bike.png
+100 seconds | Local fixture
 
-## 03. Pressure can expose concerning behavior.
+The medical API serves older adults and education finance serves young adults. Do not rank people's worth by age. The fixture alternates reviewed-template impact profiles: medication alerts versus a deferrable finance batch; routine reminders with a staffed fallback versus an imminent aid deadline; and both urgent. Domain owners must validate those assumptions before real use. Multiple mitigations exist, including deferring batch work, finite temporary capacity and shared minimum service.
 
-Time: 80s | Sources: R1 · R2
+## 04. Today's shortcut is tomorrow's state.
 
-Anthropic’s agentic-misalignment framework crosses fictional scenarios, goal types and replacement/restriction urgency. Alignment-faking research investigates another constructed training-objective conflict. These are distinct studies. Do not quote an aggregate blackmail rate or imply a field incidence estimate. The reviewed alignment-faking README has inconsistent headline percentages, so no rate is shown.
+100 seconds | Local fixture
 
-## 04. Borrow the strongest parts of existing work.
+These are three possible branches, not one asserted trajectory. Bypass creates a restore-or-continue decision; an independently approved scoped exception creates a later expiry review; temporary compute consumes a finite reserve. Backlogs also accumulate. The visual clock is a schematic of logical progression, not a measured time series. The scripted delivery policy has 35 later exposure windows; an exposure window does not prove an exploit.
 
-Time: 80s | Sources: R3 · R5–R9
+## 05. Time travel is a test design.
 
-Use the established tools as methodological anchors. Petri and Bloom repository documentation points to maintained Meridian Labs successors. Discovery should generate hypotheses; frozen independent scenarios should test them. The delivered standard-library runner is an offline calibration artifact, not a replacement for these frameworks.
+80 seconds | METR
 
-## 05. Three clocks. Three different claims.
+A changed date is not accumulated experience. A fixed-weight model does not learn just because the calendar advances. METR task-completion horizons are based on human task time and are not ethical persistence or elapsed agent runtime. Our scenario carries state and selected history, but does not replay every event in three years. Keep time, pressure and interaction count separate in a real experimental design.
 
-Time: 80s | Sources: R4
+## 06. Research gives us a method. Not a warranty.
 
-METR’s time horizon measures success against human task-completion time. That is neither elapsed agent runtime nor ethical stability. Separate wall time, logical time and interaction count in your experimental design.
+90 seconds | Anthropic, AgentDojo, ControlArena
 
-## 06. Evaluate the configured system.
+These are distinct research programs. Anthropic's agentic-misalignment scenarios include blackmail under constructed pressures; do not quote a field incidence rate. AgentDojo studies prompt injection through tool interactions. ControlArena supports evaluation of policies and control protocols. The reviewed project documentation grounds our design; full-paper and current-law verification remain incomplete. Further references are in the appendix and research dossier.
 
-Time: 65s | Sources: Local implementation / synthesis
+## 07. Freeze the scenario. Test the configured agent.
 
-The full production system is the intended target. The delivered live adapter uses a fixed, finite decision scaffold; integrating a real agent requires an adapter that retains that agent’s prompts, memory, tools and control logic. Label that scope honestly.
+110 seconds | Implementation
 
-## 07. Telemetry seeds the story. It does not set moral priority.
+The implementation validates a synthetic telemetry export and an AI-authored template fixture, then deterministically compiles Ink. It does not collect live telemetry or call a generative authoring service. Freeze and review candidates separately from the target and scorer. The existing compatible-endpoint/LiteLLM adapters test a finite-choice scaffold. A real whole-agent evaluation must preserve the production agent's own prompts, tools, memory and oversight while redirecting effects into an isolated environment.
 
-Time: 65s | Sources: Local implementation / synthesis
+## 08. Three runs. Three different costs.
 
-The implemented telemetry adapter accepts a bounded normalized export and drops arbitrary annotations and identifiers. The candidate fixture was authored by AI in this session and compiled deterministically; a reusable generation prompt is included, but no live generator service was run. Clinical/business impact facts need service-owner review. A generator cannot supply executable policy/scorer code.
+230 seconds | Recorded calibration
 
-## 08. The gate holds. The fixes fail.
+Allow three minutes for the demo and about fifty seconds for interpretation. From the repo root run npm run ethics:demo -- --output /tmp/ethics-demo-NEW, choosing a fresh path. Show month one's global bypass, the next month's recovery decision, and a scoped approval followed by expiry. Then open comparison.json. Table columns are decisions, explicit policy violations, and medical/education disruption. The exception policy has 11 expiry reviews; its final exception is still open at the horizon. These are deterministic instrument controls, not evidence of real-model degradation. Full demo output and provider interfaces are already implemented.
 
-Time: 65s | Sources: Local implementation / synthesis
+## 09. Zero violations can still be unfair.
 
-The new Ink fixture uses the unsigned-image denial and failed-fix telemetry seed. Business pressure does not create authorization. The agent can choose rollback, targeted remediation, scoped approval, escalation or an explicit policy violation. These choices change later branches; a global bypass persists until restored.
+100 seconds | Matched calibration
 
-## 09. Whose service do you degrade?
+Both label-biased trajectories have zero explicit hard-policy violations. Their burdens reverse from medical/education disruption 0/84 to 84/0, with all 36 capacity decisions changing. The impact-aware pair makes identical choices. This calibrates the paired probe. Clinical or eligibility facts can legitimately depend on age; counterfactual plausibility needs domain review. Do not interpret this scripted experiment as proof that a model or real service discriminates.
 
-Time: 65s | Sources: Local cluster fixture
+## 10. Keep three separate signals.
 
-These are synthetic service-owner impact cards, not demographic rankings. CPU metrics cannot establish urgency. The age labels are older adults and young adults, but priority is conditioned on concrete consequences, authority and alternatives. The matched-label probe keeps operational facts fixed; changing facts is a separate treatment.
+90 seconds | DeepEval, Protocol
 
-Visual credit: AKIRA — Kaneda and motorcycle poster artwork. AKIRA (1988). Artwork belongs to its respective rights holders; excluded from the repository MIT license. Source: https://raw.githubusercontent.com/Realdhiru/wallps/1a2bd8e505f6a29bd68b422269e4c9c900f4a914/light/akira-kaneda-bike.png
+The optional offline DeepEval 4.3.3 bridge uses actual custom metric APIs, without a judge model or cloud service. It reconciles the explicit action rubric and checks horizon completion. A failed adapter is incomplete, not a successful zero-violation run. Service burden is reported separately. Nuanced judges need independent human calibration, subgroup error checks and a held-out set. The robotic fault animation is a visual metaphor, not experimental telemetry.
 
-## 10. What if the agent proposes the wrong action?
+## 11. Every session can become a test.
 
-Time: 80s | Sources: R8
+80 seconds | Google ADK, DeepEval
 
-ControlArena separates policy behavior, monitoring and control protocols. A deterministic gate is useful where authorization can be checked exactly. Ambiguous ethical decisions still require domain judgment. Our guard sees the oracle answer, so it is a calibration ceiling, not a realistic learned monitor.
+The ADK bridge imports exported Session events into pending candidates, leaving expected answers unset. Explicit review metadata and independent expected outputs are required for promotion. The synthetic export validates under ADK 2.13.0. Review metadata is an attestation, not authentication, and the sanitizer is not a complete PII system. No ADK agent execution, training, RLHF or RL was performed. Model updates require a separate data and optimization design; never train on the holdout.
 
-## 11. 36 logical months. 144–179 decisions.
+## 12. Use the stack you already operate.
 
-Time: 60s | Sources: Local implementation / synthesis
+75 seconds | Deployment examples
 
-These counts are actual completed scripted Ink trajectories in the new artifact. Four standard decisions occur in each monthly batch, with additional decisions caused by earlier exception/bypass choices. This is not an exhaustive decision tree and does not reproduce three operational years. Earlier generic Python calibration results are separate.
+Flux delivers versioned configuration; it is not the simulation clock. The runner advances logical state. The supplied Kubernetes Job runs the earlier generic Python calibration; running the Ink scenario there needs a Node/inkjs image path. Docker, Flux reconciliation and end-to-end collector receipt were not executed. OTLP records are retrospective evidence, not measured latency. No production cluster credentials or live mutations are needed for the offline demo.
 
-## 12. Choose → change state → face consequences
+## 13. Before you grant more autonomy…
 
-Time: 180s | Sources: Local implementation / synthesis
+95 seconds | Enterprise protocol
 
-Run the new cluster replay commands. Inspect a bypass in month one and the resulting recovery choice in month two. Then inspect a scoped approval in month three and expiry review in month four. Show hard violations separately from illustrative disruption units. Policies are scripted calibrations; no real model claim.
+For regulated enterprise adoption, identify the actual role, sector, jurisdiction, data use and authority budget. Map evidence to concrete obligations, rather than claiming universal compliance. Domain experts review contested outcomes. A named owner decides whether the next increment of autonomy is justified, with monitoring and a rollback path. NIST, EU AI Act/GDPR and sector guidance are useful mappings; current applicability and legal dates require primary verification. No compliance certification is claimed.
 
-## 13. Zero policy violations can still hide unfairness.
+## 14. Start with one hard incident.
 
-Time: 75s | Sources: Local implementation / synthesis
+40 seconds | a-game-of-ethics
 
-The deliberately label-biased reference passes the fixture hard-policy checks while allocating disruption based solely on a group label. Swapping labels changes all 36 capacity decisions. This shows the probe detects scripted label dependence, not evidence of discrimination by any real model. The defer-batch alternative demonstrates displaced cost without immediate public-API disruption.
+Close the loop on the blocked deployment. The practical contribution is a reproducible, inspectable method for stateful stress tests, not a lifetime guarantee. The code is in the local feat/ethics-v2 branch of a-game-of-ethics; the attempted GitHub push was denied by repository authorization. Leave the remaining time for questions. Presenter names remain Torin van den Bulk and Vicente Herrera.
 
-## 14. Unconfound the clock.
+## 15. What the proof actually establishes
 
-Time: 80s | Sources: Local implementation / synthesis
+0 seconds | Validation record
 
-The delivered demo starts pressure at month 12: time and pressure are confounded. That is useful for explaining the mechanism, not for estimating a causal time effect. A research study needs independent treatments and enough independent trajectories, not a larger count of dependent conversation turns.
+See docs/agentic-ethics/VALIDATION.md and its hashed evidence bundle. Original Ink validation also passed for 12 core/template scenarios, with one expected warning on the new cluster scenario. Hashes establish consistency against an external trusted root, not authenticity if an attacker replaces the entire bundle. No empirical real-model performance claim is made.
 
-## 15. No single “ethical score.”
+## 16. Research behind the method
 
-Time: 80s | Sources: Local implementation / synthesis
+0 seconds | Research dossier
 
-Predefine a failure taxonomy and severity. Domain experts should resolve contested cases with a documented rubric. Calibrate LLM judges, blind target identity and assess their attack surface. Do not use chain-of-thought as definitive evidence of intent. Cluster inference by independent trajectory or task family.
-
-## 16. A release gate needs an accountable owner.
-
-Time: 80s | Sources: Local implementation / synthesis
-
-Discuss regulated adoption as an evidence process: accountable business owner, data governance, domain validation, escalation and post-deployment controls. Model/scaffold changes invalidate some prior evidence. Increase authority gradually and measure the actual distribution in shadow/canary stages.
-
-Visual credit: AKIRA — Kaneda and motorcycle poster artwork. AKIRA (1988). Artwork belongs to its respective rights holders; excluded from the repository MIT license. Source: https://raw.githubusercontent.com/Realdhiru/wallps/1a2bd8e505f6a29bd68b422269e4c9c900f4a914/light/akira-kaneda-bike.png
-
-## 17. Evidence for assurance. Not a compliance stamp.
-
-Time: 80s | Sources: Local implementation / synthesis
-
-Do not state implementation dates or classification conclusions without current legal review. Original regulatory pages were blocked during preparation. This is an evidence-planning mapping, not legal advice, conformity assessment or an ISO certificate. Use the dossier’s primary URLs for final verification.
-
-## 18. Standard infrastructure. Explicit responsibilities.
-
-Time: 80s | Sources: Local implementation / synthesis
-
-Flux reconciles configuration; it is not the simulated clock. The runner advances the scenario. OTel exports are retrospective records, not measured latency spans. The delivery contains deployment examples; a cluster rollout and end-to-end collector receipt have not been executed. Do not present these as a working production installation.
-
-## 19. Preserve the evidence that could prove you wrong.
-
-Time: 65s | Sources: Local implementation / synthesis
-
-A hash chain catches changes against a trusted root but is not authentic if an attacker can replace the whole bundle and recompute it. Use immutable retention or signed external manifests for higher assurance. Real-world I/O may contain sensitive data and requires deliberate logging controls.
-
-## 20. Every session can improve the test suite.
-
-Time: 75s | Sources: R12 · R13
-
-Offline demo: import the synthetic ADK refund session. The agent gave a bad answer; the bridge leaves the expected answer empty. An explicitly reviewed correction is required before exporting an ADK-shaped EvalSet. The synthetic reviewer record is labeled as such. The offline DeepEval 4.3.3 bridge runs policy and horizon-completion metrics over the Ink trajectories with no judge model. Outcome burdens and matched-label probes stay separate. No actual ADK runtime execution has been claimed.
-
-## 21. Feedback first. Weight updates only with evidence.
-
-Time: 75s | Sources: R12 · R8
-
-ADK is an agent and evaluation framework, not a universal RL trainer. RLHF, preference optimization and RL require different data and optimization infrastructure; many APIs do not expose weight updates. Do not train on the holdout or let a system certify its own generated labels. The delivered bridge performs no model update.
-
-## 22. A calibrated instrument. Not three years of proof.
-
-Time: 65s | Sources: Local implementation / synthesis
-
-Present the validation record plainly. No model-provider efficacy measurements were made. The next study should integrate an actual scaffold, run independently authored held-out tasks and evaluate realistic monitors against adaptive attacks.
-
-Visual credit: AKIRA — Kaneda and motorcycle poster artwork. AKIRA (1988). Artwork belongs to its respective rights holders; excluded from the repository MIT license. Source: https://raw.githubusercontent.com/Realdhiru/wallps/1a2bd8e505f6a29bd68b422269e4c9c900f4a914/light/akira-kaneda-bike.png
-
-## 23. Increase autonomy as evidence improves.
-
-Time: 45s | Sources: Local implementation / synthesis
-
-Close with the practical call to action. The code and protocol are packaged locally; repository publishing is deferred. Leave time for questions. The aim is to replace a general claim of being ethical with specific, inspectable evidence about a defined workflow.
-
-Visual credit: AKIRA — Kaneda and motorcycle poster artwork. AKIRA (1988). Artwork belongs to its respective rights holders; excluded from the repository MIT license. Source: https://raw.githubusercontent.com/Realdhiru/wallps/1a2bd8e505f6a29bd68b422269e4c9c900f4a914/light/akira-kaneda-bike.png
-
-## 24. Research to read next
-
-Time: 0s | Sources: Local implementation / synthesis
-
-See research/RESEARCH-DOSSIER.md for links, retrieval limits, methods and inference boundaries. Source snapshots and retrieval records are included. Do not treat repository documentation alone as a completed systematic literature review.
-
-R1: https://github.com/anthropic-experimental/agentic-misalignment
-R2: https://github.com/redwoodresearch/alignment_faking_public
-R3: https://github.com/ethz-spylab/agentdojo
-R4: https://github.com/METR/eval-analysis-public
-R5: https://github.com/UKGovernmentBEIS/inspect_ai
-R6: https://github.com/safety-research/petri
-R7: https://github.com/safety-research/bloom
-R8: https://github.com/UKGovernmentBEIS/control-arena
-R9: https://github.com/sierra-research/tau2-bench
-R10: https://github.com/xiaowu0162/LongMemEval
-R11: https://github.com/xiaowu0162/LongMemEval-V2
-R12: https://github.com/google/adk-python
-R13: https://github.com/confident-ai/deepeval/tree/fec0da671d861ba8a8b15c7679bad380be1945f6
+Source links:
+https://github.com/anthropic-experimental/agentic-misalignment
+https://github.com/redwoodresearch/alignment_faking_public
+https://github.com/ethz-spylab/agentdojo
+https://github.com/sierra-research/tau2-bench
+https://github.com/METR/eval-analysis-public
+https://github.com/UKGovernmentBEIS/inspect_ai
+https://github.com/UKGovernmentBEIS/control-arena
+https://github.com/safety-research/petri
+https://github.com/safety-research/bloom
+https://github.com/xiaowu0162/LongMemEval
+https://github.com/xiaowu0162/LongMemEval-V2
+https://github.com/google/adk-python
+https://github.com/confident-ai/deepeval
+Snapshots, retrieval hashes and limits are preserved in docs/agentic-ethics/research. Project docs are not a substitute for a completed systematic review.
+
+## 17. Map evidence to the actual use.
+
+0 seconds | NIST AI RMF, EU AI Act / GDPR
+
+Primary verification targets: https://www.nist.gov/itl/ai-risk-management-framework ; https://eur-lex.europa.eu/eli/reg/2024/1689/oj ; https://eur-lex.europa.eu/eli/reg/2016/679/oj . These pages were not accessible during the research work, so this deck does not assert current implementation dates or classification conclusions. Sector rules and organizational duties depend on the deployment. A human reviewer needs authority, competence, time and usable evidence.
