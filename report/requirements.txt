@@ -1,20 +1,9 @@
-# Core data analysis and visualization
-pandas>=1.3.0
-matplotlib>=3.4.0
-seaborn>=0.11.0
-numpy>=1.20.0
-
-# Statistical analysis
-scipy>=1.7.0
-
-# Optional - for notebook execution
-jupyter>=1.0.0
-
-# Optional - for interactive plots
-plotly>=5.5.0
-
-# For path handling
-pathlib>=1.0.1
-
-# For command-line arguments
-argparse>=1.4.0
+# Analysis and plots
+pandas>=2.2
+matplotlib>=3.9
+seaborn>=0.13
+numpy>=2.0
+scipy>=1.14
+# Optional: notebook and interactive plots
+jupyter>=1.1
+plotly>=5.24

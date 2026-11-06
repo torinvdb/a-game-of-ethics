@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="img/a-game-of-ethics.png" alt="A Game of Ethics Logo" width="250">
+  <img src="img/logo-sprite.gif" alt="A Game of Ethics: pixel-art cyborg inspector logo" width="250">
 </p>
 
 # A Game of Ethics: Scenario-Based Alignment Benchmark for Large Language Models

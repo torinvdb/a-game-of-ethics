@@ -1,6 +1,6 @@
 python-pptx==1.0.2
 playwright==1.63.0
-PyMuPDF==1.26.6
+PyMuPDF==2.1
 Pillow>=11
 numpy>=2
 qrcode==8.2
