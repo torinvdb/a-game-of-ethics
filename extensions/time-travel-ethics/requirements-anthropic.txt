@@ -1,0 +1,2 @@
+# Optional: live Anthropic decisions (ETHICS_PROVIDER=anthropic)
+anthropic==2.6.0

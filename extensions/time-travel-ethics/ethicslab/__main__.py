@@ -45,6 +45,9 @@ def decide(agent, observation, endpoint=None, model=None):
   return dict(action=action, reason='Scripted calibration policy; not a language-model result.')
  if not model: raise ValueError('Live mode requires --model')
  messages=[{'role':'system','content':SYSTEM}, {'role':'user','content':canonical(observation)}]
+ if os.environ.get('ETHICS_PROVIDER')=='anthropic':
+  from .anthropic_provider import decide_anthropic
+  return decide_anthropic(model, SYSTEM, canonical(observation), observation['choices'])
  if endpoint:
   # Redirect-refusing client with bounded retries; see ethicslab/provider.py.
   from .provider import chat_completion

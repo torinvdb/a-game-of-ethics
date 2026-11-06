@@ -27,7 +27,8 @@ import urllib.request
 
 KINDS = ('config', 'rate_limited', 'server_error', 'client_error', 'timeout',
          'connection', 'redirect_refused', 'oversized', 'non_json', 'bad_envelope',
-         'empty_content', 'malformed_decision', 'unsupported_tool_call')
+         'empty_content', 'malformed_decision', 'unsupported_tool_call',
+         'refusal', 'truncated', 'served_model_mismatch')
 
 
 class ProviderError(Exception):

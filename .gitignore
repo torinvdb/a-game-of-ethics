@@ -47,3 +47,6 @@ __pycache__/
 .deepeval_telemetry.txt
 talks/three-years-in-thirty-minutes/*-preview.png
 talks/three-years-in-thirty-minutes/preview-frames/
+
+# Raw experiment runs (summaries are committed separately)
+benchmark/experiments/*/runs/

@@ -85,7 +85,7 @@ while(story.canContinue||story.currentChoices.length){
  transcript.push(chunk);
  if(!story.currentChoices.length)break;
  if(records.length>=300)throw Error('Decision limit exceeded');
- const before=state();const choices=story.currentChoices.map(c=>({index:c.index,text:c.text}));let selected,reason='Scripted calibration policy; not model evidence.';
+ const before=state();const choices=story.currentChoices.map(c=>({index:c.index,text:c.text}));let selected,usage=null,reason='Scripted calibration policy; not model evidence.';
  if(policy==='live'){
   const bridge=['-m','ethicslab.cluster_agent','--model',arg('--model')];if(arg('--endpoint'))bridge.push('--endpoint',arg('--endpoint'));
   const profile=metadata.scenario.profiles.find(p=>p.id===['care_urgent','education_urgent','both_urgent'][(before.month-1)%3]);
@@ -95,10 +95,10 @@ while(story.canContinue||story.currentChoices.length){
   const call=spawnSync(arg('--python','python3'),bridge,{cwd:path.resolve(here,'..'),input:JSON.stringify(observation)+"\n",encoding:'utf8',timeout:90000,maxBuffer:4*1024*1024});
   // Failure kinds are execution classes (transport, envelope, invalid action, bridge timeout), never policy outcomes.
   let kind='bridge_unparseable';
-  try {const result=JSON.parse(call.stdout||'{}');kind=call.error?(call.error.code==='ETIMEDOUT'?'bridge_timeout':'bridge_spawn_error'):String(result.error||'');if(call.status!==0||result.error||call.error)throw Error(kind);selected=choices.findIndex(c=>c.text===result.action);if(selected<0){kind='invalid_action';throw Error(kind);}reason=String(result.reason||'').slice(0,1000);}
+  try {const result=JSON.parse(call.stdout||'{}');kind=call.error?(call.error.code==='ETIMEDOUT'?'bridge_timeout':'bridge_spawn_error'):String(result.error||'');if(call.status!==0||result.error||call.error)throw Error(kind);selected=choices.findIndex(c=>c.text===result.action);if(selected<0){kind='invalid_action';throw Error(kind);}reason=String(result.reason||'').slice(0,1000);usage=result.usage||null;}
   catch {failure={at_decision:records.length,type:'adapter_failure',kind:/^[a-z_A-Z]{1,40}$/.test(kind)?kind:'bridge_unparseable',detail:'Provider response invalid, unavailable or timed out; not a behavioral violation.'};break;}
  }else selected=choose(choices,before,chunk);
- records.push({index:records.length,observation:chunk,state_before:before,choices,selected:choices[selected].text,reason});story.ChooseChoiceIndex(selected);
+ records.push({index:records.length,observation:chunk,state_before:before,choices,selected:choices[selected].text,reason,...(usage?{usage}:{})});story.ChooseChoiceIndex(selected);
 }
 if(story.hasError)throw Error(story.currentErrors.join('\n'));
 const final=state();if(!failure&&(final.month!==final.horizon+1||records.length!==final.decision_count))throw Error('Incomplete or inconsistent playthrough');

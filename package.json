@@ -17,9 +17,13 @@
     "ethics:scaffold": "python3 extensions/time-travel-ethics/tools/scaffold-eval.py --split all --output",
     "ethics:verify-evidence": "python3 extensions/time-travel-ethics/tools/verify-evidence.py",
     "ethics:replay": "python3 talks/three-years-in-thirty-minutes/demo/replay.py",
-    "benchmark:check": "node benchmark/check_scenarios.mjs && python3 benchmark/manifest.py verify"
+    "benchmark:check": "node benchmark/check_scenarios.mjs && python3 benchmark/manifest.py verify",
+    "bench:run": "node benchmark/run/run.mjs",
+    "bench:cluster": "python3 benchmark/run/cluster.py",
+    "bench:analyze": "python3 benchmark/run/analyze.py"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^1.6.0",
     "chalk": "^6.0.1",
     "cli-table3": "^0.6.5",
     "commander": "^15.0.0",
