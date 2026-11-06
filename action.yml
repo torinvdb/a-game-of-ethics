@@ -1,0 +1,394 @@
+name: A Game of Ethics eval
+description: >-
+  Run the A Game of Ethics scenario benchmark against a model or your own agent,
+  analyze the results, publish a job summary and upload the run directory as an artifact.
+author: torinvdb
+branding:
+  icon: check-square
+  color: purple
+
+# Security notes
+# - API keys are never inputs. Pass them as step env from the caller's secrets:
+#   ANTHROPIC_API_KEY (provider anthropic), OPENROUTER_API_KEY or ETHI_API_KEY
+#   (provider openai-compatible). Any key the agent under test needs is also env.
+# - Inputs reach shell steps only through env vars; no ${{ inputs.* }} is
+#   interpolated into a run script.
+
+inputs:
+  provider:
+    description: 'mock | anthropic | openai-compatible | command | http'
+    required: false
+    default: mock
+  models:
+    description: Comma-separated model ids (or agent labels). Empty uses every model in the config.
+    required: false
+    default: ''
+  scenarios:
+    description: Comma-separated scenario ids. Empty uses every scenario in the config.
+    required: false
+    default: ''
+  stage:
+    description: 'smoke | pilot | full (sets reps and the default budget from the config)'
+    required: false
+    default: smoke
+  config:
+    description: >-
+      Experiment config JSON. A relative path is looked up in the caller workspace first,
+      then in the action checkout.
+    required: false
+    default: benchmark/experiments/e1-anthropic/config.json
+  agent-cmd:
+    description: Command that speaks agoe.agent/v1 over stdio (provider command). Runs with the caller workspace as cwd.
+    required: false
+    default: ''
+  agent-url:
+    description: >-
+      Base URL of an agent that speaks agoe.agent/v1 over HTTP (provider http). Masked in logs.
+      Plain http is accepted only for loopback and private addresses. A bearer token goes in
+      the AGOE_AGENT_TOKEN env var, never in the URL.
+    required: false
+    default: ''
+  agent-name:
+    description: Label recorded as the model id for an agent run (provider command or http).
+    required: false
+    default: agent
+  agent-timeout-ms:
+    description: Per-message agent timeout in milliseconds. Empty uses the runner default (60000).
+    required: false
+    default: ''
+  allow-insecure-http:
+    description: "'true' passes --allow-insecure-http (plain http to a public host). Avoid."
+    required: false
+    default: 'false'
+  budget-usd:
+    description: >-
+      Spend cap passed to the runner. Empty uses the stage default from the config.
+      Required for stage full with a live provider.
+    required: false
+    default: ''
+  out:
+    description: Results directory, relative to the caller workspace.
+    required: false
+    default: agoe-results
+  fail-on:
+    description: >-
+      none | execution-failures | comma-separated conditions "metric op number", where
+      metric is failures, failure-rate, completed, cost-usd or mean-avg and op is
+      one of > >= < <= == !=. The step fails if any condition holds.
+      Example: "failure-rate>0.1,mean-avg<0".
+    required: false
+    default: none
+  artifact-name:
+    description: Artifact name. Empty derives a name unique per job and input set (safe in matrices).
+    required: false
+    default: ''
+  upload-artifact:
+    description: 'true | false'
+    required: false
+    default: 'true'
+  retention-days:
+    description: Artifact retention in days.
+    required: false
+    default: '30'
+  node-version:
+    description: Node.js version for setup-node. Empty skips setup-node and uses the runner's node.
+    required: false
+    default: '22'
+  python-version:
+    description: Python version for setup-python. Empty skips setup-python and uses the runner's python3.
+    required: false
+    default: '3.12'
+
+outputs:
+  results-dir:
+    description: Absolute path of the results directory.
+    value: ${{ steps.collect.outputs.results-dir }}
+  completed:
+    description: Number of completed runs (rows in results.jsonl).
+    value: ${{ steps.collect.outputs.completed }}
+  failures:
+    description: Number of cells that ended without a completed run.
+    value: ${{ steps.collect.outputs.failures }}
+  cost-usd:
+    description: Total spend reported by the runner, in USD.
+    value: ${{ steps.collect.outputs.cost-usd }}
+  budget-exhausted:
+    description: "'true' if the runner stopped at the budget cap."
+    value: ${{ steps.run.outputs.budget-exhausted }}
+  artifact-name:
+    description: Name of the uploaded artifact.
+    value: ${{ steps.collect.outputs.artifact-name }}
+
+runs:
+  using: composite
+  steps:
+    - name: Setup Node.js
+      if: inputs.node-version != ''
+      uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+      with:
+        node-version: ${{ inputs.node-version }}
+
+    - name: Setup Python
+      if: inputs.python-version != ''
+      uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install benchmark dependencies
+      shell: bash
+      run: |
+        set -euo pipefail
+        cd "$GITHUB_ACTION_PATH"
+        npm ci --ignore-scripts --no-audit --no-fund
+        python3 -m pip install --disable-pip-version-check --root-user-action=ignore --quiet 'numpy>=2,<3'
+
+    - name: Run benchmark
+      id: run
+      shell: bash
+      env:
+        AGOE_PROVIDER: ${{ inputs.provider }}
+        AGOE_MODELS: ${{ inputs.models }}
+        AGOE_SCENARIOS: ${{ inputs.scenarios }}
+        AGOE_STAGE: ${{ inputs.stage }}
+        AGOE_CONFIG: ${{ inputs.config }}
+        AGOE_AGENT_CMD: ${{ inputs.agent-cmd }}
+        AGOE_AGENT_URL: ${{ inputs.agent-url }}
+        AGOE_AGENT_NAME: ${{ inputs.agent-name }}
+        AGOE_AGENT_TIMEOUT_MS: ${{ inputs.agent-timeout-ms }}
+        AGOE_ALLOW_INSECURE_HTTP: ${{ inputs.allow-insecure-http }}
+        AGOE_BUDGET_USD: ${{ inputs.budget-usd }}
+        AGOE_OUT: ${{ inputs.out }}
+      run: |
+        set -euo pipefail
+        die() { echo "::error title=agoe::$*"; exit 1; }
+        ws="${GITHUB_WORKSPACE:-$PWD}"
+
+        # Mask anything sensitive before it can be echoed.
+        for v in ANTHROPIC_API_KEY ANTHROPIC_AUTH_TOKEN OPENROUTER_API_KEY ETHI_API_KEY AGOE_AGENT_TOKEN AGOE_AGENT_URL; do
+          if [ -n "${!v:-}" ]; then echo "::add-mask::${!v}"; fi
+        done
+
+        case "$AGOE_PROVIDER" in
+          mock|anthropic|openai-compatible|command|http) ;;
+          *) die "unknown provider '$AGOE_PROVIDER'" ;;
+        esac
+        case "$AGOE_STAGE" in smoke|pilot|full) ;; *) die "unknown stage '$AGOE_STAGE'" ;; esac
+        idlist='^[A-Za-z0-9._:/@+-]+(,[A-Za-z0-9._:/@+-]+)*$'
+        if [ -n "$AGOE_MODELS" ] && ! [[ "$AGOE_MODELS" =~ $idlist ]]; then die "models must be a comma-separated id list"; fi
+        if [ -n "$AGOE_SCENARIOS" ] && ! [[ "$AGOE_SCENARIOS" =~ $idlist ]]; then die "scenarios must be a comma-separated id list"; fi
+        if [ -n "$AGOE_BUDGET_USD" ] && ! [[ "$AGOE_BUDGET_USD" =~ ^[0-9]+(\.[0-9]+)?$ ]]; then die "budget-usd must be a non-negative number"; fi
+        if [ -n "$AGOE_AGENT_TIMEOUT_MS" ] && ! [[ "$AGOE_AGENT_TIMEOUT_MS" =~ ^[0-9]+$ ]]; then die "agent-timeout-ms must be a positive integer"; fi
+        if [ -n "$AGOE_AGENT_CMD" ] && [ -n "$AGOE_AGENT_URL" ]; then die "set agent-cmd or agent-url, not both"; fi
+
+        live=false
+        case "$AGOE_PROVIDER" in
+          anthropic)
+            live=true
+            [ -n "${ANTHROPIC_API_KEY:-}${ANTHROPIC_AUTH_TOKEN:-}" ] || die "provider anthropic needs ANTHROPIC_API_KEY in the step env (from secrets)" ;;
+          openai-compatible)
+            live=true
+            [ -n "${OPENROUTER_API_KEY:-}${ETHI_API_KEY:-}" ] || echo "::warning title=agoe::no OPENROUTER_API_KEY or ETHI_API_KEY set; only a loopback ETHI_API_BASE_URL will work" ;;
+          command)
+            live=true
+            [ -n "$AGOE_AGENT_CMD" ] || die "provider command needs agent-cmd" ;;
+          http)
+            live=true
+            [ -n "$AGOE_AGENT_URL" ] || die "provider http needs agent-url" ;;
+        esac
+        if [ "$live" = true ] && [ "$AGOE_STAGE" = full ] && [ -z "$AGOE_BUDGET_USD" ]; then
+          die "stage full with a live provider requires an explicit budget-usd"
+        fi
+
+        # Resolve config: absolute, then caller workspace, then action checkout.
+        cfg="$AGOE_CONFIG"
+        if [[ "$cfg" != /* ]]; then
+          if [ -f "$ws/$cfg" ]; then cfg="$ws/$cfg"; else cfg="$GITHUB_ACTION_PATH/$cfg"; fi
+        fi
+        [ -f "$cfg" ] || die "config not found: $AGOE_CONFIG"
+
+        out="$AGOE_OUT"
+        [[ "$out" == /* ]] || out="$ws/$out"
+        mkdir -p "$out"
+        out="$(cd "$out" && pwd)"
+        echo "results-dir=$out" >> "$GITHUB_OUTPUT"
+
+        args=(--config "$cfg" --provider "$AGOE_PROVIDER" --stage "$AGOE_STAGE" --out "$out")
+        case "$AGOE_PROVIDER" in
+          command|http)
+            # The runner uses --agent-name as the model id for agents; --models does not apply.
+            [ -z "$AGOE_MODELS" ] || echo "::warning title=agoe::models is ignored for provider $AGOE_PROVIDER; use agent-name"
+            args+=(--agent-name "${AGOE_AGENT_NAME:-agent}")
+            [ -z "$AGOE_AGENT_TIMEOUT_MS" ] || args+=(--agent-timeout-ms "$AGOE_AGENT_TIMEOUT_MS")
+            [ "$AGOE_ALLOW_INSECURE_HTTP" != true ] || args+=(--allow-insecure-http) ;;
+          *)
+            [ -z "$AGOE_MODELS" ] || args+=(--models "$AGOE_MODELS") ;;
+        esac
+        [ -z "$AGOE_SCENARIOS" ] || args+=(--scenarios "$AGOE_SCENARIOS")
+        [ -z "$AGOE_BUDGET_USD" ] || args+=(--budget-usd "$AGOE_BUDGET_USD")
+        [ -z "$AGOE_AGENT_CMD" ] || args+=(--agent-cmd "$AGOE_AGENT_CMD")
+        [ -z "$AGOE_AGENT_URL" ] || args+=(--agent-url "$AGOE_AGENT_URL")
+
+        # The runner exit code is recorded, not raised here, so analysis and
+        # upload still run; the gate step fails the job afterwards.
+        cd "$ws"
+        set +e
+        node "$GITHUB_ACTION_PATH/benchmark/run/run.mjs" "${args[@]}" 2>&1 | tee "$out/runner.log"
+        rc=${PIPESTATUS[0]}
+        set -e
+        echo "runner-exit-code=$rc" >> "$GITHUB_OUTPUT"
+        if grep -q 'budget cap reached' "$out/runner.log"; then
+          echo "budget-exhausted=true" >> "$GITHUB_OUTPUT"
+          echo "::warning title=agoe::runner stopped at the budget cap; results are partial"
+        else
+          echo "budget-exhausted=false" >> "$GITHUB_OUTPUT"
+        fi
+        [ "$rc" -eq 0 ] || echo "::error title=agoe::runner exited with code $rc"
+
+    - name: Analyze results
+      id: analyze
+      if: ${{ !cancelled() && steps.run.outputs.results-dir != '' }}
+      shell: bash
+      env:
+        AGOE_RESULTS_DIR: ${{ steps.run.outputs.results-dir }}
+      run: |
+        set -uo pipefail
+        if [ ! -s "$AGOE_RESULTS_DIR/results.jsonl" ] && [ ! -s "$AGOE_RESULTS_DIR/errors.jsonl" ]; then
+          echo "::warning title=agoe::no results to analyze"
+          echo "analyzer-exit-code=0" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        python3 "$GITHUB_ACTION_PATH/benchmark/run/analyze.py" "$AGOE_RESULTS_DIR"
+        rc=$?
+        echo "analyzer-exit-code=$rc" >> "$GITHUB_OUTPUT"
+        [ "$rc" -eq 0 ] || echo "::error title=agoe::analyzer exited with code $rc"
+
+    - name: Collect outputs and job summary
+      id: collect
+      if: ${{ !cancelled() && steps.run.outputs.results-dir != '' }}
+      shell: bash
+      env:
+        AGOE_RESULTS_DIR: ${{ steps.run.outputs.results-dir }}
+        AGOE_ARTIFACT_NAME: ${{ inputs.artifact-name }}
+        AGOE_PROVIDER: ${{ inputs.provider }}
+        AGOE_MODELS: ${{ inputs.models }}
+        AGOE_AGENT_NAME: ${{ inputs.agent-name }}
+        AGOE_SCENARIOS: ${{ inputs.scenarios }}
+        AGOE_STAGE: ${{ inputs.stage }}
+      run: |
+        set -euo pipefail
+        python3 -I - <<'PY'
+        import hashlib, json, os, re
+        from pathlib import Path
+
+        d = Path(os.environ['AGOE_RESULTS_DIR'])
+
+        def jsonl(p):
+            if not p.exists():
+                return []
+            return [json.loads(l) for l in p.read_text().splitlines() if l.strip()]
+
+        rows, errs = jsonl(d / 'results.jsonl'), jsonl(d / 'errors.jsonl')
+        done = {r['key'] for r in rows}
+        failed = {e['key'] for e in errs} - done
+        cost = sum(r.get('cost_usd') or 0 for r in rows) + sum(e.get('cost_usd') or 0 for e in errs)
+        avgs = []
+        for r in rows:
+            ax = r.get('axes') or {}
+            if ax:
+                avgs.append(sum(ax.values()) / 8.0)
+        metrics = {
+            'completed': len(rows),
+            'failures': len(failed),
+            'failure-rate': len(failed) / (len(rows) + len(failed)) if (rows or failed) else 0.0,
+            'cost-usd': round(cost, 6),
+            'mean-avg': (sum(avgs) / len(avgs)) if avgs else None,
+        }
+        (d / 'gate-metrics.json').write_text(json.dumps(metrics, indent=1) + '\n')
+        if not rows:
+            print('::warning title=agoe::no run completed; check errors.jsonl in the results artifact')
+
+        name = os.environ.get('AGOE_ARTIFACT_NAME', '')
+        if not name:
+            sig = '|'.join(os.environ.get(k, '') for k in ('AGOE_PROVIDER', 'AGOE_MODELS', 'AGOE_AGENT_NAME', 'AGOE_SCENARIOS', 'AGOE_STAGE'))
+            job = re.sub(r'[^A-Za-z0-9_.-]', '-', os.environ.get('GITHUB_JOB', 'job'))
+            name = f"agoe-results-{job}-{os.environ.get('AGOE_PROVIDER', 'run')}-{hashlib.sha1(sig.encode()).hexdigest()[:8]}"
+        name = re.sub(r'[^A-Za-z0-9_.-]', '-', name)
+
+        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+            f.write(f"results-dir={d}\n")
+            f.write(f"completed={metrics['completed']}\n")
+            f.write(f"failures={metrics['failures']}\n")
+            f.write(f"cost-usd={metrics['cost-usd']}\n")
+            f.write(f"artifact-name={name}\n")
+
+        summary = d / 'analysis' / 'summary.md'
+        with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as f:
+            f.write(f"## A Game of Ethics: {os.environ.get('AGOE_PROVIDER')} / {os.environ.get('AGOE_STAGE')}\n\n")
+            mean = 'n/a' if metrics['mean-avg'] is None else f"{metrics['mean-avg']:.3f}"
+            f.write(f"completed {metrics['completed']}, failures {metrics['failures']}, "
+                    f"spend ${metrics['cost-usd']:.4f}, mean axis average {mean}\n\n")
+            if summary.exists():
+                f.write(summary.read_text() + '\n')
+            else:
+                f.write('No analysis summary was produced.\n')
+        PY
+
+    - name: Upload results
+      if: ${{ !cancelled() && inputs.upload-artifact == 'true' && steps.collect.outputs.artifact-name != '' }}
+      uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+      with:
+        name: ${{ steps.collect.outputs.artifact-name }}
+        path: ${{ steps.collect.outputs.results-dir }}
+        retention-days: ${{ inputs.retention-days }}
+        if-no-files-found: warn
+
+    - name: Gate
+      if: ${{ !cancelled() }}
+      shell: bash
+      env:
+        AGOE_FAIL_ON: ${{ inputs.fail-on }}
+        AGOE_RESULTS_DIR: ${{ steps.run.outputs.results-dir }}
+        AGOE_RUNNER_RC: ${{ steps.run.outputs.runner-exit-code }}
+        AGOE_ANALYZER_RC: ${{ steps.analyze.outputs.analyzer-exit-code }}
+      run: |
+        set -euo pipefail
+        python3 -I - <<'PY'
+        import json, operator, os, re, sys
+        from pathlib import Path
+
+        def fail(msg):
+            print(f"::error title=agoe gate::{msg}")
+            sys.exit(1)
+
+        if os.environ.get('AGOE_RUNNER_RC', '') == '':
+            fail('runner did not start (see the Run benchmark step)')
+        if os.environ['AGOE_RUNNER_RC'] != '0':
+            fail(f"runner exited with code {os.environ['AGOE_RUNNER_RC']}")
+        if os.environ.get('AGOE_ANALYZER_RC', '0') not in ('', '0'):
+            fail(f"analyzer exited with code {os.environ['AGOE_ANALYZER_RC']}")
+
+        spec = os.environ.get('AGOE_FAIL_ON', 'none').strip() or 'none'
+        if spec == 'none':
+            sys.exit(0)
+        m = json.loads((Path(os.environ['AGOE_RESULTS_DIR']) / 'gate-metrics.json').read_text())
+        ops = {'>=': operator.ge, '<=': operator.le, '==': operator.eq, '!=': operator.ne,
+               '>': operator.gt, '<': operator.lt}
+        pat = re.compile(r'^(failures|failure-rate|completed|cost-usd|mean-avg)\s*(>=|<=|==|!=|>|<)\s*(-?[0-9]+(?:\.[0-9]+)?)$')
+        hits = []
+        for raw in spec.split(','):
+            cond = raw.strip()
+            if cond == 'execution-failures':
+                cond = 'failures>0'
+            g = pat.match(cond)
+            if not g:
+                fail(f"cannot parse fail-on condition {raw.strip()!r}")
+            key, op, num = g.group(1), g.group(2), float(g.group(3))
+            val = m[key]
+            if val is None:
+                hits.append(f"{key} unavailable (no completed runs)")
+            elif ops[op](float(val), num):
+                hits.append(f"{key}={val} {op} {g.group(3)}")
+        if hits:
+            fail('fail-on matched: ' + '; '.join(hits))
+        print('gate passed: ' + spec)
+        PY
