@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agoe"
+version = "2.0.2"
+description = "A Game of Ethics scenarios as a UK AISI Inspect task"
+license = "MIT"
+requires-python = ">=3.10"
+dependencies = ["inspect-ai>=0.3.287"]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[project.entry-points.inspect_ai]
+agoe = "agoe._registry"
+
+[project.scripts]
+agoe-export = "agoe.export:main"
+
+[tool.setuptools]
+packages = ["agoe"]
+
+[tool.setuptools.package-data]
+agoe = ["ink_server.mjs"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
