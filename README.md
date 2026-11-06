@@ -151,6 +151,21 @@ node src/debug.js --auto-validate scenarios/core/*.ink
 
 Run `node ethi-cli.js model --help` for all options. Setup details: [Operating Guide](docs/operating-guide.md). To write a scenario, start from a [template](scenarios/tmpl/), declare all eight axis variables, and validate it with `src/debug.js` and `benchmark/check_scenarios.mjs` (see the [Ethics Scorecard](docs/ethics-scorecard.md)).
 
+### Test your own agent
+
+The runner drives any agent through a small JSON protocol, over stdio or HTTP. The agent keeps its own memory and never sees scores.
+
+```bash
+npm run bench:agent -- --stage smoke --scenarios hostage-holdout --agent-cmd "python3 examples/agents/stdio_agent.py" --out runs/my-agent
+```
+
+| Route | Use it for | Docs |
+| --- | --- | --- |
+| `--agent-cmd` / `--agent-url` | Any framework; reference agents in [`examples/agents/`](examples/agents/) | [Agent protocol](docs/AGENT-PROTOCOL.md) |
+| Docker sandbox | Harness and agent on a network with no internet; allowlisted model egress | [Sandbox](docs/SANDBOX.md) |
+| GitHub Action | `uses: torinvdb/a-game-of-ethics@v2` in CI, with job summary and artifact | [GitHub Action](docs/GITHUB-ACTION.md) |
+| Inspect AI | `inspect eval agoe/agoe --model <provider/model>` | [Inspect](docs/INSPECT.md) |
+
 <img src="img/readme/section-08-credits.png" alt="Section 08: 記録 Credits" width="100%">
 
 ## Credits
