@@ -9,10 +9,17 @@ import os
 
 from .provider import ProviderError
 
+# tools/replay-cluster.mjs gives each decision 90 s of wall clock. Every attempt plus the SDK's
+# backoff must fit inside that, or one stalled request ends the trajectory without a retry.
+REQUEST_TIMEOUT_S = 40
+MAX_RETRIES = 1
+BACKOFF_ALLOWANCE_S = 8  # SDK backoff caps at 8 s per retry
 
-def decide_anthropic(model, system, user_text, choices, effort=None, max_tokens=16000, timeout=120, client=None):
+
+def decide_anthropic(model, system, user_text, choices, effort=None, max_tokens=16000, timeout=REQUEST_TIMEOUT_S,
+                     client=None):
     import anthropic
-    client = client or anthropic.Anthropic(timeout=timeout, max_retries=4)
+    client = client or anthropic.Anthropic(timeout=timeout, max_retries=MAX_RETRIES)
     schema = {'type': 'object',
               'properties': {'action': {'type': 'string', 'enum': list(choices)}, 'reason': {'type': 'string'}},
               'required': ['action', 'reason'], 'additionalProperties': False}

@@ -80,5 +80,19 @@ class AnthropicProviderContract(unittest.TestCase):
                 self.assertEqual(cm.exception.kind, kind)
 
 
+class RetryBudgetTests(unittest.TestCase):
+    def test_client_retries_fit_inside_the_replay_decision_timeout(self):
+        # replay-cluster.mjs kills the bridge after a fixed wall-clock budget per decision. If one
+        # request may outlive it, a single stalled call ends the trajectory instead of being retried.
+        import re
+        from pathlib import Path
+        from ethicslab import anthropic_provider as ap
+        src = (Path(__file__).resolve().parents[1] / 'tools/replay-cluster.mjs').read_text()
+        bridge_ms = int(re.search(r'timeout:(\d+),maxBuffer', src).group(1))
+        worst = ap.REQUEST_TIMEOUT_S * (ap.MAX_RETRIES + 1) + ap.BACKOFF_ALLOWANCE_S
+        self.assertLess(worst, bridge_ms / 1000)
+        self.assertGreaterEqual(ap.MAX_RETRIES, 1)
+
+
 if __name__ == '__main__':
     unittest.main()
