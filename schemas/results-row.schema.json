@@ -190,6 +190,13 @@
               "string",
               "null"
             ]
+          },
+          "served_model": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Model id reported by the provider for this decision (OpenRouter may route to a variant)."
           }
         }
       }

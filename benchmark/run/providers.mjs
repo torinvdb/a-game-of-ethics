@@ -88,7 +88,7 @@ export function openaiCompatibleProvider(options = {}) {
   const config = resolveAdapterConfig(options);
   return {
     name: 'openai-compatible',
-    async decide({ system, messages, numChoices, model }) {
+    async decide({ system, messages, numChoices, model, settings = {} }) {
       const flat = [{ role: 'system', content: system }, ...messages.map((m) => ({
         role: m.role,
         content: typeof m.content === 'string' ? m.content
@@ -96,7 +96,9 @@ export function openaiCompatibleProvider(options = {}) {
       }))];
       let reply;
       try {
-        reply = await requestCompletion(config, { model, messages: flat });
+        // Sampling and length come from the experiment config so runs are reproducible and reasoning models are not cut off.
+        const call = { ...config, temperature: settings.temperature ?? config.temperature, maxTokens: settings.openai_max_tokens ?? config.maxTokens };
+        reply = await requestCompletion(call, { model, messages: flat });
       } catch (error) {
         throw new RunError(error.kind === 'timeout' ? 'timeout' : 'api_error', error.kind || error.name);
       }

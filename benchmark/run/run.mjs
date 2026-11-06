@@ -127,7 +127,8 @@ async function playStory({ provider, session, cell, scenarioFile, system, settin
     const presented = out.choice - 1;
     const original = order[presented];
     decisions.push({ step, n_options: choices.length, options: choices.map((c) => c.text), order, presented_index: presented, original_index: original,
-      option_text: choices[original].text, rationale: out.rationale.slice(0, 2000), stop_reason: out.stopReason });
+      option_text: choices[original].text, rationale: out.rationale.slice(0, 2000), stop_reason: out.stopReason,
+      served_model: out.servedModel ?? null });
     messages.push({ role: 'assistant', content: out.assistantContent });
     story.ChooseChoiceIndex(original);
   }
@@ -159,7 +160,8 @@ async function main() {
   fs.mkdirSync(out, { recursive: true });
   const reps = Number(arg('--reps', cfg.stages[stage].reps));
   // An external agent is one "model" in the cell grid; its name is the model id in keys and rows.
-  const models = isAgent ? [agentName] : (arg('--models') || cfg.models.map((m) => m.id).join(',')).split(',');
+  const models = isAgent ? [agentName] : (arg('--models') || cfg.models.map((m) => m.id).join(',')).split(',').filter(Boolean);
+  if (!models.length || models.some((m) => /REPLACE|^<|>$/.test(m))) throw new Error('no models selected: fill config.models or pass --models');
   const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, cfg.benchmark_manifest), 'utf8'));
   const wanted = arg('--scenarios') ? arg('--scenarios').split(',') : cfg.scenarios;
   const scenarios = manifest.scenarios.filter((s) => wanted.includes(s.id));
