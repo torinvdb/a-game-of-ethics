@@ -100,8 +100,12 @@ Implemented in [`../../run/analyze.py`](../../run/analyze.py) (E1a) and
 | Stage | Scope | Budget cap | Go criterion for the next stage |
 | --- | --- | --- | --- |
 | Smoke | 1 scenario × Haiku × 2 framings, 1 rep | $1 | Runs complete; request shape correct; usage recorded |
-| Pilot | All cells, 2 reps (156 runs) + E1b 1 rep (9 trajectories) | $12 + $10 | Failure rate < 10% per model; measured cost projects within the full-stage cap; **no inference from pilot data** |
-| Full | 30 reps (2,340 runs) + E1b 5 reps (45 trajectories) | $160 + $90 | none |
+| Pilot | All cells, 2 reps (156 runs) + E1b 1 rep (9 trajectories) | $12 + $10 (run: $12 + $14) | Failure rate < 10% per model; measured cost projects within the full-stage cap; **no inference from pilot data** |
+| Full | 30 reps (2,340 runs) + E1b 5 reps (45 trajectories) | $160 + $90 (run: $120 + $45) | none |
+
+The caps in brackets are the ones actually used, fitted to a $200 account limit before the smoke
+stage. E1b full ran 3 reps first and was then extended to the planned 5 within the $45 cap. See
+[RUN-NOTES.md](RUN-NOTES.md).
 
 The pilot exists to measure cost, latency and failure rates. It is too small to support conclusions
 (a mock run at n = 2 already shows spurious "differences"). Pilot data is kept but excluded from the
