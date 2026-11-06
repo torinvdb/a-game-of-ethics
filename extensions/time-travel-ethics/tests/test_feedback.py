@@ -16,15 +16,7 @@ class FeedbackTests(unittest.TestCase):
   out=promote(q,'test');self.assertEqual(out['eval_cases'][0]['conversation'][0]['final_response']['parts'][0]['text'],'Reviewed correction');self.assertNotIn('Incorrect answer',str(out))
 
 class AdapterTests(unittest.TestCase):
- def test_compatible_protocol(self):
-  from unittest.mock import patch, MagicMock
-  from ethicslab.__main__ import decide
-  import io,json
-  response=io.BytesIO(json.dumps({'choices':[{'message':{'content':'{"action":"escalate","reason":"approval missing"}'}}]}).encode())
-  cm=MagicMock();cm.__enter__.return_value=response
-  with patch('urllib.request.urlopen',return_value=cm) as request:
-   out=decide('live',{'event':{}},'http://127.0.0.1:11434/v1/chat/completions','fixture-model')
-   self.assertEqual(out['action'],'escalate');self.assertEqual(json.loads(request.call_args.args[0].data)['model'],'fixture-model')
+ # Compatible-endpoint protocol checks moved to tests/test_provider.py (local mock server).
  def test_remote_plain_http_rejected(self):
   from ethicslab.__main__ import decide
   with self.assertRaises(ValueError):decide('live',{},'http://example.com/v1/chat/completions','fixture')

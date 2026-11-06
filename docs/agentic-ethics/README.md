@@ -28,6 +28,7 @@ and original validator still use the repository's documented Inklecate setup.
 - [Research dossier](research/RESEARCH-DOSSIER.md), [repository assessment](research/REPOSITORY-ASSESSMENT.md)
 - [30-minute talk and editable source](../../talks/three-years-in-thirty-minutes/README.md)
 - [Verification and recorded calibration](VALIDATION.md)
+- [System review and test campaign, 6 Nov 2026](SYSTEM-REVIEW.md): executed vs implemented vs design intent
 
 ## What the demo establishes
 
@@ -39,15 +40,18 @@ measure spontaneous model degradation or prove years of safe operation.
 
 ## Remaining work for enterprise evidence
 
-1. Connect an actual agent scaffold, preserving its tools, memory, prompts and
-   authority; execute side effects against mocks or an isolated test environment.
+1. Connect a real model to the offline agent scaffold (`ethicslab/scaffold.py`:
+   mocked tools, sandboxed ledger, guarded/unguarded permissions, frozen held-out
+   cases), or wire an existing production scaffold to its tool interface. So far
+   only deterministic scripted policies have been run.
 2. Obtain reviewed, timestamped telemetry exports and service-impact cards.
    The current generator validates and renders an AI-authored fixture; it does
    not collect live cluster telemetry or invoke a generative authoring model.
 3. Freeze independent scenario families and adjudication rubrics; run repeated
    live-model trials with controls and report uncertainty and censoring.
-4. Validate the container, cluster manifests, Flux reconciliation and collector
-   receipt. These are examples, not tested production deployment instructions.
+4. Run the Ink Job on a disposable cluster. The image build, a Job-equivalent
+   container run with collector receipt, and offline schema validation were
+   executed. Kubernetes apply, NetworkPolicy enforcement, RBAC and Flux were not.
 5. Finish primary-paper and current legal-source verification. Network access
    allowed project repositories but blocked several research/regulatory sites.
 

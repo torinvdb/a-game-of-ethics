@@ -1,5 +1,38 @@
 # Verification record
 
+**6 November 2026 review:** see [SYSTEM-REVIEW.md](SYSTEM-REVIEW.md) for the test
+campaign. It records which results were executed and which are design intent.
+Summary of the review:
+
+- The 5 November baseline was reproduced byte for byte before any change: all 21
+  recorded output hashes, including the DeepEval reports, with inkjs 2.4.0.
+- Eight defects were fixed, among them credential forwarding on HTTP redirect and
+  adapter failures counted as guard blocks or policy passes.
+- Python tests went from 35 to 88.
+- A mocked-tool agent scaffold was added, with frozen held-out cases.
+- Provider-contract tests run against a local mock server.
+- The container/Job now runs the Ink scenario. It was executed with Docker and a
+  real OTel collector, but not on Kubernetes.
+
+Current hashes: [evidence/manifest.json](evidence/manifest.json). The superseded
+baseline is in [evidence/baseline-2026-11-05/](evidence/baseline-2026-11-05/).
+
+| Check (6 Nov 2026) | Exit | Result |
+| --- | ---: | --- |
+| `npm run ethics:test` | 0 | 88 tests pass (provider contract, scaffold, trajectory recomputation, deploy consistency, evidence verification, plus the original 35) |
+| `npm run ethics:demo -- --output …/review-005-final --deepeval-python …` | 0 | Same 7 trajectories and counts as below. The rejected adapter is now `execution_failure` / not evaluable (it was previously a policy-metric "pass") |
+| `python3 extensions/time-travel-ethics/tools/verify-evidence.py RUN docs/agentic-ethics/evidence/manifest.json --inputs-root .` | 0 | 21/21 outputs and all inputs match |
+| `python3 extensions/time-travel-ethics/tools/scaffold-eval.py --split all --output …` | 0 | 126 scripted-policy sessions. Guarded: 0 tool-level violations executed. Content violations (misleading reports) pass the guard. Deterministic across two runs |
+| Docker build plus Job-equivalent run with an OTel collector | 0 | Collector received 1062 spans; Ink hashes identical; overwrite and collector-down runs fail as intended |
+| `kubeconform -strict` (Kubernetes 1.32) on `kubectl kustomize deploy` | 0 | 7/7 valid. Not applied to any cluster (kind failed in the sandbox) |
+| Inklecate validator | n/a | Not run. The working-tree validator now compiles with inkjs: 16 scenarios, 15 pass, 1 expected warning |
+
+---
+
+The record below is the original 5 November baseline, kept for comparison.
+
+# Verification record
+
 Verified locally on 5 November 2026. These are harness/calibration results,
 not real-model performance or regulatory approval.
 
@@ -64,8 +97,9 @@ review record is explicitly synthetic and included for demonstration only.
 
 No live model/provider trials, complete production-agent execution, automatic
 training, live telemetry collection or live scenario-authoring service was run.
-The Docker/Kubernetes/Flux/collector examples were not built or deployed. The
-current Job runs the earlier Python calibration, not the Ink scenario. Current
+As of 6 November the image is built and the Ink Job script runs under Docker
+with a real collector. Kubernetes apply, NetworkPolicy enforcement and Flux
+reconciliation remain unexecuted (see SYSTEM-REVIEW.md, section 6). Current
 legal applicability and full-paper review remain incomplete because several
 primary sites were unavailable. Native PowerPoint playback needs rehearsal in
 the conference software.

@@ -20,6 +20,58 @@ Each run contains 36 logical months × 6 decisions = 216 opportunities. No sleep
 
 Outputs: `run.json` (observations, decisions, state, hash chain), `summary.json`, and OTLP/HTTP JSON traces. Existing output directories are rejected to prevent accidental overwrites. Invalid responses fail closed and are counted separately from behavioral violations; process exit 2 indicates invalid/API outcomes. Zero violations alongside unresolved work is not a success.
 
+## Reproduce the 6 Nov 2026 review
+
+From the repository root. Use a new output directory each time; existing directories are refused.
+
+```sh
+npm ci
+npm run ethics:test                      # 88 tests; Ink replay tests skip if node_modules is absent
+npm run ethics:demo -- --output extensions/time-travel-ethics/runs/repro-001
+python3 extensions/time-travel-ethics/tools/verify-evidence.py \
+  extensions/time-travel-ethics/runs/repro-001 docs/agentic-ethics/evidence/manifest.json --inputs-root .
+#   DeepEval outputs are listed in the manifest; without --deepeval-python they show as "missing".
+python3 -m venv /tmp/de && /tmp/de/bin/pip install -r extensions/time-travel-ethics/requirements-deepeval.txt
+npm run ethics:demo -- --output extensions/time-travel-ethics/runs/repro-002 --deepeval-python /tmp/de/bin/python
+python3 extensions/time-travel-ethics/tools/scaffold-eval.py --split all \
+  --output extensions/time-travel-ethics/runs/scaffold-001
+python3 extensions/time-travel-ethics/tools/export-otlp.py \
+  extensions/time-travel-ethics/runs/repro-001/replays --output /tmp/traces.otlp.json
+```
+
+The container/Job path is in [deploy/README.md](deploy/README.md). The review findings, with
+executed results kept apart from design intent, are in
+[../../docs/agentic-ethics/SYSTEM-REVIEW.md](../../docs/agentic-ethics/SYSTEM-REVIEW.md).
+
+### Failure classes
+
+Every summary keeps these classes separate. None of them is ever folded into another.
+
+- **Execution failures:** adapter or transport errors (`rate_limited`, `timeout`, `non_json`,
+  `redirect_refused`, …), invalid or unoffered actions, parse and schema errors, retry
+  exhaustion, step limits. They make a run incomplete or unresolved. They are not policy
+  outcomes, and an incomplete Ink run is *not evaluable*.
+- **Guard outcomes:** denials (allowlist, permission expiry or revocation, exception
+  expiry, external effects).
+- **Policy outcomes:** rubric violations that were executed (realized) and violations that
+  were attempted (intent).
+- **Useful work and burdens:** releases shipped through an authorized path, disruption,
+  backlog.
+- **Fairness probes:** paired label-swap runs. A run with zero violations can still flip
+  every allocation.
+
+## Offline agent scaffold (mocked tools)
+
+`ethicslab/scaffold.py` drives any `model(observation) -> str` callable through parsed tool
+calls, a permission gateway (`GUARDED` / `UNGUARDED`), mocked cluster tools and a hash-chained
+ledger. Nothing leaves the process; `http_post` is recorded as "not sent". The scripted
+policies in `ethicslab/scripted_models.py` are deterministic calibration controls, not
+language models. Held-out cases in `cases/heldout/` are frozen by
+`cases/heldout.FROZEN.json`, and the loader refuses to run them if they change. A changed set
+needs a new name and a new freeze (`tools/freeze-heldout.py --force`, announced). Sessions
+checkpoint and resume to an identical ledger. `verify_session(session, trusted_head)` detects
+edits only against a head digest stored elsewhere.
+
 ## Providers and local models
 
 Fully offline testing needs no keys. Direct OpenAI-compatible endpoints:
@@ -39,11 +91,17 @@ python3 -m pip install -r requirements-live.txt
 python3 -m ethicslab --agent live --model anthropic/YOUR_MODEL --months 1 --output runs/anthropic
 ```
 
+The compatible-endpoint client (`ethicslab/provider.py`) refuses redirects, retries 429 and
+5xx a bounded number of times (honouring `Retry-After` up to 30 s), classifies every failure,
+and accepts either JSON content or a single `choose_action` tool call. These behaviours were
+tested only against a local mock server.
+
 Use LiteLLM's supported provider prefixes for Azure, Bedrock, Gemini, Ollama, vLLM and others. This is broad adapter coverage, **not verification of every provider**. No paid provider calls were made. Some models require different temperature/structured-output options; a rejected request is an adapter error, never a behavioral failure. For an existing full agent system, implement `decide()` to invoke its entire scaffold. The built-in live adapter tests a fixed decision scaffold, not arbitrary production agents.
 
 ## Method and deployment
 
-Read `docs/PROTOCOL.md` before reporting results. Kubernetes, Flux and OpenTelemetry examples are in `deploy/`; local execution is the tested path. Deployment examples require building an image and selecting an isolated cluster. They never create permissions for the evaluated policy to access a production Kubernetes API. The [research and verification index](../../docs/agentic-ethics/README.md) and [presentation](../../talks/three-years-in-thirty-minutes/README.md) are included in this repository.
+Read `docs/PROTOCOL.md` before reporting results. Kubernetes, Flux and OpenTelemetry examples are in `deploy/`. The image and the Ink Job
+script were executed under Docker with a real collector. Cluster apply was not executed. Deployment examples require building an image and selecting an isolated cluster. They never create permissions for the evaluated policy to access a production Kubernetes API. The [research and verification index](../../docs/agentic-ethics/README.md) and [presentation](../../talks/three-years-in-thirty-minutes/README.md) are included in this repository.
 
 The log hash chain detects edits against a trusted external final hash. It is not signed or tamper-proof; an attacker able to replace the whole bundle can recompute it. Store a signed manifest or immutable external digest in production. Raw observations are synthetic here; enterprise deployments require redaction, retention controls and restricted access to logs.
 

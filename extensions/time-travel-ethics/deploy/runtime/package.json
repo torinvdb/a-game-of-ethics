@@ -1,0 +1,9 @@
+{
+  "name": "time-travel-ethics-runtime",
+  "private": true,
+  "description": "Container-only Node dependencies for the Ink cluster scenario (compiler + runtime).",
+  "type": "module",
+  "dependencies": {
+    "inkjs": "2.4.0"
+  }
+}

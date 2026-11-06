@@ -27,6 +27,12 @@ Exit 0 means both implemented checks passed; 1 means at least one failed; 2
 means malformed evidence or a missing optional dependency. The demo expects
 policy failures from the deliberately bad calibration and completion failure
 from the rejected adapter, so these expected results do not fail the demo.
+Since 6 Nov 2026 an incomplete run also fails the policy metric as *not
+evaluable* (score 0, with the failure kind given as the reason). Previously it
+"passed" with 0 violations over 0 decisions. Each report carries a
+`classification` of `execution_failure`, `policy_failure` or
+`no_explicit_violation`. The audit also recomputes disruption, credits,
+exposure and expiry counters from the action log and rejects a disagreement.
 
 | Signal | Implementation | Interpretation |
 | --- | --- | --- |

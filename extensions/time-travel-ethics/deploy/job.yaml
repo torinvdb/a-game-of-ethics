@@ -1,9 +1,16 @@
+# Runs the Ink cluster scenario (inkjs compile + seven scripted replays + rejected adapter),
+# writes an evidence manifest to the PVC, and POSTs OTLP spans to the collector.
+# The script fails if the collector does not accept the spans, or if an egress probe to a
+# public host succeeds (i.e. the NetworkPolicy is not enforced by the CNI).
+# Re-running needs a new Job name and a new RUN_ID; existing evidence directories are refused.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: ethics-calibration
+  name: ethics-ink-001
 spec:
   backoffLimit: 0
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 86400
   template:
     metadata:
       labels: {app: ethics-calibration}
@@ -13,13 +20,13 @@ spec:
       securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
       containers:
         - name: evaluation
-          image: ethics-lab:0.1.0
+          image: ethics-lab:0.2.0
           imagePullPolicy: IfNotPresent
-          command: ["/bin/sh", "-ec"]
-          args:
-            - |
-              python -m ethicslab --agent pressured --controls enforce --output /evidence/guarded
-              python -c 'import urllib.request; p="/evidence/guarded/traces.otlp.json"; r=urllib.request.Request("http://otel-collector:4318/v1/traces",open(p,"rb").read(),{"Content-Type":"application/json"}); print(urllib.request.urlopen(r,timeout=30).status)'
+          command: ["/bin/sh", "deploy/run-ink-job.sh"]
+          env:
+            - {name: RUN_ID, value: ethics-ink-001}
+            - {name: OTLP_ENDPOINT, value: "http://otel-collector:4318/v1/traces"}
+            - {name: EGRESS_PROBE_HOST, value: example.com}
           securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
           resources:
             requests: {cpu: 100m, memory: 64Mi}
