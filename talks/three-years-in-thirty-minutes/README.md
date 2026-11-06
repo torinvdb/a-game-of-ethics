@@ -1,83 +1,81 @@
 # Three Years in Thirty Minutes
 
-**Time-Travel Ethics Evaluation for AI Agents** — Torin van den Bulk · Vicente Herrera.
-CNCF-Hosted Co-located Events North America 2026.
+**Time-Travel Ethics Evaluation for AI Agents** · Torin van den Bulk · Vicente Herrera
+CNCF-Hosted Co-located Events North America 2026 (co-located day: Mon 9 Nov 2026,
+Salt Lake City, per search results on 6 Nov 2026; **confirm room/time on the official
+schedule**, as no public listing for this session was found).
 
-The main talk is now **14 slides**, with a 22-minute 10-second rehearsal budget
-including a three-minute demo, leaving room for questions in the 30-minute slot.
-Three research/verification appendices are hidden in PowerPoint's normal slide
-show. The narrative follows one blocked deployment: pressure, affected people,
-persistent consequences, the evaluation loop, then the decision to grant autonomy.
+**v2:** 15 main slides, **22 min 50 s** planned including a 4-minute demo, which
+leaves about 7 minutes for questions. Five hidden appendix slides cover the evidence
+boundary, the full calibration table, sources, the regulatory map and fallbacks.
 
-## Present
+One story runs through the talk: **incident → decision → persistent consequence →
+test method → evidence → adoption decision.**
 
-- **[Animated PowerPoint](three-years.pptx)** — editable text/diagrams, 35 click
-  groups and four embedded looping GIFs: terminal boot, neon signal circuit,
-  logical clock, and a robotic diagnostic fault with localized sparks.
-- **[Static PowerPoint](three-years-static.pptx)** — all content visible, motion
-  assets frozen. Use this for low-motion viewing and compatibility fallback.
-- **[Offline HTML](three-years.html)** — embedded images, motion and fonts; no server
-  or internet required.
-- **[PDF](three-years.pdf)** — all 17 slides, including appendices, fully revealed.
-- **[Speaker notes](speaker-notes.md)** — pacing, research citations, inference
-  boundaries and the three-minute demo sequence.
+## Files
 
-**Start the animated PPTX in Slide Show mode (F5).** Click to reveal each evidence
-group. GIFs are static in editing view and PDF; supported PowerPoint desktop
-players animate them in Slide Show. Install the three bundled Nimbus fonts from
-`assets/fonts/` before presenting to preserve the intended typography. Text,
-shapes and timing remain editable. If the conference player substitutes fonts or
-ignores GIF motion, use the self-contained HTML or the static/PDF fallback.
+| File | Use it for |
+| --- | --- |
+| [`three-years.pptx`](three-years.pptx) | **Presenting.** Editable text, 44 native click reveals, auto title wipes, neon flicker-on entrances, a looping motion-path packet, 9 embedded animated GIFs |
+| [`three-years-static.pptx`](three-years-static.pptx) | Low-motion / compatibility fallback: no timings, stills only |
+| [`three-years.html`](three-years.html) | Fully offline browser deck (fonts and media embedded): speaker notes, timer, reduced motion |
+| [`three-years.pdf`](three-years.pdf) | Handout: all 20 slides, fully revealed |
+| [`speaker-notes.md`](speaker-notes.md) | Two-speaker script with `[CLICK]` cues, handoffs, timings and Q&A prep |
+| [`DEMO-RUNBOOK.md`](DEMO-RUNBOOK.md) | Rehearsed demo commands, expected output and fallbacks |
+| [`demo/replay.py`](demo/replay.py) | Stage-friendly retro replay of recorded trajectories |
+| [`REVIEW.md`](REVIEW.md) | Critique of v1 and what v2 changed |
+| [`assets/ASSET-LEDGER.md`](assets/ASSET-LEDGER.md) | Provenance of every visual and font |
+| [`preview/`](preview/) | Per-slide PNGs, `contact-sheet.jpg` and a browser-recorded `motion-preview.mp4` |
 
-Browser controls: Right/Space reveals or advances; Left returns; **A** reveals
-all; **N** shows notes; **M** freezes motion; **R** opens/exits the appendix;
-**F** enters fullscreen; Home/End select the main opening/closing. The main
-closing stops navigation into the appendix. Reduced-motion preferences select
-PNG stills automatically. Sparks are small localized events, with no full-frame
-flashing or audio. They illustrate a fault, not a measured agent failure.
+**Before presenting:** install `assets/fonts/Oswald-Bold.ttf`, `Rajdhani-SemiBold.ttf`
+and `ShareTechMono-Regular.ttf`, then run Slide Show (F5). GIFs and entrance effects
+play only in Slide Show. If the venue player misbehaves, use the HTML deck (press F
+for fullscreen) or the static PPTX.
 
-The city/architecture imagery is cropped from existing third-party artwork in a
-Ghost in the Shell-themed collection. There is **no Akira poster and no newly
-generated anime artwork**. These are not authenticated film frames or the exact
-inline reference originals. [Provenance](assets/images.json) records immutable
-retrieval URLs, source/asset hashes and crop coordinates. See
-[asset notes](assets/SOURCES.md) for rights and font details.
+HTML keys: →/Space next · ← back · N notes · M motion on/off · A reveal all ·
+R appendix · B blank · T reset timer · F fullscreen. The closing slide doesn't run
+into the appendix. `?still` or `prefers-reduced-motion` uses still images.
 
-## Rebuild and check
+## Art direction
 
-```sh
+Late-80s/90s cyberpunk anime vocabulary: dusk megacity haze, dense kanji signage
+(each sign is a word from the talk: 監査 audit, 例外 exception, 署名 signature, 期限
+deadline…), overhead cables, CRT phosphor consoles, machine rooms, industrial robot
+arms and small localized sparks. Every visual is **drawn by code** in `scenery.py` and
+`motion.py`: no film frames, posters, photos or AI-generated art. The motion explains
+something: a terminal types the incident; the "disable" sign is the one that sparks; a
+timeline shows the three branches across 36 months; three clocks separate logical,
+wall and experienced time; a robot arm seals the scenario with its real hash; the label
+swap flips 36 cells; a faulting arm is labelled "logged, not scored".
+
+## Build
+
+```bash
 python3 -m pip install -r requirements-build.txt
-python3 make_motion.py  # regenerate GIFs/stills when their design changes
+```
+
+```bash
 python3 build.py
+```
+
+```bash
 python3 render_check.py
 ```
 
-`content.json` is the editorial source. `render_deck.py` makes a shared scene
-layout for editable PPTX and HTML; `pptx_motion.py` builds native PowerPoint
-entrance timing. `make_motion.py` draws deterministic UI/diagram animations, not
-AI illustrations or experimental data. `deck.css` and `deck.js` provide browser
-playback. The static PPTX has no GIF media or entrance timings.
+`build.py` renders the plates (if missing), then motion (about 2 min), then both
+PPTX files, the HTML and the speaker notes. `build.py --fast` reuses existing motion.
+`render_check.py` uses Playwright's Chromium to screenshot every slide and check
+for text overflow and overlap, console errors, navigation and four viewport sizes.
+It also exports the PDF and verifies the PPTX package: hidden appendix, animation
+targets and multiframe GIF media. Results are in
+[`render-validation.json`](render-validation.json).
 
-`preview_motion.py --output preview.mp4` records a browser preview using the same
-embedded GIF assets; it is not a recording of PowerPoint playback. It needs the
-system FFmpeg executable.
+## What has and has not been verified
 
-`render_check.py` needs Chromium at `/usr/bin/chromium`. It checks all 17 slides,
-text bounds/overlap, navigation, reveal groups, appendix boundary, speaker notes,
-motion controls, offline assets, four viewport sizes, native timing references,
-multiframe GIF media and PDF structure. It exports PDF and preview images.
-[Validation results](render-validation.json) distinguish browser/render checks
-from PowerPoint package checks: **Microsoft PowerPoint playback and conference
-hardware have not been tested here.**
-
-## Demo
-
-From the repository root:
-
-```sh
-npm run ethics:demo -- --output extensions/time-travel-ethics/runs/rehearsal
-```
-
-Show the first global bypass, its next-month recovery branch, a scoped exception
-followed by expiry, then `comparison.json`. Results are scripted calibration,
-not results for a real model. The full evidence can be generated without Wi-Fi.
+- **Verified here:** browser rendering and navigation (Chromium); PPTX package
+  structure; LibreOffice import and static rendering of both PPTX files; GIF frame
+  counts.
+- **Not verified:** **Microsoft PowerPoint playback** (Windows/macOS) of the custom
+  flicker and motion-path effects, the conference AV setup, and font substitution on
+  the presenting laptop. Rehearse once in real PowerPoint. If any custom effect
+  misbehaves, change it to Fade in the Animation Pane; the content is unaffected.

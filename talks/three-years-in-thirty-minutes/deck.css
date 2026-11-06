@@ -1,1 +1,46 @@
-*{box-sizing:border-box}html,body{margin:0;background:#03090b;color:#e2e7d3;overflow:hidden}#stage{position:absolute;width:1600px;height:900px;transform-origin:0 0}.slide{display:none;position:absolute;width:1600px;height:900px;overflow:hidden;background:#08191c}.slide.active{display:block}.element{position:absolute}.text{white-space:pre;line-height:1.16;overflow:visible}.image{display:block}.reveal{visibility:hidden}.reveal.shown{visibility:visible;animation:enter .4s ease both}.slide:after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.075;background:repeating-linear-gradient(0deg,transparent 0 4px,#08191c 4px 5px)}@keyframes enter{from{clip-path:inset(0 100% 0 0);filter:brightness(1.25)}to{clip-path:inset(0);filter:brightness(1)}}body.motion-off *{animation:none!important}nav{position:fixed;right:8px;bottom:5px;display:flex;gap:5px;z-index:20;opacity:.15}nav:hover,nav:focus-within{opacity:1}button{background:#0d2527;border:1px solid #45625d;color:#bdd5c8;padding:6px 12px;cursor:pointer;font:14px monospace}#notes{display:none;position:fixed;left:5%;right:5%;bottom:50px;max-height:48vh;overflow:auto;z-index:19;padding:25px;background:#0b2022f5;border:1px solid #75c6b1;font:20px/1.5 sans-serif;white-space:pre-line}#notes.visible{display:block}@media(prefers-reduced-motion:reduce){*{animation:none!important}}@page{size:1600px 900px;margin:0}@media print{html,body{overflow:visible}#stage{position:static;transform:none!important;height:auto}.slide{position:relative;display:block!important;break-after:page;print-color-adjust:exact;-webkit-print-color-adjust:exact}.slide:last-child{break-after:auto}.reveal{visibility:visible!important;animation:none!important}nav,#notes{display:none!important}.slide:after{display:none}}
+:root{--bg:#070d10;--fg:#e8ecd6;--teal:#40c4b2;--amber:#ffb052;--red:#ff5a48}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#000;color:var(--fg);overflow:hidden;font-family:Rajdhani,system-ui,sans-serif}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform-origin:0 0;background:var(--bg)}
+.slide{position:absolute;inset:0;visibility:hidden;overflow:hidden}
+.slide.current{visibility:visible}
+.el{position:absolute;margin:0;white-space:pre;user-select:text}
+img.el{object-fit:cover;display:block}
+/* CRT glass over the whole stage: static scanlines + soft vignette; no flashing */
+#stage::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:50;
+ background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px),
+ radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,.45) 100%)}
+/* steps start hidden; revealed by deck.js */
+.step{opacity:0;visibility:hidden}
+.shown{visibility:visible;opacity:1}
+.slide.current .shown.anim-fade{animation:fadeIn .45s ease both;animation-delay:var(--delay)}
+.slide.current .shown.anim-wipe{animation:wipeIn .55s ease-out both;animation-delay:var(--delay)}
+.slide.current .shown.anim-flicker{animation:flickerOn .58s linear both;animation-delay:var(--delay)}
+.slide.current .shown.anim-path{animation:fadeIn .3s both,travel var(--dur) linear .3s infinite}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes wipeIn{from{clip-path:inset(0 100% 0 0)}to{clip-path:inset(0 0 0 0)}}
+@keyframes flickerOn{0%{opacity:0}1%{opacity:1}12%{opacity:1}13%{opacity:0}24%{opacity:0}25%{opacity:1}34%{opacity:1}35%{opacity:0}55%{opacity:.15}56%{opacity:1}100%{opacity:1}}
+@keyframes travel{from{transform:translateX(0)}to{transform:translateX(var(--dx))}}
+/* reduced motion / frozen: no keyframes, stills instead of GIFs (deck.js swaps src) */
+body.still .slide.current .shown{animation:none!important}
+@media (prefers-reduced-motion:reduce){.slide.current .shown{animation:none!important}}
+#notes{position:fixed;right:0;top:0;bottom:44px;width:min(520px,92vw);background:rgba(5,10,12,.96);border-left:2px solid var(--teal);
+ padding:18px 22px;overflow:auto;font:17px/1.45 Rajdhani,sans-serif;white-space:pre-wrap;display:none;z-index:60}
+#notes.open{display:block}
+#notes h2{font:600 15px ShareTechMono,monospace;color:var(--amber);margin:0 0 8px;letter-spacing:.08em}
+#controls{position:fixed;left:0;right:0;bottom:0;height:44px;display:flex;gap:6px;align-items:center;padding:0 10px;
+ background:rgba(0,0,0,.6);opacity:0;transition:opacity .3s;z-index:70}
+#controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}
+#controls button{font:14px ShareTechMono,monospace;background:#0b1418;color:var(--teal);border:1px solid #2a4444;padding:6px 10px;cursor:pointer}
+#controls button:focus-visible{outline:2px solid var(--amber)}
+#clock{margin-left:auto;font:16px ShareTechMono,monospace;color:var(--amber)}
+body.blank #stage{visibility:hidden}
+@media print{
+ @page{size:1600px 900px;margin:0}
+ html,body{overflow:visible;background:var(--bg)}
+ #stage{position:static;transform:none!important;width:1600px;height:auto}
+ #stage::after,#notes,#controls{display:none}
+ .slide{position:relative;visibility:visible;width:1600px;height:900px;page-break-after:always;break-after:page}
+ .step{opacity:1;visibility:visible}
+ .shown,.el{animation:none!important}
+}

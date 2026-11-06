@@ -1,55 +1,54 @@
 {
-  "main_slides": 14,
-  "hidden_appendices": 3,
-  "duration_seconds": 1330,
-  "js_errors": [],
-  "external_requests": [],
+ "scope": "Browser render (Chromium/Playwright) + PPTX package structure. Microsoft PowerPoint playback is NOT exercised by this script.",
+ "checks": {
+  "closing_stops_before_appendix": true,
+  "appendix_key_opens_appendix": true,
+  "fits_1280x720": true,
+  "fits_1920x1080": true,
+  "fits_1024x768": true,
+  "fits_390x844": true,
+  "console_errors": [],
   "layout_issues": [],
-  "native_pptx": {
-    "slides": 17,
-    "hidden_appendices": 3,
-    "click_groups": 35,
-    "entrance_shapes": 135,
-    "animated_media": {
-      "ppt/media/image2.gif": {
-        "frames": 60,
-        "loop": 0
-      },
-      "ppt/media/image4.gif": {
-        "frames": 58,
-        "loop": 0
-      },
-      "ppt/media/image5.gif": {
-        "frames": 36,
-        "loop": 0
-      },
-      "ppt/media/image6.gif": {
-        "frames": 37,
-        "loop": 0
-      }
-    }
+  "reveal_groups_per_slide": [
+   0,
+   3,
+   4,
+   3,
+   4,
+   4,
+   3,
+   4,
+   0,
+   4,
+   2,
+   4,
+   3,
+   5,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "reveal_groups_total": 44,
+  "three-years.pptx": {
+   "slides": 20,
+   "hidden": 5,
+   "slides_with_timing": 20,
+   "animation_targets_missing": [],
+   "gif_media": 9,
+   "multiframe_gifs": 9,
+   "size_mb": 16.7
   },
-  "viewports": [
-    "1600x900",
-    "1280x720",
-    "1024x768",
-    "1920x1080"
-  ],
-  "checks": [
-    "group reveals",
-    "appendix boundary",
-    "speaker notes",
-    "motion toggle",
-    "reduced-motion static assets",
-    "offline image decoding",
-    "text bounds and overlaps",
-    "static PDF 17 pages",
-    "PPTX timing targets and unique IDs",
-    "four multiframe GIFs",
-    "static PPTX without animation"
-  ],
-  "not_verified": [
-    "Microsoft PowerPoint slideshow playback",
-    "PowerPoint rendering on conference hardware"
-  ]
+  "three-years-static.pptx": {
+   "slides": 20,
+   "hidden": 5,
+   "slides_with_timing": 0,
+   "animation_targets_missing": [],
+   "gif_media": 0,
+   "multiframe_gifs": 0,
+   "size_mb": 4.6
+  }
+ }
 }

@@ -1,3 +1,9 @@
 python-pptx==1.0.2
-playwright==1.62.0
+playwright==1.63.0
 PyMuPDF==1.26.6
+Pillow>=11
+numpy>=2
+qrcode==8.2
+fonttools>=4.55
+brotli>=1.1
+lxml>=5
