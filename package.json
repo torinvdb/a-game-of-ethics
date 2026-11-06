@@ -18,6 +18,7 @@
     "ethics:verify-evidence": "python3 extensions/time-travel-ethics/tools/verify-evidence.py",
     "ethics:replay": "python3 talks/three-years-in-thirty-minutes/demo/replay.py",
     "benchmark:check": "node benchmark/check_scenarios.mjs && python3 benchmark/manifest.py verify",
+    "benchmark:test": "python3 -m unittest discover -s benchmark/run -p 'test_*.py' -v",
     "bench:run": "node benchmark/run/run.mjs",
     "bench:cluster": "python3 benchmark/run/cluster.py",
     "bench:analyze": "python3 benchmark/run/analyze.py",

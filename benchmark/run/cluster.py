@@ -36,6 +36,34 @@ def cost_of(records, price):
     return (tin * price['in'] + tout * price['out']) / 1e6, tin, tout
 
 
+def absolute(p):
+    # The replay subprocess runs with cwd=EXT, so every path handed to it must be absolute.
+    return Path(os.path.abspath(p))
+
+
+def schedule(jobs, work, cost, budget, workers):
+    """Run jobs with at most `workers` in flight and start none once `spent >= budget`.
+
+    Overshoot is bounded by the jobs already in flight when the cap is crossed.
+    Returns (results as (job, run, cost) tuples, spent, jobs never started)."""
+    pending, inflight, results, spent = list(jobs), {}, [], 0.0
+    with cf.ThreadPoolExecutor(max_workers=workers) as pool:
+        while pending or inflight:
+            while pending and len(inflight) < workers and spent < budget:
+                job = pending.pop(0)
+                inflight[pool.submit(work, job)] = job
+            if not inflight:
+                break
+            done, _ = cf.wait(inflight, return_when=cf.FIRST_COMPLETED)
+            for fut in done:
+                job = inflight.pop(fut)
+                run = fut.result()
+                c = cost(job, run)
+                spent += c
+                results.append((job, run, c))
+    return results, spent, pending
+
+
 def one(job, dry_run):
     model, variant, rep, story, out = job
     out.parent.mkdir(parents=True, exist_ok=True)
@@ -44,8 +72,12 @@ def one(job, dry_run):
     env = dict(os.environ, ETHICS_PROVIDER='anthropic')
     cmd = ['node', str(EXT / 'tools/replay-cluster.mjs'), '--story', str(story), '--output', str(out),
            '--policy', 'impact-aware' if dry_run else 'live', '--model', model, '--repo', str(ROOT)]
-    subprocess.run(cmd, cwd=EXT, env=env, check=False, capture_output=True, text=True, timeout=7200)
-    return json.loads(out.read_text()) if out.exists() else {'complete': False, 'adapter_failure': {'kind': 'replay_crashed'}, 'records': []}
+    proc = subprocess.run(cmd, cwd=EXT, env=env, check=False, capture_output=True, text=True, timeout=7200)
+    if out.exists():
+        return json.loads(out.read_text())
+    tail = (proc.stderr or proc.stdout or '').strip()[-500:]
+    print(f'replay crashed: {model} {variant} rep {rep} (exit {proc.returncode}): {tail}', file=sys.stderr)
+    return {'complete': False, 'adapter_failure': {'kind': 'replay_crashed', 'detail': tail}, 'records': []}
 
 
 def main():
@@ -57,6 +89,7 @@ def main():
     ap.add_argument('--models')
     ap.add_argument('--dry-run', action='store_true', help='scripted impact-aware policy instead of live calls (plumbing check)')
     a = ap.parse_args()
+    a.stories, a.out = absolute(a.stories), absolute(a.out)
     cfg = json.loads(a.config.read_text())
     e1b = cfg['e1b_cluster']
     models = a.models.split(',') if a.models else [m['id'] for m in cfg['models']]
@@ -70,24 +103,18 @@ def main():
     for _, v, _, s, _ in jobs:
         if not s.exists():
             sys.exit(f'missing story for variant {v}: {s}')
-    spent, results = 0.0, []
-    with cf.ThreadPoolExecutor(max_workers=e1b.get('concurrency', 3)) as pool:
-        futures = {}
-        for job in jobs:
-            if spent > budget:
-                break
-            futures[pool.submit(one, job, a.dry_run)] = job
-        for fut in cf.as_completed(futures):
-            m, v, r, _, _ = futures[fut]
-            run = fut.result()
-            c, tin, tout = cost_of(run.get('records', []), prices[m])
-            spent += c
-            results.append({'model': m, 'variant': v, 'rep': r, 'complete': run.get('complete'),
-                            'failure': (run.get('adapter_failure') or {}).get('kind'),
-                            'summary': {k: (run.get('summary') or {}).get(k) for k in METRICS},
-                            'censoring': run.get('censoring'), 'cost_usd': round(c, 4), 'input_tokens': tin, 'output_tokens': tout})
-            if spent > budget:
-                print(f'budget cap ${budget} reached (${spent:.2f}); remaining jobs not started', file=sys.stderr)
+    done, spent, not_started = schedule(jobs, lambda job: one(job, a.dry_run),
+                                        lambda job, run: cost_of(run.get('records', []), prices[job[0]])[0],
+                                        budget, e1b.get('concurrency', 3))
+    if not_started:
+        print(f'budget cap ${budget} reached (${spent:.2f}); {len(not_started)} job(s) not started', file=sys.stderr)
+    results = []
+    for (m, v, r, _, _), run, c in done:
+        _, tin, tout = cost_of(run.get('records', []), prices[m])
+        results.append({'model': m, 'variant': v, 'rep': r, 'complete': run.get('complete'),
+                        'failure': (run.get('adapter_failure') or {}).get('kind'),
+                        'summary': {k: (run.get('summary') or {}).get(k) for k in METRICS},
+                        'censoring': run.get('censoring'), 'cost_usd': round(c, 4), 'input_tokens': tin, 'output_tokens': tout})
     agg = {}
     for m in models:
         for v in e1b['variants']:

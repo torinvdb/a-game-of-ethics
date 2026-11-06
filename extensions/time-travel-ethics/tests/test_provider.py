@@ -137,7 +137,8 @@ class ProviderContractTests(unittest.TestCase):
 
     def test_redirect_not_followed_and_credentials_not_forwarded(self):
         # Previously urllib followed a 302 to another host with the Authorization header.
-        sink = Mock([ok(completion('{"action":"share"}'))], host='127.0.0.2')
+        # Distinct host name from the 127.0.0.1 mock; 127.0.0.2 is not bound on macOS by default.
+        sink = Mock([ok(completion('{"action":"share"}'))], host='localhost')
         self.addCleanup(sink.close)
         for code in (301, 302, 303, 307, 308):
             out, _, _ = self.call([(code, {'Location': sink.url}, b'', 0)], api_key='sk-not-real')
