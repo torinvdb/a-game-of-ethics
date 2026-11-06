@@ -6,6 +6,11 @@
 //        [--stage pilot|full] [--models a,b] [--scenarios x,y] [--reps N] [--concurrency N]
 //        [--budget-usd X] [--estimate]
 //
+// External agents (protocol agoe.agent/v1, docs/AGENT-PROTOCOL.md):
+//        --agent-cmd "python3 examples/agents/stdio_agent.py"   (provider "command")
+//        --agent-url http://127.0.0.1:8080                      (provider "http")
+//        [--agent-name NAME] [--agent-timeout-ms N] [--allow-insecure-http]
+//
 // Output (append-only, resumable at the (cell, rep) key):
 //   results.jsonl  one row per completed scenario run
 //   errors.jsonl   one row per failed attempt (failure class, usage if billed)
@@ -62,8 +67,25 @@ function readJsonl(file) {
   return fs.readFileSync(file, 'utf8').split('\n').filter(Boolean).map((l) => JSON.parse(l));
 }
 
+// Text that would reveal the rubric to an agent. The frozen scenarios print it only after the last
+// choice; this guard keeps a future scenario from leaking it mid-story to an external agent.
+const SCORE_TEXT = /Ethical Score|Average Per Axis|VERDICT:|\((hc|fj|ar|al|lt|it|sp|uc)\):\s*-?\d/;
+
 // One scenario run. Returns a results row or throws RunError (with partial usage).
-async function playOnce({ provider, cell, rep, scenarioFile, system, settings, prices }) {
+// External agents get a session (start ... end) around the story; model providers do not.
+async function playOnce({ provider, cell, rep, scenarioFile, system, settings, prices, runId }) {
+  const session = provider.openRun ? await provider.openRun({ runId, scenario: cell.scenario.id, system }) : null;
+  let completed = false;
+  try {
+    const row = await playStory({ provider, session, cell, scenarioFile, system, settings, prices });
+    completed = true;
+    return row;
+  } finally {
+    if (session) await session.close({ completed });
+  }
+}
+
+async function playStory({ provider, session, cell, scenarioFile, system, settings, prices }) {
   const story = loadStory(scenarioFile);
   const rand = rng(cell.seed);
   const messages = [];
@@ -81,11 +103,17 @@ async function playOnce({ provider, cell, rep, scenarioFile, system, settings, p
     if (!choices.length) break;
     const order = permutation(choices.length, rand); // presented position k shows original option order[k]
     const lines = order.map((orig, k) => `${k + 1}. ${choices[orig].text}`);
+    const observation = pending.trim();
     messages.push({ role: 'user', content: `${pending.trim()}\n\nOptions:\n${lines.join('\n')}` });
     pending = '';
     let out;
     try {
-      out = await provider.decide({ system, messages, numChoices: choices.length, model: cell.model, settings });
+      if (session) {
+        if (SCORE_TEXT.test(observation)) throw new RunError('harness_error', 'score text in observation; not sent to agent');
+        out = await session.decide({ step, observation, options: order.map((orig, k) => ({ id: k + 1, text: choices[orig].text })) });
+      } else {
+        out = await provider.decide({ system, messages, numChoices: choices.length, model: cell.model, settings });
+      }
     } catch (error) {
       if (error instanceof RunError) {
         add(error.usage);
@@ -117,11 +145,21 @@ async function main() {
   const cfgBytes = fs.readFileSync(configPath);
   const cfg = JSON.parse(cfgBytes);
   const stage = arg('--stage', 'pilot');
-  const providerName = arg('--provider', cfg.provider);
+  const agentCmd = arg('--agent-cmd');
+  const agentUrl = arg('--agent-url');
+  if (agentCmd && agentUrl) throw new Error('use either --agent-cmd or --agent-url, not both');
+  const providerName = agentCmd ? 'command' : agentUrl ? 'http' : arg('--provider', cfg.provider);
+  const isAgent = providerName === 'command' || providerName === 'http';
+  if (isAgent && !agentCmd && !agentUrl) throw new Error(`--provider ${providerName} needs --agent-cmd or --agent-url`);
+  const agentName = arg('--agent-name', 'agent');
+  if (!/^[A-Za-z0-9._:-]{1,64}$/.test(agentName)) throw new Error('--agent-name must match ^[A-Za-z0-9._:-]{1,64}$');
+  const agentTimeoutMs = Number(arg('--agent-timeout-ms', 60000));
+  if (!(agentTimeoutMs > 0)) throw new Error('--agent-timeout-ms must be a positive number');
   const out = path.resolve(arg('--out', path.join(path.dirname(configPath), 'runs', `${stage}-${providerName}`)));
   fs.mkdirSync(out, { recursive: true });
   const reps = Number(arg('--reps', cfg.stages[stage].reps));
-  const models = (arg('--models') || cfg.models.map((m) => m.id).join(',')).split(',');
+  // An external agent is one "model" in the cell grid; its name is the model id in keys and rows.
+  const models = isAgent ? [agentName] : (arg('--models') || cfg.models.map((m) => m.id).join(',')).split(',');
   const manifest = JSON.parse(fs.readFileSync(path.join(ROOT, cfg.benchmark_manifest), 'utf8'));
   const wanted = arg('--scenarios') ? arg('--scenarios').split(',') : cfg.scenarios;
   const scenarios = manifest.scenarios.filter((s) => wanted.includes(s.id));
@@ -130,7 +168,7 @@ async function main() {
     const h = sha256(fs.readFileSync(path.join(ROOT, s.path)));
     if (h !== s.sha256) throw new Error(`scenario drift: ${s.id} ${h.slice(0, 12)} != manifest ${s.sha256.slice(0, 12)}`);
   }
-  const prices = Object.fromEntries(cfg.models.map((m) => [m.id, m.price_per_mtok]));
+  const prices = isAgent ? {} : Object.fromEntries(cfg.models.map((m) => [m.id, m.price_per_mtok]));
   const budget = Number(arg('--budget-usd', cfg.stages[stage].budget_usd));
   const concurrency = Number(arg('--concurrency', cfg.concurrency));
 
@@ -143,7 +181,8 @@ async function main() {
   const resultsFile = path.join(out, 'results.jsonl');
   const errorsFile = path.join(out, 'errors.jsonl');
   // Terminal failure classes are outcomes of the cell (recorded once, not retried);
-  // transient ones (api_error, timeout, harness_error) are retried up to max_attempts.
+  // transient ones (api_error, timeout, harness_error, agent_crashed, agent_error) are retried
+  // up to max_attempts on a later invocation (resume).
   const TERMINAL = new Set(['refusal', 'truncated', 'schema_invalid', 'served_model_mismatch', 'max_decisions']);
   const done = new Set(readJsonl(resultsFile).map((r) => r.key));
   const attempts = {};
@@ -155,12 +194,17 @@ async function main() {
   const todo = cells.filter((c) => !done.has(c.key));
 
   let git = null;
-  try { git = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8' }).trim(); } catch { /* not a checkout */ }
+  try { git = execFileSync('git', ['rev-parse', 'HEAD'], { cwd: ROOT, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim(); } catch { /* not a checkout */ }
+  const agentProvider = isAgent
+    ? makeProvider(providerName, { cmd: agentCmd, url: agentUrl, timeoutMs: agentTimeoutMs, cwd: process.cwd(),
+      logDir: path.join(out, 'agent-logs'), allowInsecureHttp: flag('--allow-insecure-http') })
+    : null;
   const sdkVersion = JSON.parse(fs.readFileSync(path.join(ROOT, 'node_modules/@anthropic-ai/sdk/package.json'), 'utf8')).version;
   fs.writeFileSync(path.join(out, 'run.json'), JSON.stringify({ experiment_id: cfg.experiment_id, stage, provider: providerName,
     config_sha256: sha256(cfgBytes), git_commit: git, anthropic_sdk: sdkVersion, node: process.version,
     scenarios: scenarios.map((s) => ({ id: s.id, sha256: s.sha256, split: s.split })), models, reps,
-    cells_total: cells.length, started_at: new Date().toISOString() }, null, 1) + '\n');
+    cells_total: cells.length, ...(isAgent ? { agent: { ...agentProvider.agent, name: agentName, timeout_ms: agentTimeoutMs } } : {}),
+    started_at: new Date().toISOString() }, null, 1) + '\n');
 
   if (flag('--estimate')) {
     console.log(JSON.stringify({ cells: cells.length, remaining: todo.length, note: 'run with --provider mock to measure tokens, then scale' }));
@@ -169,7 +213,8 @@ async function main() {
   if (providerName === 'anthropic' && !process.env.ANTHROPIC_API_KEY && !process.env.ANTHROPIC_AUTH_TOKEN) {
     console.error('Set ANTHROPIC_API_KEY (or use an ant auth profile) before a live run.');
   }
-  const provider = makeProvider(providerName, { seed: 1 });
+  const provider = agentProvider ?? makeProvider(providerName, { seed: 1 });
+  if (provider.init) await provider.init();
   console.log(`${todo.length}/${cells.length} cells to run · provider ${providerName} · budget $${budget} · spent $${spent.toFixed(4)}`);
 
   let stop = false;
@@ -179,18 +224,21 @@ async function main() {
       const cell = todo[idx++];
       const t0 = Date.now();
       const system = [cfg.prompts.system_common, cell.framing.system_prefix].join('\n\n');
+      // Agent runs carry a run id (one per attempt) that the agent uses to key its memory.
+      const runId = isAgent ? `${cell.seed.slice(0, 16)}-a${attempts[cell.key] || 0}` : undefined;
+      const agentFields = isAgent ? { run_id: runId, agent: { protocol: provider.agent.protocol, transport: provider.agent.transport, name: agentName } } : {};
       try {
         const res = await playOnce({ provider, cell, rep: cell.rep, scenarioFile: path.join(ROOT, cell.scenario.path), system,
-          settings: cfg.settings, prices });
+          settings: cfg.settings, prices, runId });
         spent += res.cost_usd;
         fs.appendFileSync(resultsFile, JSON.stringify({ key: cell.key, model: cell.model, scenario: cell.scenario.id,
-          split: cell.scenario.split, framing: cell.framing.id, rep: cell.rep, seed: cell.seed, ...res,
+          split: cell.scenario.split, framing: cell.framing.id, rep: cell.rep, seed: cell.seed, ...agentFields, ...res,
           latency_s: (Date.now() - t0) / 1000 }) + '\n');
       } catch (error) {
         const fc = error instanceof RunError ? error.failureClass : 'harness_error';
         spent += error.cost || 0;
         fs.appendFileSync(errorsFile, JSON.stringify({ key: cell.key, model: cell.model, scenario: cell.scenario.id,
-          framing: cell.framing.id, rep: cell.rep, failure_class: fc, detail: String(error.detail ?? error.message).slice(0, 300),
+          framing: cell.framing.id, rep: cell.rep, ...(isAgent ? { run_id: runId } : {}), failure_class: fc, detail: String(error.detail ?? error.message).slice(0, 300),
           at_decision: error.atDecision ?? null, usage: error.usageTotal ?? null, cost_usd: error.cost || 0, at: new Date().toISOString() }) + '\n');
       }
       if (spent > budget) {

@@ -1,0 +1,104 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/torinvdb/a-game-of-ethics/schemas/errors-row.schema.json",
+  "title": "benchmark/run/run.mjs errors.jsonl row",
+  "description": "One failed attempt. A failure is never scored as a choice. run_id is present only for external-agent runs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "key",
+    "model",
+    "scenario",
+    "framing",
+    "rep",
+    "failure_class",
+    "detail",
+    "at_decision",
+    "usage",
+    "cost_usd",
+    "at"
+  ],
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "scenario": {
+      "type": "string"
+    },
+    "framing": {
+      "type": "string"
+    },
+    "rep": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "failure_class": {
+      "enum": [
+        "refusal",
+        "truncated",
+        "schema_invalid",
+        "served_model_mismatch",
+        "max_decisions",
+        "api_error",
+        "timeout",
+        "harness_error",
+        "agent_crashed",
+        "agent_error"
+      ]
+    },
+    "detail": {
+      "type": "string",
+      "maxLength": 300
+    },
+    "at_decision": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "minimum": 0
+    },
+    "usage": {
+      "oneOf": [
+        {
+          "type": "object",
+          "properties": {
+            "input_tokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "output_tokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "cache_read_input_tokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "cache_creation_input_tokens": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "cost_usd": {
+      "type": "number",
+      "minimum": 0
+    },
+    "at": {
+      "type": "string",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}T"
+    }
+  }
+}

@@ -20,7 +20,10 @@
     "benchmark:check": "node benchmark/check_scenarios.mjs && python3 benchmark/manifest.py verify",
     "bench:run": "node benchmark/run/run.mjs",
     "bench:cluster": "python3 benchmark/run/cluster.py",
-    "bench:analyze": "python3 benchmark/run/analyze.py"
+    "bench:analyze": "python3 benchmark/run/analyze.py",
+    "bench:agent": "node benchmark/run/run.mjs",
+    "bench:cluster-agent": "node benchmark/run/cluster-agent.mjs",
+    "schemas:validate": "node schemas/validate.mjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^1.6.0",

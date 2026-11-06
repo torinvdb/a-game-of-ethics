@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/torinvdb/a-game-of-ethics/schemas/agent-decide.schema.json",
+  "title": "agoe.agent/v1 decide message",
+  "description": "Harness to agent, once per decision. Carries only story text since the previous decision; never scores, axis values or verdicts.",
+  "type": "object",
+  "required": [
+    "type",
+    "run_id",
+    "step",
+    "observation",
+    "options",
+    "deadline_ms"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "const": "decide"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "step": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "observation": {
+      "type": "string"
+    },
+    "options": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "text"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Presented position (1-based) after the harness shuffle"
+          },
+          "text": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "deadline_ms": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Time the agent has to reply, in milliseconds"
+    }
+  }
+}

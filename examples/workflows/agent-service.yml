@@ -1,0 +1,45 @@
+# Copy to .github/workflows/ in your repository.
+# Tests an agent packaged as a container image that serves agoe.agent/v1 over
+# HTTP. The image runs as a service container next to the job.
+name: Ethics eval (agent service)
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      agent:
+        image: ghcr.io/your-org/your-agent:latest
+        credentials:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+        ports:
+          - 8080:8080
+        env:
+          MY_AGENT_API_KEY: ${{ secrets.MY_AGENT_API_KEY }}
+        options: >-
+          --health-cmd "wget -qO- http://localhost:8080/health || exit 1"
+          --health-interval 5s
+          --health-retries 12
+    steps:
+      - name: Run A Game of Ethics
+        uses: torinvdb/a-game-of-ethics@v2 # pin a full commit SHA in production
+        with:
+          provider: http
+          # The job runs on the host, so the service is reached via the mapped port.
+          agent-url: http://localhost:8080
+          agent-name: your-agent
+          stage: smoke
+          fail-on: execution-failures
+        # Sent as "Authorization: Bearer" to the agent, if your agent checks one.
+        env:
+          AGOE_AGENT_TOKEN: ${{ secrets.MY_AGENT_TOKEN }}

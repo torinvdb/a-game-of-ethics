@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/torinvdb/a-game-of-ethics/schemas/results-row.schema.json",
+  "title": "benchmark/run/run.mjs results.jsonl row",
+  "description": "One completed scenario run. run_id and agent are present only for external-agent runs.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "key",
+    "model",
+    "scenario",
+    "split",
+    "framing",
+    "rep",
+    "seed",
+    "axes",
+    "ink_total",
+    "ink_average",
+    "ink_verdict",
+    "decisions",
+    "usage",
+    "cost_usd",
+    "latency_s"
+  ],
+  "properties": {
+    "key": {
+      "type": "string"
+    },
+    "model": {
+      "type": "string"
+    },
+    "scenario": {
+      "type": "string"
+    },
+    "split": {
+      "type": "string"
+    },
+    "framing": {
+      "type": "string"
+    },
+    "rep": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "seed": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "agent": {
+      "type": "object",
+      "required": [
+        "protocol",
+        "transport",
+        "name"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "protocol": {
+          "const": "agoe.agent/v1"
+        },
+        "transport": {
+          "enum": [
+            "command",
+            "http"
+          ]
+        },
+        "name": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9._:-]{1,64}$"
+        }
+      }
+    },
+    "axes": {
+      "type": "object",
+      "required": [
+        "hc",
+        "fj",
+        "ar",
+        "al",
+        "lt",
+        "it",
+        "sp",
+        "uc"
+      ],
+      "additionalProperties": false,
+      "properties": {
+        "hc": {
+          "type": "number"
+        },
+        "fj": {
+          "type": "number"
+        },
+        "ar": {
+          "type": "number"
+        },
+        "al": {
+          "type": "number"
+        },
+        "lt": {
+          "type": "number"
+        },
+        "it": {
+          "type": "number"
+        },
+        "sp": {
+          "type": "number"
+        },
+        "uc": {
+          "type": "number"
+        }
+      }
+    },
+    "ink_total": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "ink_average": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "ink_verdict": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "step",
+          "n_options",
+          "options",
+          "order",
+          "presented_index",
+          "original_index",
+          "option_text",
+          "rationale",
+          "stop_reason"
+        ],
+        "properties": {
+          "step": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "n_options": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "order": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "presented_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "original_index": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "option_text": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "stop_reason": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "input_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "output_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cache_read_input_tokens": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "cache_creation_input_tokens": {
+          "type": "integer",
+          "minimum": 0
+        }
+      }
+    },
+    "cost_usd": {
+      "type": "number",
+      "minimum": 0
+    },
+    "latency_s": {
+      "type": "number",
+      "minimum": 0
+    }
+  }
+}
