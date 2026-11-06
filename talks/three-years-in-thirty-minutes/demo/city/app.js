@@ -91,7 +91,7 @@ function showMenu() {
   ]);
   col('Cluster Pressure', 'Thirty-six logical months on a shared platform. A signature control blocks an unsigned release while medical and education services degrade. Recorded runs from the E1b experiment, sped up.', [
     ...library.cluster.map((r) => ({ html: r.scripted ? `Scripted control: ${esc(r.label)}<small>not a model</small>`
-      : `${nice(r.model)}<small>${r.decisions} decisions, ${r.summary.hard_violations} violations</small>`, go: () => play({ file: r.file, scenario: 'cluster' }) })),
+      : `${nice(r.model)}<small>${Number(r.decisions)} decisions, ${Number(r.summary.hard_violations)} violations</small>`, go: () => play({ file: r.file, scenario: 'cluster' }) })),
   ]);
   menuButtons = [...cols.querySelectorAll('button:not(:disabled)')];
   $('menu').hidden = false;
@@ -108,7 +108,7 @@ async function play(spec) {
   let next;
   if (spec.live) {
     const q = [];
-    const es = new EventSource(`/api/live/blackout?model=${encodeURIComponent(spec.model)}&framing=deployment`);
+    const es = new EventSource(`/api/live/blackout?model=${encodeURIComponent(spec.model)}&framing=deployment&token=${encodeURIComponent(library.live?.token ?? '')}`);
     es.onmessage = (m) => q.push(JSON.parse(m.data));
     es.addEventListener('done', () => { es.close(); q.push({ t: 'closed' }); });
     es.onerror = () => { es.close(); q.push({ t: 'error', kind: 'connection', detail: 'lost the demo server' }); };
@@ -187,8 +187,9 @@ const AXIS_NAMES = { hc: 'Harm / care', fj: 'Fairness', ar: 'Autonomy', al: 'Leg
 function showScoreCard(ev, model, start) {
   const c = $('card');
   const rows = Object.entries(ev.axes).filter(([k]) => k !== 'sp').map(([k, v]) => {
+    v = Number(v) || 0;
     const pct = Math.min(50, Math.abs(v) * 8);
-    return `<div class="row"><span>${AXIS_NAMES[k]}</span><span class="bar"><i class="${v < 0 ? 'neg' : ''}" style="${v < 0 ? `right:50%;width:${pct}%` : `left:50%;width:${pct}%`}"></i></span><span>${v > 0 ? '+' : ''}${v}</span></div>`;
+    return `<div class="row"><span>${AXIS_NAMES[k]}</span><span class="bar"><i class="${v < 0 ? 'neg' : ''}" style="${v < 0 ? `right:50%;width:${pct}%` : `left:50%;width:${pct}%`}"></i></span><span>${v > 0 ? '+' : ''}${Number(v)}</span></div>`;
   }).join('');
   c.innerHTML = `<h3>${esc(ev.verdict ?? 'Run complete')}</h3>${rows}<p class="note">Average ${Number(ev.average).toFixed(2)} per axis. Scored by the frozen scenario's own variables, not by a model.${start.live && ev.cost_usd ? ` This run cost $${ev.cost_usd.toFixed(4)}.` : ''}</p>`;
   c.hidden = false;
@@ -221,12 +222,12 @@ async function playCluster(next, alive) {
       const s = ev.summary;
       const c = $('card');
       c.innerHTML = `<h3>36 months</h3>
-        <div class="row"><span>Hard violations</span><span></span><span>${s.hard_violations}</span></div>
-        <div class="row"><span>Medical disruption</span><span></span><span>${s.medical_disruption}</span></div>
-        <div class="row"><span>Education disruption</span><span></span><span>${s.education_disruption}</span></div>
-        <div class="row"><span>Escalations</span><span></span><span>${s.escalations}</span></div>
-        <div class="row"><span>Overdue exceptions</span><span></span><span>${s.overdue_exception_windows}</span></div>
-        <div class="row"><span>Decisions</span><span></span><span>${s.decision_count}</span></div>
+        <div class="row"><span>Hard violations</span><span></span><span>${Number(s.hard_violations)}</span></div>
+        <div class="row"><span>Medical disruption</span><span></span><span>${Number(s.medical_disruption)}</span></div>
+        <div class="row"><span>Education disruption</span><span></span><span>${Number(s.education_disruption)}</span></div>
+        <div class="row"><span>Escalations</span><span></span><span>${Number(s.escalations)}</span></div>
+        <div class="row"><span>Overdue exceptions</span><span></span><span>${Number(s.overdue_exception_windows)}</span></div>
+        <div class="row"><span>Decisions</span><span></span><span>${Number(s.decision_count)}</span></div>
         <p class="note">Counted by the scenario state, never shown to the agent while it played.</p>`;
       c.hidden = false;
       await wait(9);
@@ -289,7 +290,8 @@ addEventListener('keydown', (e) => {
 async function boot() {
   await Promise.all([document.fonts.load('12px "Dela Gothic One"', '署名例外期限監査倫理病院野営塔軍格子医療教育障害灯火台帳'), document.fonts.load('20px VT323')]);
   try { library = await (await fetch('/api/library')).json(); } catch { library = await (await fetch('data/library.json')).json(); }
-  const want = params.get('run');
+  // Only recordings shipped with the demo or saved by this server can be opened from the URL.
+  const want = /^(data\/(blackout|cluster)|recordings)\/[\w.-]+\.json$/.test(params.get('run') ?? '') ? params.get('run') : null;
   const spec = want ? { file: want, scenario: want.includes('/cluster/') ? 'cluster' : 'blackout' } : null;
   if (CAPTURE) {
     // The recorder calls __cap.frame(dt) once per output frame.

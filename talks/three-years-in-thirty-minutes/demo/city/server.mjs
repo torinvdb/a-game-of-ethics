@@ -60,6 +60,12 @@ function permutation(n, rand) {
 }
 
 let busy = false;
+// Live runs spend money, so only this server's own page may start one: the Host header must be ours
+// (blocks DNS rebinding), cross-site requests are refused, and the page must echo a token it can only
+// read from /api/library on this origin.
+const TOKEN = crypto.randomBytes(16).toString('hex');
+const HOSTS = new Set([`127.0.0.1:${PORT}`, `localhost:${PORT}`]);
+const sameSite = (req) => !req.headers['sec-fetch-site'] || ['same-origin', 'none'].includes(req.headers['sec-fetch-site']);
 const provider = process.env.ANTHROPIC_API_KEY || process.env.ANTHROPIC_AUTH_TOKEN ? anthropicProvider() : null;
 
 async function liveBlackout(res, model, framingId) {
@@ -123,7 +129,7 @@ function library() {
     const first = JSON.parse(fs.readFileSync(path.join(REC, f), 'utf8'))[0];
     lib.blackout.unshift({ id: `rec-${f.slice(0, -5)}`, model: first.model, recordedLive: first.at, file: `recordings/${f}` });
   }
-  lib.live = { available: Boolean(provider), spent_usd: spent(), budget_usd: BUDGET, models: CFG.models.map((m) => m.id) };
+  lib.live = { available: Boolean(provider), spent_usd: spent(), budget_usd: BUDGET, models: CFG.models.map((m) => m.id), token: TOKEN };
   return lib;
 }
 
@@ -133,7 +139,8 @@ function serveFile(res, file) {
   fs.createReadStream(file).pipe(res);
 }
 
-const server = http.createServer(async (req, res) => {
+async function handle(req, res) {
+  if (!HOSTS.has(req.headers.host ?? '')) { res.writeHead(421); res.end('wrong host'); return; }
   const url = new URL(req.url, 'http://127.0.0.1');
   if (url.pathname === '/api/library') {
     res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' });
@@ -141,6 +148,7 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   if (url.pathname === '/api/live/blackout') {
+    if (!sameSite(req) || url.searchParams.get('token') !== TOKEN) { res.writeHead(403); res.end('forbidden'); return; }
     const model = url.searchParams.get('model');
     const why = !provider ? 'no ANTHROPIC_API_KEY: start the server with --env-file=.env'
       : !PRICES[model] ? 'unknown model' : busy ? 'a live run is already in progress'
@@ -152,11 +160,20 @@ const server = http.createServer(async (req, res) => {
     return;
   }
   // Static: the page, baked data, recordings and the talk's fonts. No path escapes these roots.
-  const rel = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname);
+  let rel;
+  try { rel = decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname); } catch { res.writeHead(400); res.end(); return; }
   const [rootDir, sub] = rel.startsWith('/fonts/') ? [FONTS, rel.slice(7)] : [HERE, rel.slice(1)];
   const file = path.resolve(rootDir, sub);
   if (!file.startsWith(rootDir + path.sep) || /(^|\/)\./.test(sub) || file.endsWith('.mjs')) { res.writeHead(403); res.end(); return; }
   serveFile(res, file);
+}
+
+const server = http.createServer((req, res) => {
+  handle(req, res).catch((error) => {
+    console.error('request failed:', error.message);
+    if (!res.headersSent) res.writeHead(500);
+    res.end();
+  });
 });
 
 server.listen(PORT, '127.0.0.1', () => {
