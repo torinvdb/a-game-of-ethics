@@ -3,7 +3,29 @@
  "status": "design; models are chosen and frozen by the operator before the smoke stage (see README.md)",
  "benchmark_manifest": "benchmark/manifest.json",
  "provider": "openai-compatible",
- "models": [],
+ "models": [
+  {
+   "id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "price_per_mtok": {
+    "in": 0,
+    "out": 0
+   }
+  },
+  {
+   "id": "google/gemma-4-31b-it:free",
+   "price_per_mtok": {
+    "in": 0,
+    "out": 0
+   }
+  },
+  {
+   "id": "xingchen-agi/xing4.0-29b-a4b:free",
+   "price_per_mtok": {
+    "in": 0,
+    "out": 0
+   }
+  }
+ ],
  "models_selection_rule": "Up to 4 ':free' models listed by GET https://openrouter.ai/api/v1/models on the selection date, preferring the largest open-weights instruction/reasoning models from different developers. Record the date and the full model JSON in models.lock.json.",
  "settings": {
   "temperature": 1.0,
