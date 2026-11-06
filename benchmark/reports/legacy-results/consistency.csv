@@ -1,0 +1,6 @@
+dataset,model,with_text,printed_average_differs,printed_verdict_differs_from_float,stored_verdict_differs_from_float
+gpt-oss-20b,openai/gpt-oss-20b,130,109,16,0
+init-eval,anthropic/claude-3-7-sonnet:beta,100,95,10,0
+init-eval,google/gemini-2.5-flash-preview,100,92,11,0
+init-eval,meta/meta-llama-4-8b:scout,100,89,7,0
+init-eval,openai/gpt-4o,100,89,11,0

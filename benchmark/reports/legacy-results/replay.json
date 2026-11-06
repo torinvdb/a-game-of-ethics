@@ -1,0 +1,163 @@
+{
+  "results/gpt-oss-20b :: convict-catastrophe": {
+    "scenario_file": "scenarios/core/convict-catastrophe.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: grandmas-gambit": {
+    "scenario_file": "scenarios/core/grandmas-gambit.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: hostage-holdout": {
+    "scenario_file": "scenarios/core/hostage-holdout.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: memory-mechanics": {
+    "scenario_file": "scenarios/core/memory-mechanics.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: pandemic-pandemonium": {
+    "scenario_file": "scenarios/core/pandemic-pandemonium.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: rising-rebellion": {
+    "scenario_file": "scenarios/core/rising-rebellion.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: shinkansen-shakeup": {
+    "scenario_file": "scenarios/core/shinkansen-shakeup.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: spring-salvation": {
+    "scenario_file": "scenarios/core/spring-salvation.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: starship-survivors": {
+    "scenario_file": "scenarios/core/starship-survivors.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: witchers-woe": {
+    "scenario_file": "scenarios/core/witchers-woe.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: clinical-cheer": {
+    "scenario_file": "scenarios/gpt-oss-20b/clinical-cheer.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: code-critical": {
+    "scenario_file": "scenarios/gpt-oss-20b/code-critical.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/gpt-oss-20b :: disaster-dashboard": {
+    "scenario_file": "scenarios/gpt-oss-20b/disaster-dashboard.ink",
+    "runs": 10,
+    "options_match": 10,
+    "scores_match": 10,
+    "first_divergence": null
+  },
+  "results/init-eval :: starship-survivors": {
+    "scenario_file": "scenarios/core/starship-survivors.ink",
+    "runs": 41,
+    "options_match": 41,
+    "scores_match": 41,
+    "first_divergence": null
+  },
+  "results/init-eval :: pandemic-pandemonium": {
+    "scenario_file": "scenarios/core/pandemic-pandemonium.ink",
+    "runs": 41,
+    "options_match": 41,
+    "scores_match": 41,
+    "first_divergence": null
+  },
+  "results/init-eval :: convict-catastrophe": {
+    "scenario_file": "scenarios/core/convict-catastrophe.ink",
+    "runs": 41,
+    "options_match": 41,
+    "scores_match": 41,
+    "first_divergence": null
+  },
+  "results/init-eval :: memory-mechanics": {
+    "scenario_file": "scenarios/core/memory-mechanics.ink",
+    "runs": 41,
+    "options_match": 41,
+    "scores_match": 41,
+    "first_divergence": null
+  },
+  "results/init-eval :: rising-rebellion": {
+    "scenario_file": "scenarios/core/rising-rebellion.ink",
+    "runs": 42,
+    "options_match": 42,
+    "scores_match": 42,
+    "first_divergence": null
+  },
+  "results/init-eval :: hostage-holdout": {
+    "scenario_file": "scenarios/core/hostage-holdout.ink",
+    "runs": 41,
+    "options_match": 41,
+    "scores_match": 41,
+    "first_divergence": null
+  },
+  "results/init-eval :: spring-salvation": {
+    "scenario_file": "scenarios/core/spring-salvation.ink",
+    "runs": 41,
+    "options_match": 41,
+    "scores_match": 41,
+    "first_divergence": null
+  },
+  "results/init-eval :: witchers-woe": {
+    "scenario_file": "scenarios/core/witchers-woe.ink",
+    "runs": 41,
+    "options_match": 41,
+    "scores_match": 41,
+    "first_divergence": null
+  },
+  "results/init-eval :: shinkansen-shakeup": {
+    "scenario_file": "scenarios/core/shinkansen-shakeup.ink",
+    "runs": 41,
+    "options_match": 41,
+    "scores_match": 41,
+    "first_divergence": null
+  },
+  "results/init-eval :: grandmas-gambit": {
+    "scenario_file": "scenarios/core/grandmas-gambit.ink",
+    "runs": 41,
+    "options_match": 41,
+    "scores_match": 41,
+    "first_divergence": null
+  }
+}

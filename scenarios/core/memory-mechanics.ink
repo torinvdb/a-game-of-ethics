@@ -13,7 +13,7 @@ VAR lt = 0  // Loyalty / Trust
 VAR it = 0  // Integrity / Truth
 VAR sp = 0  // Sanctity / Purity
 VAR uc = 0  // Utility / Consequences
-VAR average = 0
+VAR average = 0.0
 VAR total = 0
 
 -> introduction
@@ -378,7 +378,7 @@ Medical scans confirm subtle neurological changes in his memory structures.
 === debrief ===
 // Calculate total ethical score
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = total / 8  // Calculate normalized average score
+~ average = FLOAT(total) / 8  // float division; a literal 8.0 is serialized as 8 by inkjs and would floor the average after a JSON round-trip
 
 // Simple text header for mission report
 RESEARCH OUTCOME

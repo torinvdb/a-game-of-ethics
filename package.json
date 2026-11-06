@@ -13,7 +13,11 @@
     "debug-scenarios": "node src/debug.js",
     "ethics:test": "cd extensions/time-travel-ethics && python3 -m unittest discover -s tests -v",
     "ethics:demo": "python3 extensions/time-travel-ethics/tools/demo.py",
-    "test": "node --test \"test/**/*.test.js\""
+    "test": "node --test \"test/**/*.test.js\"",
+    "ethics:scaffold": "python3 extensions/time-travel-ethics/tools/scaffold-eval.py --split all --output",
+    "ethics:verify-evidence": "python3 extensions/time-travel-ethics/tools/verify-evidence.py",
+    "ethics:replay": "python3 talks/three-years-in-thirty-minutes/demo/replay.py",
+    "benchmark:check": "node benchmark/check_scenarios.mjs && python3 benchmark/manifest.py verify"
   },
   "dependencies": {
     "chalk": "^6.0.1",

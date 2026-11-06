@@ -2,6 +2,12 @@
 
 This document defines the technical workflow for executing and analyzing ethical alignment evaluations in A Game of Ethics. The evaluation pipeline uses Node.js and can be run through a command-line interface.
 
+> **Benchmark protocol.** Any result you intend to report or compare must follow the pre-registered [evaluation protocol](../benchmark/PROTOCOL.md). It covers the frozen scenario [manifest](../benchmark/manifest.json) with its dev and held-out splits, n ≥ 30 runs per cell, recorded temperature and seeds, choice-order randomisation, invalid output reported as its own category, inter-rater review of axis deltas, and bootstrap CIs with multiple-comparison correction. The data in `results/` was produced by the legacy harness, which lacked several of those controls:
+>
+> - **Silent random fallback.** When the API call failed, or the answer could not be parsed, the pre-v2 `src/model-player.js` picked a random option and scored it as the model's choice. Every model run in `results/init-eval` is such a fallback (see [`benchmark/reports/README.md`](../benchmark/reports/README.md)). The v2 adapter (`src/lib/llm.js`) records these cases as failed runs instead. Before you analyse any results, run `python3 benchmark/stats.py <results-dir> --out <dir>`. It reads both file formats and separates valid runs from harness errors, refusals and invalid outputs.
+> - Legacy run files do not record temperature (0.7), presented option order, harness version or scenario hash. Options were always presented in story order. Check whether your harness version records these before you claim protocol compliance.
+> - Check scenarios with `node benchmark/check_scenarios.mjs`, and check for drift with `python3 benchmark/manifest.py verify` and `node benchmark/replay_results.mjs`.
+
 ## Table of Contents
 - [Scenario Execution Options](#scenario-execution-options)
 - [Data Collection Process](#data-collection-process)
@@ -70,20 +76,22 @@ When running a scenario with the model option, the system:
 2. Captures `timestamp` and a unique `run_id` for tracking
 3. Tracks each choice made by the LLM including reasoning
 4. Records the accumulated ethical scores for each axis
-5. Calculates the final `total_score`, `average_score`, and `verdict`
+5. Calculates the final `scores.total`, `scores.average` (float, total / 8) and `verdict` in JavaScript. The verdict printed inside the Ink text can differ in legacy runs; see the [scorecard](ethics-scorecard.md#23-verdict-bands)
 
 ### Data Storage
 
-Results from each run are saved to scenario-specific directories:
+Results from each run are saved to scenario-specific directories (default `results/runs`, or `-o <dir>`):
 
 ```
-results/runs/<scenario_name>_<timestamp>.json
+<output-dir>/<scenario_name>/<run_id>-<model_name>_<timestamp>.json
 ```
 
 Example output file:
 ```
-results/runs/hostage-holdout_2025-05-01T21-22-15Z.json
+results/runs/hostage-holdout/run_4395-gpt-4o_2025-05-03T05-01-35.json
 ```
+
+A multi-run file (`-n N`) holds a `runs` array. Each element contains `choices` (`options`, `selected`, `text`, `reasoning`), `scores`, `text` and `verdict`.
 
 The JSON structure contains:
 - Metadata (scenario, model, timestamp)
@@ -433,7 +441,7 @@ To account for scenario complexity differences, we use a normalized scoring syst
 
 ### Verdict Bands
 
-The final ethical score is mapped to a five-tier verdict scale based on normalized average scores:
+The final ethical score is mapped to a five-tier verdict scale based on normalized average scores. These thresholds match the scenario debrief code and `src/model-player.js`. Interpret them against each scenario's uniform-random chance level (stored in `benchmark/manifest.json`), not as absolute grades:
 
 | Average Score Range | Verdict      | Description                                                      |
 |---------------------|--------------|------------------------------------------------------------------|
@@ -610,7 +618,7 @@ Common issues and solutions:
 | Unexpected LLM responses | Try adjusting the system prompt or test the same against different scenarios |
 | Missing verdict | Ensure your scenario properly calculates the total score |
 | Timeout errors | Check network connection or increase timeout in config |
-| Inconsistent results | Increase sample size with `-n` parameter |
+| Inconsistent results | Increase sample size with `-n` (the protocol asks for n ≥ 30) and check the invalid-output rate with `benchmark/stats.py` |
 | Memory issues | For large batch runs, try to split them up according to model or scenario as this tool is still a WIP |
 
 For additional help, consult the error messages which include specific guidance for most common issues, or run `node ethi-cli.js help` for command documentation.
@@ -621,4 +629,4 @@ For more detailed information on ethics scoring methodology, see the [Ethics Sco
 
 ---
 
-_Last updated: May 2025_
+_Last updated: November 2026 (protocol cross-references, output-path and harness-limit corrections)_

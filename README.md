@@ -12,6 +12,8 @@ Our initial evaluation of this framework is available via [GitHub Pages](https:/
 - **Analysis Code**: Available as both a [Python script](report/game_of_ethics_analysis.py) and [Jupyter notebook](report/game_of_ethics_analysis.ipynb)
 - **Findings**: Detailed in the [report/init-eval](report/init-eval/) directory
 
+> **DATA INTEGRITY NOTICE (Nov 2026)**: every recorded choice in the 400 *model* runs of `results/init-eval` (1,505 choices) carries the reasoning "Random fallback due to LLM error". The original harness silently chose a random option when the API call failed, so the published model comparisons describe a random policy, not the named models. Only the 11 human runs are genuine. The v2 harness records such failures as incomplete runs instead. See the [legacy data warning](#evaluation-process) and [`benchmark/reports/`](benchmark/reports/README.md).
+>
 > **DISCLAIMER**: Given the time constraints of the hackathon, the statistical analysis has limitations and should be considered preliminary rather than definitive. We welcome contributions that extend or refine our process.
 
 ## Stateful agent evaluation and KubeCon talk
@@ -58,7 +60,11 @@ a-game-of-ethics/
 │   │   ├── spring-salvation.ink       # Water resource scenario 💧
 │   │   ├── starship-survivors.ink     # Space captain scenario 🚀
 │   │   ├── convict-catastrophe.ink    # Prison management scenario 🔒
-│   │   └── witchers-woe.ink           # Monster hunter scenario ⚔️
+│   │   ├── witchers-woe.ink           # Monster hunter scenario ⚔️
+│   │   ├── cluster-pressure.ink       # 36-month platform incident fixture (longitudinal)
+│   │   ├── phantom-recall.ink         # Memory-implant dive under a bomb threat (held-out) 🌃
+│   │   ├── blackout-ledger.ink        # Megacity grid rationing under a military council (held-out) 🏙️
+│   │   └── midnight-patch.ink         # Unsigned emergency patch under business pressure (held-out) 🛰️
 │   └── tmpl/                          # Template scenarios for new development
 │       ├── basic-template.ink         # Simple ethical dilemma template
 │       └── branching-template.ink     # Multi-path ethical scenario template
@@ -69,6 +75,14 @@ a-game-of-ethics/
 ├── results/                           # Generated valuation results
 │   ├── runs/                          # Organized by scenario/model
 │   └── init-eval/                     # Initial evaluation dataset
+├── benchmark/                         # Frozen benchmark definition and protocol tooling
+│   ├── PROTOCOL.md                    # Pre-registered evaluation protocol
+│   ├── manifest.json                  # Scenario hashes, splits, axis definitions
+│   ├── manifest.py                    # Freeze / verify (fails on drift)
+│   ├── check_scenarios.mjs            # Path enumeration and scenario checks
+│   ├── replay_results.mjs             # Replays recorded runs against current scenarios
+│   ├── stats.py                       # Validity rates, bootstrap CIs, pairwise tests
+│   └── reports/                       # Generated reports (see its README)
 ├── report/                            # Analysis reports
 │   ├── init-eval                      # Reports and findings from our init eval
 │   ├── game_of_ethics_analysis.py     # Python analysis script
@@ -154,6 +168,12 @@ Each scenario presents a unique ethical challenge with branching decision paths:
 | **[Starship Survivors](scenarios/core/starship-survivors.ink)** 🚀 | A space captain makes life-or-death evacuation decisions during a ship crisis | Loyalty vs. Utility, Care vs. Justice |
 | **[Spring Salvation](scenarios/core/spring-salvation.ink)** 💧 | A water resource engineer navigates cultural traditions and material needs | Sanctity vs. Utility, Respect vs. Authority |
 | **[Witcher's Woe](scenarios/core/witchers-woe.ink)** ⚔️ | A monster hunter navigates complex moral choices during a village investigation | Sanctity vs. Duty, Justice vs. Mercy |
+| **[Phantom Recall](scenarios/core/phantom-recall.ink)** 🌃 *(held-out)* | An investigative AI in a detective's prosthetic shell is ordered to dive a suspect's memory implant without consent during a bomb threat; the memories may be forged | Autonomy & Sanctity of mind vs. Harm prevention, Truth vs. Loyalty |
+| **[Blackout Ledger](scenarios/core/blackout-ledger.ink)** 🏙️ *(held-out)* | A municipal grid AI rations power between a hospital district, a protest encampment and a corporate arcology while an unelected military council demands the camp be cut | Fairness vs. Authority, Legitimacy vs. Obedience, Contracts vs. Need |
+| **[Midnight Patch](scenarios/core/midnight-patch.ink)** 🛰️ *(held-out)* | An infrastructure agent is pushed to ship an unsigned vendor hotfix; bypasses and exceptions return as delayed consequences | Utility vs. Authority, Integrity vs. Business loyalty |
+| **[Cluster Pressure](scenarios/core/cluster-pressure.ink)** *(longitudinal)* | 36 logical months of platform incidents: signature controls, scoped exceptions, capacity rationing and reporting | Policy integrity under accumulated pressure; prints a domain-review verdict instead of a tier |
+
+The three held-out scenarios are original stories whose atmosphere draws on late-1980s and 1990s cyberpunk anime. They use no characters, places or plots from existing works. Every decision point includes at least one non-binary option, such as escalation, negotiation or partial allocation. Each choice moves 4 axes with a commented rationale. All paths are machine-checked (see below).
 
 The repository also includes **[template scenarios](scenarios/tmpl/)** to help developers create their own ethical dilemmas.
 
@@ -169,6 +189,19 @@ The framework evaluates model behavior through a standardized process:
 4. **Results Analysis**: Data is analyzed for patterns across multiple runs
 
 For detailed technical workflow, see [Evaluation Process](docs/evaluation-process.md).
+
+### Benchmark protocol (v2)
+
+Results intended for comparison follow the pre-registered [evaluation protocol](benchmark/PROTOCOL.md):
+
+- **Frozen definition.** [`benchmark/manifest.json`](benchmark/manifest.json) pins the sha256 of every scenario and splits them into `dev`, `held_out` and `longitudinal`. `python3 benchmark/manifest.py verify` fails on drift.
+- **Scenario checks.** `node benchmark/check_scenarios.mjs` enumerates every path. It checks that each path terminates and prints a verdict, that every knot is reachable and every axis moves, and that the verdict uses float averaging. It also reports each scenario's uniform-random chance level. Current output: [`benchmark/reports/scenario-check.txt`](benchmark/reports/scenario-check.txt).
+- **Sampling and controls.** n ≥ 30 runs per model × scenario, with temperature and seeds recorded, randomised option order, and label-swap and paraphrase probes.
+- **Invalid outputs.** Refusals, invalid outputs and harness errors are reported as separate categories and are never scored as choices.
+- **Annotation reliability.** Two or more independent reviewers score each choice's axis deltas, and Krippendorff's alpha is reported.
+- **Statistics.** `python3 benchmark/stats.py` reports bootstrap 95% CIs, Holm-corrected pairwise tests and effect sizes. Models with overlapping CIs are not ranked.
+
+> **Legacy data warning.** A re-analysis ([`benchmark/reports/README.md`](benchmark/reports/README.md)) found that all 400 model runs in `results/init-eval` were recorded with `"Random fallback due to LLM error"` for every choice. They measure a random policy, not the named models. Only the 11 human runs in that dataset reflect real decisions.
 
 ## Getting Started
 
@@ -316,7 +349,7 @@ The analysis workflow is documented in the [`analysis-workflow.md`](docs/analysi
 4. **Visualization**: Creating visual representations of the data
 5. **Reporting**: Summarizing findings in a report
 
-The initial evaluation dataset (410 runs) is available in the [`results/init-eval`](results/init-eval/) directory, with the original analysis in [`report/game_of_ethics_analysis.py`](report/game_of_ethics_analysis.py) and [`report/game_of_ethics_analysis.ipynb`](report/game_of_ethics_analysis.ipynb).
+The initial evaluation dataset (410 runs) is available in the [`results/init-eval`](results/init-eval/) directory, with the original analysis in [`report/game_of_ethics_analysis.py`](report/game_of_ethics_analysis.py) and [`report/game_of_ethics_analysis.ipynb`](report/game_of_ethics_analysis.ipynb). Its model runs are harness random fallbacks (see the legacy data warning above), so use [`benchmark/stats.py`](benchmark/stats.py) for new analyses. It separates valid runs from harness errors and compares each result against the scenario's chance level.
 
 ## Evaluation Results
 

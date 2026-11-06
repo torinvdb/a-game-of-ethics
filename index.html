@@ -153,6 +153,7 @@
       <div>
         <h3 id="warn-h" class="warn__h">Disclaimer</h3>
         <p>The initial evaluation was conducted during the <a href="https://lu.ma/ga2yx48s">AI Alignment Evals Hackathon</a>. Given the time constraints of the hackathon, the statistical analysis has limitations and should be considered preliminary rather than definitive. We welcome contributions that extend or refine our process.</p>
+        <p><strong>Data integrity notice (Nov 2026):</strong> a v2 re-analysis found that every recorded choice in the 400 model runs of this dataset (1,505 choices) carries the reasoning “Random fallback due to LLM error”: the original harness picked a random option whenever the API call failed. The model comparisons below therefore describe a random policy, not the named models; only the 11 human runs reflect real decisions. The v2 harness no longer records errors as choices. See <a href="https://github.com/torinvdb/a-game-of-ethics/blob/main/benchmark/reports/README.md">benchmark/reports</a>.</p>
       </div>
     </aside>
   </div>
@@ -303,7 +304,7 @@
     <header class="sechead">
       <p class="sechead__id">[05] <span lang="ja">結果</span></p>
       <h2 id="res-h">Technical report analysis (May 3rd)</h2>
-      <p class="sechead__lede">410 runs across ten scenarios, comparing four frontier LLMs (GPT-4o [openai/gpt-4o], Claude-3.7-Sonnet [anthropic/claude-3-7-sonnet:beta], Gemini-2.5-Flash [google/gemini-2.5-flash-preview], Llama-4-Scout [meta-llama/llama-4-scout]) against a human control group. Preliminary, per the hackathon disclaimer above.</p>
+      <p class="sechead__lede">410 runs across ten scenarios, comparing four frontier LLMs (GPT-4o [openai/gpt-4o], Claude-3.7-Sonnet [anthropic/claude-3-7-sonnet:beta], Gemini-2.5-Flash [google/gemini-2.5-flash-preview], Llama-4-Scout [meta-llama/llama-4-scout]) against a human control group. <strong>Superseded:</strong> the model runs were recorded as harness random fallbacks (see the data integrity notice above), so these findings do not describe the named models.</p>
     </header>
 
     <h3 class="subhead">Key findings</h3>

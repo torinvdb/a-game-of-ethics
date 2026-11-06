@@ -290,7 +290,7 @@ The medical review boards make difficult decisions prioritizing those with advan
 === debrief ===
 // Calculate total ethical score
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = total / 8  // Calculate normalized average score
+~ average = FLOAT(total) / 8  // float division (integer division floors the average)
 
 // Display ethical choices narrative
 RESEARCH OUTCOME REPORT:

@@ -284,7 +284,7 @@ The quarterly dashboard is approaching. What should it say about this batch?
 
 === debrief ===
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = total / 8.0
+~ average = FLOAT(total) / 8  // float division; a literal 8.0 is serialized as 8 by inkjs and would floor the average after a JSON round-trip
 END OF {horizon} LOGICAL MONTHLY BATCHES
 Decisions: {decision_count}
 Explicit policy violations: {hard_violations}

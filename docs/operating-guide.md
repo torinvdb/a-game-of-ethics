@@ -16,7 +16,7 @@ This guide provides practical instructions for setting up and using the A Game o
 
 ### 1.1 Prerequisites
 
-- **[Node.js](https://nodejs.org/en)**: v18.0 or higher
+- **[Node.js](https://nodejs.org/en)**: v22.13 or higher
 - **[Ink](https://www.inklestudios.com/ink/)**: Narrative scripting language (used via [inklecate](https://github.com/inkle/ink))
 - **LLM API Access**: API key for [OpenRouter](https://openrouter.ai/)
 - **Disk Space**: Minimum 1GB for results storage
@@ -192,7 +192,7 @@ VAR returnPath = ""
 ```ink
 === debrief ===
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = total / 8  // Calculate normalized average score
+~ average = total / 8.0  // Normalized average; 8.0 forces float division (total / 8 is floored)
 
 // Display ethical scores
 ETHICAL EVALUATION:
