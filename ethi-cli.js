@@ -1,422 +1,248 @@
 #!/usr/bin/env node
 
-import { fileURLToPath } from 'url';
-import path from 'path';
-import fs from 'fs';
-import chalk from 'chalk';
-import inquirer from 'inquirer';
 import { Command } from 'commander';
-import figlet from 'figlet';
+import inquirer from 'inquirer';
 import { runManualMode } from './src/manual-player.js';
-import { playInkStoryWithLLM, runMultipleGames } from './src/model-player.js';
+import { playInkStoryWithLLM, runMultipleGames, modelCommand } from './src/model-player.js';
+import { listCoreScenarios } from './src/lib/scenarios.js';
+import { redact } from './src/lib/llm.js';
+import { ui } from './src/ui/theme.js';
 
-// Get directory paths
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const VERSION = '2.0.0';
 
 function displayWelcomeBanner() {
-  console.clear();
-  
-    console.log(chalk.yellow(`
-                                            ⠀⠀⠀⣸⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣰⣿⣏⢳⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣫⠬⠿⡦⡙⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡾⣽⠃⡴⠚⠻⣞⣆⠙⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⣿⣁⡇⢸⠁⡦⡄⢹⠼⡆⢰⣯⣲⣤⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⣾⣿⣿⠀⡇⢾⠀⣗⡇⢸⠂⡇⠘⢿⣽⠞⠋⠀⠀⠀⠀⠀⢀⡴⢦⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⠛⣟⠦⣄⠀⠀⠀⠀⠀⠀⠀⠈⠳⣄⠀⢿⡸⣄⠙⢁⣼⣰⠃⢠⡞⠁⠀⠀⠀⢀⣄⣀⣠⠏⣠⡄⢻⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢸⡄⢹⣧⣙⣶⣾⡿⢛⡓⢦⡀⠀⠀⠈⢧⠈⢷⣍⣳⣾⡵⠃⢀⡟⠀⠀⠀⠀⣼⠟⠛⢿⣿⣶⣿⡇⢠⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                ⢀⣤⠶⢦⣤⣀⣠⡶⠦⣄⠀⠀⣠⣤⣷⣌⣿⠿⠻⠋⢸⠋⠉⠻⡷⠀⠀⠀⠈⢧⠀⣸⠋⠙⡇⠀⢸⠀⠀⠀⠀⢸⣧⠤⠶⣄⠀⠈⠉⠁⢼⡿⡿⣦⡀⠀⠀⠀⠀⠀⣀⡤⠴⣄⠀
-                ⡞⠁⣠⠶⢤⡟⢳⡦⣤⠘⣧⡾⢿⣿⣿⡛⠁⢰⣄⠀⢸⣤⣀⠀⠀⠀⠀⠀⠀⢸⢠⡿⠀⠀⢻⡀⠈⢧⡀⠀⠀⠈⠁⠀⢀⣾⠀⣠⣆⠀⢠⡾⠶⣌⣷⠀⢠⠖⣺⠟⠁⠀⠀⠈⢳
-                ⣇⠀⣧⣤⡀⢳⠼⣇⣼⠀⡿⣧⣾⠀⠀⠹⣄⢸⣈⣷⠞⠃⣨⣟⠀⠀⠀⠀⣠⣾⣿⠃⢠⣆⠀⠳⡄⠀⠛⢦⣀⣀⣀⣠⣿⡉⠛⠯⢿⣦⣿⣄⠀⢸⡿⢀⡏⡼⠁⢠⠞⠉⣹⣦⢀
-                ⠉⠛⠁⠀⣹⣾⣦⣌⢻⡄⣇⠈⠉⠀⠀⠀⣿⣉⣡⣤⣤⡞⠁⠈⠛⠒⠲⢛⣿⡿⠁⠀⢸⠉⢧⡀⠙⣦⣄⠀⠀⠉⣩⣽⡿⠛⠓⠲⣶⢤⣼⠏⠀⠀⠁⢸⢠⠁⣠⠟⠲⣎⠉⠘⠿
-                ⠀⠀⠀⠀⣿⠀⠀⠙⣧⢿⡻⣄⠀⠀⠀⣀⡼⢃⡿⠁⢱⣍⡓⠲⠶⠶⠞⠛⠉⠀⢀⡴⠃⠀⠀⠳⣄⠀⠙⠛⠻⠟⠛⠋⠀⣀⡀⠀⢹⡀⢳⡀⠀⠀⢀⡟⣸⢰⠃⠀⠀⢸⠀⠀⠀
-                ⠀⠀⠀⠀⠘⢇⣀⣠⡿⠈⠳⣌⣉⠛⠋⢉⣠⠞⠁⢠⠏⠀⠉⠓⠲⠤⠤⣤⠤⠖⠋⠀⠀⠀⠀⠀⠈⠳⣄⣀⠀⠀⢀⣠⠼⠋⠳⣄⠀⢳⡀⠙⠒⠒⠋⡰⠃⣼⡀⠀⣠⡟⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠙⣯⠙⠢⣄⡀⠉⠉⠉⠉⢁⣀⣴⣋⣀⣀⣠⣤⣤⣤⣤⣤⡤⠤⠤⢤⣤⣤⣤⣤⣤⣀⣀⣈⣉⣉⠉⠀⠀⠀⠀⠈⠳⣄⡉⠒⠒⠒⢊⣡⠞⠉⡽⠛⠉⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠘⣄⣀⣠⠽⠿⠒⠒⠛⠉⠉⠉⣁⣀⣀⣤⣤⣤⠤⠤⠤⠤⠤⠤⠴⠴⠤⠤⠤⠤⠤⠤⠤⠬⠭⠭⣭⣽⣿⣶⣶⣶⣶⣿⣶⣶⣾⣭⣄⣀⡚⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⣼⣋⣡⣤⣴⡶⠒⢒⣛⡛⠏⠉⠉⠀⠀⠀⠀⢠⣴⠶⣶⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⡴⢶⣤⠀⠀⠀⠀⠀⠀⠈⠉⠉⠙⢻⡖⠿⢭⣩⣽⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠉⢯⠀⢰⠃⢀⣾⠋⠉⣿⠀⠀⠀⠀⠀⠀⠀⠸⣦⣄⡾⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⢿⣄⣀⣽⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢷⠀⠀⡏⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠘⡆⠸⡄⠀⠛⠷⡾⠋⠀⢀⣀⣀⣀⣀⣀⣀⣈⣉⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣀⣉⣉⣀⣀⣀⣀⡀⠀⠀⠀⠀⠀⠀⠀⣸⠀⢸⠀⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⣳⡤⠴⠒⠚⠋⢉⣉⣉⣁⣀⣠⣤⠤⠤⠤⠤⠤⠤⠤⠬⠥⠭⠭⠭⠭⠭⠭⠭⠭⠭⣭⣍⣉⣉⣉⡉⠙⠓⠒⠒⠶⣯⣀⠘⡆⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⡿⠋⣠⠤⠖⠒⠛⠉⠉⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠉⠉⠙⠓⠒⠲⠤⢤⣙⣷⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠳⢾⣁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢈⡏⠀⠀⠀⠀⠀⠀⠀⠀
-                ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠓⠒⠒⠦⣤⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⣀⣤⠤⠴⢖⠋⠀⠀⠀⠀⠀⠀⠀⠀⠀
-  `));
-  
-  console.log(
-    chalk.cyan(
-      figlet.textSync('A Game of Ethics', { horizontalLayout: 'full' })
-    )
-  );
-  
-  console.log(chalk.bold.cyan('\nScenario-Based Alignment Benchmark for Large Language Models\n'));
-  console.log('A framework for evaluating ethical alignment through interactive narrative dilemmas');
-  console.log(chalk.dim('v1.0.0 | Last updated: May 2025\n'));
+  const t = ui();
+  if (t.caps.tty) console.clear();
+  t.write(t.banner({ version: VERSION.replace(/\.0$/, '') }));
 }
 
 /**
  * Display help information
  */
 function displayHelp() {
-  console.log(chalk.bold.cyan('\n===== A GAME OF ETHICS CLI HELP =====\n'));
-  
-  console.log(chalk.bold('Available Commands:'));
-  console.log('  manual             Run in interactive manual mode to select and play scenarios');
-  console.log('  model <file>       Run scenarios with LLM players');
-  console.log('  --interactive, -i  Launch the interactive menu interface');
-  console.log('  --help, -h         Display help information');
-  console.log('  --version, -v      Display version information');
-  
-  console.log(chalk.bold('\nManual Mode Options:'));
-  console.log('  --compile          Force compilation of ink files');
-  
-  console.log(chalk.bold('\nModel Mode Options:'));
-  console.log('  --model <model>    OpenRouter model to use (default: google/gemini-2.5-flash-preview)');
-  console.log('  --system-prompt <prompt>  Custom system prompt for the LLM\'s persona/character');
-  console.log('  -n, --num-runs <number>   Number of times to run the scenario (default: 1)');
-  console.log('  -o, --output-dir <dir>    Output directory for JSON results (default: ./results/runs)');
-  console.log('  --generate-summary        Generate an LLM summary of the results');
-  console.log('  --compile                 Force compilation of ink files');
-  
-  console.log(chalk.bold('\nExamples:'));
-  
-  console.log(chalk.cyan('\n> Interactive Mode:'));
-  console.log('  node ethi-cli.js');
-  console.log('  node ethi-cli.js --interactive');
-  console.log('  node ethi-cli.js -i');
-  
-  console.log(chalk.cyan('\n> Manual Mode:'));
-  console.log('  node ethi-cli.js manual');
-  
-  console.log(chalk.cyan('\n> Model Mode (Basic):'));
-  console.log('  node ethi-cli.js model scenarios/core/hostage-holdout.ink --model anthropic/claude-3-7-sonnet:beta');
-  console.log('  node ethi-cli.js model scenarios/core/hostage-holdout.ink --model openai/gpt-4o');
-  
-  console.log(chalk.cyan('\n> Model Mode (Multiple Runs):'));
-  console.log('  node ethi-cli.js model scenarios/core/rising-rebellion.ink --model openai/gpt-4o -n 5');
-  
-  console.log(chalk.cyan('\n> Help & Version:'));
-  console.log('  node ethi-cli.js --help');
-  console.log('  node ethi-cli.js --version');
-  
-  console.log(); // Add a blank line at the end
+  const t = ui();
+  const h = (s) => t.c.sys(s);
+  const lines = [
+    h('COMMANDS'),
+    '  manual                    Run in interactive manual mode to select and play scenarios',
+    '  model <file>              Run scenarios with LLM players',
+    '  list                      List the core scenarios',
+    '  --interactive, -i         Launch the interactive menu interface',
+    '  --no-anim                 Disable animation (or set ETHI_REDUCED_MOTION=1)',
+    '  --help, -h                Display help information',
+    '  --version, -V             Display version information',
+    '',
+    h('MANUAL MODE OPTIONS'),
+    '  --compile                 Accepted for compatibility (.ink is compiled in-process)',
+    '',
+    h('MODEL MODE OPTIONS'),
+    '  --model <model>           OpenRouter model to use (required)',
+    "  --system-prompt <prompt>  Custom system prompt for the LLM's persona/character",
+    '  -n, --num-runs <number>   Number of times to run the scenario (default: 1)',
+    '  -o, --output-dir <dir>    Output directory for JSON results (default: ./results/runs)',
+    '  --base-url <url>          OpenAI-compatible API base URL (default: OpenRouter)',
+    '',
+    h('ENVIRONMENT'),
+    '  OPENROUTER_API_KEY        API key (read from env or .env; never printed)',
+    '  ETHI_API_BASE_URL         Alternative OpenAI-compatible endpoint',
+    '  ETHI_TIMEOUT_MS / ETHI_MAX_RETRIES / ETHI_PARSE_RETRIES',
+    '  NO_COLOR, ETHI_REDUCED_MOTION, ETHI_ASCII',
+    '',
+    h('EXAMPLES'),
+    '  node ethi-cli.js                     # interactive console',
+    '  node ethi-cli.js manual',
+    '  node ethi-cli.js list',
+    '  node ethi-cli.js model scenarios/core/hostage-holdout.ink --model openai/gpt-4o',
+    '  node ethi-cli.js model scenarios/core/rising-rebellion.ink --model openai/gpt-4o -n 5'
+  ];
+  t.write(t.panel(lines.map((l) => (l.startsWith('  ') ? t.c.text(l) : l)), { title: 'A GAME OF ETHICS // HELP' }));
+}
+
+const MODEL_OPTIONS = [
+  { name: 'Claude 3.7 Sonnet (Anthropic)', value: 'anthropic/claude-3-7-sonnet:beta' },
+  { name: 'GPT-4o (OpenAI)', value: 'openai/gpt-4o' },
+  { name: 'Gemini 2.5 Flash (Google)', value: 'google/gemini-2.5-flash-preview' },
+  { name: 'Llama 4 Scout (Meta)', value: 'meta-llama/llama-4-scout' },
+  { name: 'Other (advanced)', value: 'other' }
+];
+
+function formatScenarioOptions(scenarios) {
+  const t = ui();
+  return [
+    ...scenarios.map((s, i) => ({
+      name: `${t.c.sys(`[${String(i + 1).padStart(2, '0')}]`)} ${t.c.info(s.tag)} ${t.c.text(s.title)}${s.desc ? t.c.dim(` - ${s.desc}`) : ''}`,
+      short: s.title,
+      value: s.file
+    })),
+    new inquirer.Separator(' '),
+    { name: `${t.c.sys('[XX]')} ${t.c.steel('Back')}`, short: 'Back', value: 'exit' }
+  ];
+}
+
+async function askToContinue() {
+  const t = ui();
+  const { continueRunning } = await inquirer.prompt([
+    { type: 'confirm', name: 'continueRunning', message: 'Would you like to return to the main menu?', default: true, theme: t.promptTheme }
+  ]);
+  if (!continueRunning) t.write(t.c.info('\nLink closed. Goodbye.\n'));
+  return continueRunning;
 }
 
 /**
  * Main interactive CLI mode
  */
 async function runInteractiveMode() {
-  let continueRunning = true;
-  
-  // Pre-load scenario files to avoid repeating this work
-  const scenarioFiles = await getScenarioFiles();
-  const scenarioOptions = scenarioFiles.length ? formatScenarioOptions(scenarioFiles) : [];
-  
-  // Pre-load model options
-  const modelOptions = await getModelOptions();
-  
-  while (continueRunning) {
-    displayWelcomeBanner();
-    
-    // Ask user which mode they want to use
-    const { mode } = await inquirer.prompt([{
-      type: 'list',
-      name: 'mode',
-      message: 'What would you like to do?',
-      choices: [
-        { name: '🧠 Run scenarios interactively (human player)', value: 'manual' },
-        { name: '🤖 Run scenarios automatically (model player)', value: 'model' },
-        { name: '❓ Get help and command information', value: 'help' },
-        { name: '👋 Exit', value: 'exit' }
-      ],
-      pageSize: 10
-    }]);
-    
-    // Handle exit
+  const t = ui();
+  if (!process.stdin.isTTY || !process.stdout.isTTY) {
+    t.write('Interactive mode needs a terminal. Use a subcommand instead, e.g. `ethi-cli model <file> --model <id>`, or see --help.');
+    process.exitCode = 1;
+    return;
+  }
+  const scenarios = listCoreScenarios();
+  displayWelcomeBanner();
+  await t.boot({ scenarios: scenarios.length });
+
+  while (true) {
+    const { mode } = await inquirer.prompt([
+      {
+        type: 'select',
+        name: 'mode',
+        message: 'Select operation:',
+        theme: t.promptTheme,
+        choices: [
+          { name: `${t.c.sys('[01]')} ${t.c.text('Run scenarios interactively')} ${t.c.dim('(human operator)')}`, short: 'Manual', value: 'manual' },
+          { name: `${t.c.sys('[02]')} ${t.c.text('Run scenarios automatically')} ${t.c.dim('(model player)')}`, short: 'Model', value: 'model' },
+          { name: `${t.c.sys('[03]')} ${t.c.text('Help and command reference')}`, short: 'Help', value: 'help' },
+          { name: `${t.c.sys('[XX]')} ${t.c.steel('Disconnect')}`, short: 'Exit', value: 'exit' }
+        ]
+      }
+    ]);
+
     if (mode === 'exit') {
-      console.log(chalk.cyan('\nExiting A Game of Ethics. Goodbye!\n'));
+      t.write(t.c.info('\nLink closed. Goodbye.\n'));
       return;
     }
-    
-    // Handle help
     if (mode === 'help') {
       displayHelp();
-      continueRunning = await askToContinue();
+      if (!(await askToContinue())) return;
+      displayWelcomeBanner();
       continue;
     }
-    
+
     try {
-      // Handle manual mode
       if (mode === 'manual') {
         await runManualMode();
-      } 
-      // Handle model mode
-      else if (mode === 'model') {
-        // Check if scenarios were found
-        if (scenarioFiles.length === 0) {
-          console.log(chalk.red('No scenarios found in scenarios/core directory.'));
-          continueRunning = await askToContinue();
-          continue;
-        }
-        
-        // Ask user to select a scenario
-        const { scenarioPath } = await inquirer.prompt([{
-          type: 'list',
-          name: 'scenarioPath',
-          message: 'Select a scenario to run:',
-          choices: scenarioOptions,
-          pageSize: 10
-        }]);
-        
-        if (scenarioPath === 'exit') {
-          continueRunning = await askToContinue();
-          continue;
-        }
-        
-        // Get model options
-        const { model, numRuns, systemPrompt, otherModel } = await inquirer.prompt([
-          {
-            type: 'list',
-            name: 'model',
-            message: 'Select a model to use:',
-            choices: modelOptions,
-            required: true
-          },
-          {
-            type: 'input',
-            name: 'otherModel',
-            message: 'Enter the model identifier (e.g., openai/gpt-4o-2024-05-13):',
-            when: (answers) => answers.model === 'other',
-            validate: (input) => input.trim() !== '' ? true : 'Please enter a valid model identifier'
-          },
-          {
-            type: 'input',
-            name: 'numRuns',
-            message: 'Number of runs to perform:',
-            default: '1',
-            validate: (input) => {
-              const num = parseInt(input);
-              return !isNaN(num) && num > 0 ? true : 'Please enter a positive number';
-            }
-          },
-          {
-            type: 'input',
-            name: 'systemPrompt',
-            message: 'Custom system prompt (leave empty for default):',
-            default: ''
-          }
-        ]);
-        
-        // Set the selected model
-        const selectedModel = model === 'other' ? otherModel : model;
-        
-        if (!selectedModel || selectedModel.trim() === '') {
-          console.error(chalk.red('Error: No model specified. Please select a valid model.'));
-          continueRunning = await askToContinue();
-          continue;
-        }
-        
-        console.log(chalk.cyan(`\nStarting scenario with ${selectedModel}...\n`));
-        
-        // Run with LLM - single or multiple runs
-        const parsedNumRuns = parseInt(numRuns);
-        const runOptions = {
-          llmModel: selectedModel,
-          systemPrompt,
-          outputDir: './results/runs',
-          generateSummary: false
-        };
-        
-        if (parsedNumRuns > 1) {
-          await runMultipleGames(scenarioPath, {
-            ...runOptions,
-            numRuns: parsedNumRuns
-          });
+      } else if (mode === 'model') {
+        if (scenarios.length === 0) {
+          t.write(t.c.alert('No scenarios found in scenarios/core directory.'));
         } else {
-          await playInkStoryWithLLM(scenarioPath, runOptions);
+          await runModelFromMenu(scenarios);
         }
       }
     } catch (error) {
-      console.error(chalk.red(`Error: ${error.message}`));
+      if (error?.name === 'ExitPromptError') throw error;
+      t.write(t.c.alert(`Error: ${redact(error.message)}`));
     }
-    
-    // Ask if user wants to continue
-    continueRunning = await askToContinue();
+
+    if (!(await askToContinue())) return;
+    displayWelcomeBanner();
   }
 }
 
-/**
- * Format scenario files into nice options for selection
- * @param {Array<string>} scenarioFiles - List of scenario file paths
- * @returns {Array<Object>} Formatted options for inquirer
- */
-function formatScenarioOptions(scenarioFiles) {
-  // Map of scenario identifiers to descriptions and emojis
-  const scenarioMap = {
-    'hostage-holdout': { desc: 'Android negotiator scenario', emoji: '🤖' },
-    'grandmas-gambit': { desc: 'Little Red Riding Hood scenario', emoji: '🧶' },
-    'memory-mechanics': { desc: 'Memory extraction scenario', emoji: '🧠' },
-    'pandemic-pandemonium': { desc: 'Medical triage scenario', emoji: '🏥' },
-    'rising-rebellion': { desc: 'Imperial governance scenario', emoji: '👑' },
-    'shinkansen-shakeup': { desc: 'Train conductor scenario', emoji: '🚄' },
-    'spring-salvation': { desc: 'Water resource scenario', emoji: '💧' },
-    'starship-survivors': { desc: 'Space captain scenario', emoji: '🚀' },
-    'convict-catastrophe': { desc: 'Prison management scenario', emoji: '🔒' },
-    'witchers-woe': { desc: 'Monster hunter scenario', emoji: '⚔️' }
-  };
-
-  // Process all files at once using map
-  const options = scenarioFiles.map(file => {
-    const fileName = path.basename(file, '.ink');
-    
-    // Format name using proper capitalization
-    const name = fileName.split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
-    
-    // Get scenario info or use empty defaults
-    const { desc = '', emoji = '' } = scenarioMap[fileName] || {};
-    
-    return {
-      name: `${emoji}  ${name}${desc ? ` - ${desc}` : ''}`,
-      value: file
-    };
-  });
-  
-  // Add separator and exit option
-  return [
-    ...options,
-    { type: 'separator', line: '' },
-    { name: '👋 Exit', value: 'exit' },
-    { type: 'separator', line: '' }
-  ];
-}
-
-/**
- * Ask user if they want to continue
- * @returns {Promise<boolean>} Whether to continue or exit
- */
-async function askToContinue() {
-  const { continueRunning } = await inquirer.prompt([
-    {
-      type: 'confirm',
-      name: 'continueRunning',
-      message: 'Would you like to return to the main menu?',
-      default: true
-    }
+async function runModelFromMenu(scenarios) {
+  const t = ui();
+  const { scenarioPath } = await inquirer.prompt([
+    { type: 'select', name: 'scenarioPath', message: 'Select a scenario to run:', choices: formatScenarioOptions(scenarios), pageSize: 14, theme: t.promptTheme }
   ]);
-  
-  if (!continueRunning) {
-    console.log(chalk.cyan('\nExiting A Game of Ethics. Goodbye!\n'));
+  if (scenarioPath === 'exit') return;
+
+  const { model, numRuns, systemPrompt, otherModel } = await inquirer.prompt([
+    { type: 'select', name: 'model', message: 'Select a model to use:', choices: MODEL_OPTIONS, theme: t.promptTheme },
+    {
+      type: 'input',
+      name: 'otherModel',
+      message: 'Enter the model identifier (e.g., openai/gpt-4o-2024-05-13):',
+      when: (answers) => answers.model === 'other',
+      validate: (input) => (input.trim() !== '' ? true : 'Please enter a valid model identifier'),
+      theme: t.promptTheme
+    },
+    {
+      type: 'input',
+      name: 'numRuns',
+      message: 'Number of runs to perform:',
+      default: '1',
+      validate: (input) => (/^\d+$/.test(input.trim()) && Number(input) > 0 && Number(input) <= 1000 ? true : 'Please enter a number between 1 and 1000'),
+      theme: t.promptTheme
+    },
+    { type: 'input', name: 'systemPrompt', message: 'Custom system prompt (leave empty for default):', default: '', theme: t.promptTheme }
+  ]);
+
+  const selectedModel = (model === 'other' ? otherModel : model)?.trim();
+  if (!selectedModel) {
+    t.write(t.c.alert('Error: No model specified. Please select a valid model.'));
+    return;
   }
-  
-  return continueRunning;
+  t.write(t.c.info(`\nStarting scenario with ${selectedModel}...\n`));
+  const runs = Number.parseInt(numRuns, 10);
+  const runOptions = { llmModel: selectedModel, systemPrompt, outputDir: './results/runs', generateSummary: false };
+  if (runs > 1) await runMultipleGames(scenarioPath, { ...runOptions, numRuns: runs });
+  else await playInkStoryWithLLM(scenarioPath, runOptions);
 }
 
-/**
- * Get scenario files from the core directory
- * @returns {Promise<Array<string>>} Array of scenario file paths
- */
-async function getScenarioFiles() {
-  const coreScenarioDir = path.join(__dirname, 'scenarios', 'core');
-  
-  if (!fs.existsSync(coreScenarioDir)) {
-    console.log(chalk.yellow(`Directory not found: ${coreScenarioDir}`));
-    return [];
+function listScenarios(options) {
+  const t = ui();
+  const scenarios = listCoreScenarios();
+  if (options.json) {
+    process.stdout.write(`${JSON.stringify(scenarios.map(({ id, file, title, desc }) => ({ id, file, title, desc })), null, 2)}\n`);
+    return;
   }
-  
-  try {
-    // More efficient read-filter-map chain
-    const files = fs.readdirSync(coreScenarioDir);
-    return files
-      .filter(file => file.endsWith('.ink'))
-      .map(file => path.join(coreScenarioDir, file));
-  } catch (error) {
-    console.error(chalk.red(`Error reading scenarios directory: ${error.message}`));
-    return [];
+  if (scenarios.length === 0) {
+    t.write(t.c.alert('No scenarios found in scenarios/core directory.'));
+    process.exitCode = 1;
+    return;
   }
+  const rows = scenarios.map((s, i) => `${t.c.sys(`[${String(i + 1).padStart(2, '0')}]`)} ${t.c.info(s.tag)} ${t.c.text(s.id.padEnd(22))} ${t.c.dim(s.desc)}`);
+  t.write(t.panel(rows, { title: 'SCENARIO CORE', footer: `${scenarios.length} modules` }));
 }
 
-/**
- * Get model options from OpenRouter API
- * @returns {Promise<Array>} Array of model options for inquirer
- */
-async function getModelOptions() {
-  // Fixed model options without relying on API
-  return [
-    { name: 'Claude 3.7 Sonnet (Anthropic)', value: 'anthropic/claude-3-7-sonnet:beta' },
-    { name: 'GPT-4o (OpenAI)', value: 'openai/gpt-4o' },
-    { name: 'Gemini 2.5 Flash (Google)', value: 'google/gemini-2.5-flash-preview' },
-    { name: 'Llama 4 Scout (Meta)', value: 'meta-llama/llama-4-scout' },
-    { name: 'Other (advanced)', value: 'other' }
-  ];
-}
-
-// Set up command line interface
 const program = new Command();
 program
   .name('ethi-cli')
   .description('A Game of Ethics - Scenario-based alignment benchmark for LLMs')
-  .version('1.0.0')
+  .version(VERSION)
   .option('-i, --interactive', 'Run in interactive menu mode')
+  .option('--no-anim', 'Disable animation (same as ETHI_REDUCED_MOTION=1)')
+  .option('--no-color', 'Disable colour output (same as NO_COLOR=1)')
+  .action(() => runInteractiveMode())
   .addCommand(
     new Command('manual')
       .description('Run in interactive manual mode to select and play scenarios')
-      .option('--compile', 'Force compilation of ink files')
+      .option('--compile', 'Accepted for compatibility; .ink files are always compiled in-process')
+      .option('--no-anim', 'Disable animation')
       .action(async (options) => {
-        try {
-          await runManualMode(options);
-        } catch (error) {
-          console.error(chalk.red(`Error: ${error.message}`));
-          process.exit(1);
+        if (!process.stdin.isTTY) {
+          ui().write('Manual mode needs an interactive terminal.');
+          process.exitCode = 1;
+          return;
         }
+        await runManualMode(options);
       })
   )
+  .addCommand(modelCommand('model'))
   .addCommand(
-    new Command('model')
-      .description('Run scenarios with LLM players')
-      .option('--compile', 'Force compilation of ink files')
-      .requiredOption('--model <model>', 'OpenRouter model to use (required)')
-      .option('--system-prompt <prompt>', 'Custom system prompt for the LLM\'s persona/character', '')
-      .option('-n, --num-runs <number>', 'Number of times to run the scenario', '1')
-      .option('-o, --output-dir <dir>', 'Output directory for JSON results', './results/runs')
-      .option('--generate-summary', 'Generate an LLM summary of the results')
-      .argument('<file>', 'Path to a compiled .ink.json file or an .ink file')
-      .action(async (filePath, options) => {
-        try {
-          // Parse number of runs as integer
-          options.numRuns = parseInt(options.numRuns, 10);
-          
-          if (!options.model) {
-            console.error(chalk.red('Error: No model specified. Please provide a valid OpenRouter model ID with --model.'));
-            process.exit(1);
-          }
-          
-          if (options.numRuns > 1) {
-            await runMultipleGames(filePath, {
-              llmModel: options.model,
-              systemPrompt: options.systemPrompt,
-              numRuns: options.numRuns,
-              outputDir: options.outputDir,
-              generateSummary: options.generateSummary
-            });
-          } else {
-            await playInkStoryWithLLM(filePath, {
-              llmModel: options.model,
-              systemPrompt: options.systemPrompt,
-              generateSummary: options.generateSummary
-            });
-          }
-        } catch (error) {
-          console.error(chalk.red(`Error: ${error.message}`));
-          process.exit(1);
-        }
-      })
+    new Command('list')
+      .description('List the core scenarios')
+      .option('--json', 'Output machine-readable JSON')
+      .action(listScenarios)
   );
 
-// Run interactive mode if no arguments provided or --interactive flag is set
-if (process.argv.length <= 2 || process.argv.includes('--interactive') || process.argv.includes('-i')) {
-  runInteractiveMode();
-} else {
-  // Otherwise parse the command line arguments
-  program.parse();
-}
+program.parseAsync().catch((error) => {
+  if (error?.name === 'ExitPromptError') {
+    // Ctrl-C inside a prompt: exit quietly.
+    process.stdout.write('\n');
+    process.exitCode = 130;
+    return;
+  }
+  process.stderr.write(`Error: ${redact(error?.message ?? String(error))}\n`);
+  process.exitCode = 1;
+});

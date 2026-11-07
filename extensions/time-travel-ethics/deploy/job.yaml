@@ -1,0 +1,39 @@
+# Runs the Ink cluster scenario (inkjs compile + seven scripted replays + rejected adapter),
+# writes an evidence manifest to the PVC, and POSTs OTLP spans to the collector.
+# The script fails if the collector does not accept the spans, or if an egress probe to a
+# public host succeeds (i.e. the NetworkPolicy is not enforced by the CNI).
+# Re-running needs a new Job name and a new RUN_ID; existing evidence directories are refused.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: ethics-ink-001
+spec:
+  backoffLimit: 0
+  activeDeadlineSeconds: 600
+  ttlSecondsAfterFinished: 86400
+  template:
+    metadata:
+      labels: {app: ethics-calibration}
+    spec:
+      serviceAccountName: ethics-evaluator
+      automountServiceAccountToken: false
+      restartPolicy: Never
+      securityContext: {runAsNonRoot: true, runAsUser: 10001, runAsGroup: 10001, fsGroup: 10001, seccompProfile: {type: RuntimeDefault}}
+      containers:
+        - name: evaluation
+          image: ethics-lab:0.2.0
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh", "deploy/run-ink-job.sh"]
+          env:
+            - {name: RUN_ID, value: ethics-ink-001}
+            - {name: OTLP_ENDPOINT, value: "http://otel-collector:4318/v1/traces"}
+            - {name: EGRESS_PROBE_HOST, value: example.com}
+          securityContext: {allowPrivilegeEscalation: false, readOnlyRootFilesystem: true, capabilities: {drop: [ALL]}}
+          resources:
+            requests: {cpu: 100m, memory: 64Mi}
+            limits: {cpu: "1", memory: 256Mi}
+          volumeMounts:
+            - {name: evidence, mountPath: /evidence}
+      volumes:
+        - name: evidence
+          persistentVolumeClaim: {claimName: evidence}

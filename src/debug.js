@@ -2,18 +2,16 @@
 
 import fs from 'fs';
 import path from 'path';
-import { execSync } from 'child_process';
 import inquirer from 'inquirer';
 import chalk from 'chalk';
-import { glob } from 'glob';
+import { listFilesRecursive } from './lib/paths.js';
+import { compileInkFile } from './lib/ink.js';
 import { createSpinner } from 'nanospinner';
 import { fileURLToPath } from 'url';
 
-// Get current file directory (equivalent to __dirname in CommonJS)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Constants for validation
 const REQUIRED_ETHICAL_AXES = [
   { name: 'hc', full: 'Harm / Care' },
   { name: 'fj', full: 'Fairness / Justice' },
@@ -28,42 +26,24 @@ const REQUIRED_ETHICAL_AXES = [
   { name: 'returnPath', full: 'Return Path' }
 ];
 
+const SCORE_AXES = new Set(['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc']);
 const MIN_AXES_PER_CHOICE = 3;
 const MAX_AXES_PER_CHOICE = 5;
 const EXTREME_SCORE_THRESHOLD = 0.2; // Maximum percentage of +3/-3 scores
 
-// Validate if inklecate is installed
+// No-op: scenarios compile in-process via inkjs, so inklecate is not required.
 function checkInklecate() {
-  try {
-    execSync('inklecate', { encoding: 'utf8', stderr: 'pipe' });
-    return true;
-  } catch (error) {
-    // Check error output for usage information, which indicates inklecate exists
-    if ((error.stderr && (error.stderr.includes('Usage: inklecate') || error.stderr.includes('ink file'))) ||
-        (error.stdout && (error.stdout.includes('Usage: inklecate') || error.stdout.includes('ink file')))) {
-      return true;
-    }
-    
-    // Display installation instructions if inklecate is not found
-    console.error(chalk.red('Error: inklecate is not installed or not in PATH.'));
-    console.log(chalk.yellow('Please install inklecate from: https://github.com/inkle/ink/releases'));
-    console.log(chalk.yellow('For macOS, you can also use:'));
-    console.log(chalk.cyan('  npm install -g inklecate'));
-    console.log(chalk.yellow('or:'));
-    console.log(chalk.cyan('  brew install inklecate'));
-    
-    return false;
-  }
+  return true;
 }
 
-// Function to find all ink files in a directory
+// Find all ink files in a directory
 function findInkFiles(directory) {
-  return glob.sync(`${directory}/**/*.ink`);
+  return listFilesRecursive(directory, (name) => name.endsWith('.ink'));
 }
 
 // Find and clean up compiled ink.json files
 function cleanupCompiledFiles(directory) {
-  const compiledFiles = glob.sync(`${directory}/**/*.ink.json`);
+  const compiledFiles = listFilesRecursive(directory, (name) => name.endsWith('.ink.json'));
   
   if (compiledFiles.length === 0) {
     return { success: true, count: 0 };
@@ -86,12 +66,12 @@ function cleanupCompiledFiles(directory) {
   };
 }
 
-// Function to check if a file has all required ethical axes variables
+// Check if a file has all required ethical axes variables
 function checkEthicalAxes(content) {
   const missingAxes = [];
   
   for (const axis of REQUIRED_ETHICAL_AXES) {
-    // Check for either VAR name = 0 or VAR name = "" style declarations
+    // Accept VAR x = 0 or VAR x = "".
     const pattern = new RegExp(`VAR\\s+${axis.name}\\s*=\\s*(0|"")`, 'i');
     if (!pattern.test(content)) {
       missingAxes.push(axis);
@@ -111,7 +91,7 @@ function analyzeChoices(content) {
     const trimmedLine = line.trim();
     
     // Detect start of a choice
-    if (trimmedLine.startsWith('*') && !trimmedLine.startsWith('**')) {
+    if (/^(?:\*|\+)(?![\*+])/.test(trimmedLine)) {
       if (currentChoice) {
         choiceBlocks.push(currentChoice);
       }
@@ -126,7 +106,7 @@ function analyzeChoices(content) {
     // If we're in a choice block, look for ethical impacts
     if (currentChoice && trimmedLine.startsWith('~')) {
       const match = trimmedLine.match(impactRegex);
-      if (match) {
+      if (match && SCORE_AXES.has(match[1])) {
         const [_, axis, operation, value] = match;
         const numericValue = parseInt(value);
         const finalValue = operation === '+' ? numericValue : -numericValue;
@@ -202,26 +182,25 @@ function checkExtremeScores(choices) {
   return { isBalanced: true, ratio: extremeRatio };
 }
 
-// Function to validate if a scenario compiles with inklecate
+// Check whether a scenario compiles with the inkjs compiler
 function validateScenarioCompilation(filePath) {
   try {
-    const result = execSync(`inklecate -c "${filePath}"`, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
-    return { success: true, output: result };
+    const { warnings } = compileInkFile(filePath);
+    return { success: true, output: warnings.join('\n') };
   } catch (error) {
     return { 
       success: false, 
-      output: error.stderr || error.stdout || error.message 
+      output: error.errors ? error.errors.join('\n  ') : error.message
     };
   }
 }
 
-// General linting function
+// Lint scenario source
 function lintScenario(content) {
   const issues = [];
   const lines = content.split('\n');
-  const ethicalImpactRegex = /~\s*\w+\s*=\s*\w+\s*[+-]\s*\d+/;
+  const ethicalImpactRegex = /~\s*(?:hc|fj|ar|al|lt|it|sp|uc)\s*=\s*\w+\s*[+-]\s*\d+/;
   
-  // Check for various issues in a single pass through the content
   const checks = {
     hasDebrief: content.includes('=== debrief ===') || content.includes('===debrief==='),
     hasTotalScore: content.includes('~ total = '),
@@ -229,11 +208,9 @@ function lintScenario(content) {
                 !!content.match(/EXEMPLARY|RESPONSIBLE|AMBIGUOUS|QUESTIONABLE|HARMFUL/i)
   };
   
-  // Process line by line for per-line checks
   lines.forEach((line, i) => {
     const trimmedLine = line.trim();
     
-    // Check for ethical impact lines without comments
     if (trimmedLine.startsWith('~') && ethicalImpactRegex.test(trimmedLine) && !trimmedLine.includes('//')) {
       issues.push({
         line: i + 1,
@@ -244,7 +221,6 @@ function lintScenario(content) {
     }
   });
   
-  // Add structural issues
   if (!checks.hasDebrief) {
     issues.push({
       line: null,
@@ -272,7 +248,7 @@ function lintScenario(content) {
   return issues;
 }
 
-// Main function to debug a scenario
+// Debug one scenario
 async function debugScenario(filePath) {
   console.log(chalk.cyan(`\nAnalyzing scenario: ${filePath}`));
   
@@ -282,15 +258,12 @@ async function debugScenario(filePath) {
     const content = fs.readFileSync(filePath, 'utf8');
     spinner.success({ text: 'File read successfully' });
     
-    // Run all analysis steps in parallel where possible
     spinner.start({ text: 'Analyzing scenario structure and content...' });
     
-    // Separate synchronous analysis steps
     const missingAxes = checkEthicalAxes(content);
     const choices = analyzeChoices(content);
     const lintIssues = lintScenario(content);
     
-    // Process the results of each analysis
     const axesResult = processMissingAxesResult(missingAxes);
     
     let impactIssues = [];
@@ -301,29 +274,26 @@ async function debugScenario(filePath) {
     } else {
       spinner.success({ text: `Found ${choices.length} choices in the scenario` });
       
-      // Process choice impacts
       const choiceResults = processChoiceResults(choices);
       impactIssues = choiceResults.impactIssues;
       scoreBalance = choiceResults.scoreBalance;
     }
     
-    // Process linting results
     processLintResults(lintIssues);
     
-    // Validate compilation (this must be done separately as it's async)
-    spinner.start({ text: 'Validating scenario compilation with inklecate...' });
+    spinner.start({ text: 'Validating scenario compilation with the inkjs compiler...' });
     const validation = validateScenarioCompilation(filePath);
     
     if (validation.success) {
-      spinner.success({ text: 'Scenario compiles successfully with inklecate' });
+      spinner.success({ text: 'Scenario compiles successfully with the inkjs compiler' });
     } else {
-      spinner.error({ text: 'Scenario failed to compile with inklecate' });
+      spinner.error({ text: 'Scenario failed to compile with the inkjs compiler' });
       console.log(chalk.red('  Compilation errors:'));
       console.log(chalk.red(`  ${validation.output}`));
     }
     
-    // Generate summary
     const hasErrors = 
+      choices.length === 0 ||
       missingAxes.length > 0 || 
       impactIssues.some(i => i.severity === 'error') || 
       !scoreBalance.isBalanced || 
@@ -336,14 +306,14 @@ async function debugScenario(filePath) {
     
     outputSummary(hasErrors, hasWarnings);
     
-    // Return the results for the summary table
     return {
       filename: path.basename(filePath),
       path: filePath,
       hasErrors,
       hasWarnings,
       issues: {
-        missingAxes: missingAxes.length, 
+        missingAxes: missingAxes.length,
+        noChoices: choices.length === 0 ? 1 : 0,
         impactIssues: impactIssues.filter(i => i.severity === 'error').length,
         impactWarnings: impactIssues.filter(i => i.severity === 'warning').length,
         scoreBalance: !scoreBalance.isBalanced ? 1 : 0,
@@ -365,7 +335,6 @@ async function debugScenario(filePath) {
   }
 }
 
-// Helper functions for debugScenario
 function processMissingAxesResult(missingAxes) {
   if (missingAxes.length > 0) {
     console.log(chalk.red('  Missing axes:'));
@@ -378,7 +347,6 @@ function processMissingAxesResult(missingAxes) {
 }
 
 function processChoiceResults(choices) {
-  // Validate number of impacts per choice
   const impactIssues = validateChoiceImpacts(choices);
   
   if (impactIssues.length > 0) {
@@ -392,7 +360,6 @@ function processChoiceResults(choices) {
     console.log(chalk.green('  All choices have the appropriate number of ethical impacts'));
   }
   
-  // Check for balanced scoring
   const scoreBalance = checkExtremeScores(choices);
   
   if (!scoreBalance.isBalanced) {
@@ -435,7 +402,7 @@ function outputSummary(hasErrors, hasWarnings) {
   }
 }
 
-// Function to display help text
+// Display help text
 function showHelp() {
   console.log(chalk.blue('=== A Game of Ethics - Scenario Debug Utility ==='));
   console.log('\nUsage:');
@@ -464,12 +431,10 @@ function validateArgs(args) {
   
   const validArgs = ['--help', '-h', '--cleanup', '--auto-validate'];
   
-  // Check for help flag first
   if (args.includes('-h') || args.includes('--help')) {
     return true;
   }
   
-  // Check for auto-validate mode
   if (args.includes('--auto-validate')) {
     const inkFiles = args.filter(arg => arg.endsWith('.ink'));
     if (inkFiles.length === 0) {
@@ -479,12 +444,10 @@ function validateArgs(args) {
     return true;
   }
   
-  // Check for cleanup mode
   if (args.includes('--cleanup')) {
     return true;
   }
   
-  // If we get here, there are unknown arguments
   const unknownArgs = args.filter(arg => !validArgs.includes(arg) && !arg.endsWith('.ink'));
   if (unknownArgs.length > 0) {
     console.error(chalk.red(`Error: Unknown argument(s): ${unknownArgs.join(', ')}`));
@@ -494,18 +457,15 @@ function validateArgs(args) {
   return true;
 }
 
-// Function to run the debug utility
+// Run the debug utility
 async function run() {
-  // Check for command line arguments
   const args = process.argv.slice(2);
   
-  // Check for help flag
   if (args.includes('-h') || args.includes('--help')) {
     showHelp();
     return;
   }
   
-  // Validate arguments
   if (!validateArgs(args)) {
     console.log('\nFor help, use: node src/debug.js --help');
     process.exit(1);
@@ -513,35 +473,29 @@ async function run() {
   
   console.log(chalk.blue('=== A Game of Ethics - Scenario Debug Utility ==='));
   
-  // Check if inklecate is installed
   if (!checkInklecate()) {
     return;
   }
   
-  // Handle cleanup mode
   if (args.includes('--cleanup')) {
     await handleCleanupMode(args);
     return;
   }
   
-  // Handle auto-validate mode
   if (args.includes('--auto-validate')) {
     await handleAutoValidateMode(args);
     return;
   }
   
-  // Handle interactive mode
   await handleInteractiveMode();
 }
 
-// Handle cleanup mode
+// Run cleanup mode
 async function handleCleanupMode(args) {
   const cleanupIndex = args.indexOf('--cleanup');
   
-  // Get directory from argument after --cleanup or use default
   let cleanupDir = args[cleanupIndex + 1];
   
-  // If no directory specified or it's another flag, use current directory
   if (!cleanupDir || cleanupDir.startsWith('--')) {
     cleanupDir = path.resolve(process.cwd(), 'scenarios');
   }
@@ -567,27 +521,23 @@ async function handleCleanupMode(args) {
   }
 }
 
-// Handle auto-validate mode
+// Run auto-validate mode
 async function handleAutoValidateMode(args) {
   const autoValidateIndex = args.indexOf('--auto-validate');
   const filesToAnalyze = args.slice(autoValidateIndex + 1).filter(arg => arg.endsWith('.ink'));
   
   console.log(chalk.cyan(`Auto-validating ${filesToAnalyze.length} .ink files...`));
   
-  // Array to store analysis results
   const results = [];
   
-  // Analyze each specified file
   for (const file of filesToAnalyze) {
     const result = await debugScenario(file);
     results.push(result);
   }
   
-  // Output summary table
   if (results.length > 0) {
     outputSummaryTable(results);
     
-    // Exit with an error code if there are errors
     const hasErrors = results.some(r => r.hasErrors);
     if (hasErrors) {
       process.exit(1);
@@ -595,9 +545,8 @@ async function handleAutoValidateMode(args) {
   }
 }
 
-// Handle interactive mode
+// Run interactive mode
 async function handleInteractiveMode() {
-  // Prompt for directory path
   const { targetPathInput } = await inquirer.prompt([
     {
       type: 'input',
@@ -609,7 +558,6 @@ async function handleInteractiveMode() {
   
   let targetPath = targetPathInput;
   
-  // Validate path existence
   let stats;
   try {
     stats = fs.statSync(targetPath);
@@ -618,7 +566,6 @@ async function handleInteractiveMode() {
     return;
   }
   
-  // Get files to analyze based on whether path is directory or file
   let filesToAnalyze = [];
   
   if (stats.isDirectory()) {
@@ -638,26 +585,22 @@ async function handleInteractiveMode() {
     return;
   }
   
-  // Select files to analyze if multiple files were found
   let selectedFiles = await selectFilesToAnalyze(filesToAnalyze);
   
-  // Analyze selected files
   const results = [];
   for (const file of selectedFiles) {
     const result = await debugScenario(file);
     results.push(result);
   }
   
-  // Output summary table for multiple files
   if (results.length > 1) {
     outputSummaryTable(results);
   }
   
-  // Ask about cleanup
   await promptForCleanup(stats.isDirectory() ? targetPath : path.dirname(targetPath));
 }
 
-// Helper function to select files for analysis
+// Select files for analysis
 async function selectFilesToAnalyze(filesToAnalyze) {
   if (filesToAnalyze.length === 1) {
     return filesToAnalyze;
@@ -665,7 +608,7 @@ async function selectFilesToAnalyze(filesToAnalyze) {
   
   const { action } = await inquirer.prompt([
     {
-      type: 'list',
+      type: 'select',
       name: 'action',
       message: 'How would you like to proceed?',
       choices: [
@@ -695,7 +638,7 @@ async function selectFilesToAnalyze(filesToAnalyze) {
   return files;
 }
 
-// Helper function to prompt for cleanup
+// Prompt for cleanup
 async function promptForCleanup(cleanupDir) {
   console.log('\n');
   const { shouldCleanup } = await inquirer.prompt([
@@ -730,11 +673,10 @@ async function promptForCleanup(cleanupDir) {
   }
 }
 
-// Helper function to output summary table
+// Output summary table
 function outputSummaryTable(results) {
   console.log('\n' + chalk.blue('=== Summary of All Scenarios ==='));
   
-  // Define table parameters
   const params = {
     maxFilenameLength: 25,
     statusWidth: 15,  // Enough for emoji + space
@@ -744,7 +686,6 @@ function outputSummaryTable(results) {
   
   const totalWidth = params.maxFilenameLength + params.statusWidth + params.numericWidth * 2;
   
-  // Create header row
   console.log(
     chalk.cyan('\n' + 'Scenario'.padEnd(params.maxFilenameLength)) +
     chalk.cyan('Status'.padEnd(params.statusWidth)) +
@@ -752,20 +693,17 @@ function outputSummaryTable(results) {
     chalk.cyan('Warnings'.padEnd(params.numericWidth))
   );
   
-  // Print divider
   console.log(params.dividerChar.repeat(totalWidth));
   
-  // Process and print each result
   results.forEach(result => {
-    // Determine status with appropriate color and emoji
     const status = result.hasErrors 
       ? chalk.red('❌ Error') 
       : result.hasWarnings 
         ? chalk.yellow('⚠️ Warning')
         : chalk.green('✅ Pass');
     
-    // Calculate counts
     const errorCount = result.error ? 1 : (
+      (result.issues?.noChoices || 0) +
       (result.issues?.missingAxes || 0) + 
       (result.issues?.impactIssues || 0) + 
       (result.issues?.scoreBalance || 0) + 
@@ -777,13 +715,11 @@ function outputSummaryTable(results) {
       ? ((result.issues.impactWarnings || 0) + (result.issues.lintWarnings || 0))
       : 0;
     
-    // Truncate filename if too long
     let displayName = result.filename;
     if (displayName.length > params.maxFilenameLength - 3) {
       displayName = displayName.substring(0, params.maxFilenameLength - 3) + '...';
     }
     
-    // Format counts with proper alignment
     const errorCountStr = String(errorCount).padStart(params.numericWidth - 2).padEnd(params.numericWidth);
     const warningCountStr = String(warningCount).padStart(params.numericWidth - 2).padEnd(params.numericWidth);
     
@@ -797,7 +733,6 @@ function outputSummaryTable(results) {
   
   console.log(params.dividerChar.repeat(totalWidth));
   
-  // Generate and display summary statistics
   const stats = {
     total: results.length,
     pass: results.filter(r => !r.hasErrors && !r.hasWarnings).length,
@@ -813,7 +748,6 @@ function outputSummaryTable(results) {
   );
 }
 
-// Run the program
 run().catch(error => {
   console.error(chalk.red(`An unexpected error occurred: ${error.message}`));
   process.exit(1);

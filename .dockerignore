@@ -1,0 +1,20 @@
+# Allowlist: everything is excluded unless re-included below.
+*
+!package.json
+!package-lock.json
+!ethi-cli.js
+!LICENSE
+!src/
+!scenarios/
+!benchmark/
+!examples/agents/
+!docker/harness/
+# Never ship raw runs, local results or secrets.
+benchmark/experiments/*/runs/
+benchmark/reports/
+**/__pycache__/
+**/*.pyc
+**/.env
+**/.env.*
+**/*.pem
+**/*.key

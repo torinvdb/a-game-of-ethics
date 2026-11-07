@@ -1,0 +1,36 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/torinvdb/a-game-of-ethics/schemas/agent-start.schema.json",
+  "title": "agoe.agent/v1 start message",
+  "description": "Harness to agent, once per run, before the first decide.",
+  "type": "object",
+  "required": [
+    "type",
+    "protocol",
+    "run_id",
+    "scenario",
+    "system"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "const": "start"
+    },
+    "protocol": {
+      "const": "agoe.agent/v1"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "scenario": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Scenario id from benchmark/manifest.json"
+    },
+    "system": {
+      "type": "string",
+      "description": "Instructions for the agent (shared prompt plus framing sentence)"
+    }
+  }
+}

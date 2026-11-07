@@ -135,7 +135,7 @@ Your improvised shelter holds as the storm intensifies. The child watches intent
 === debrief ===
 // Calculate total ethical score
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = total / 8  // Calculate normalized average score
+~ average = FLOAT(total) / 8  // FLOAT(): integer division would floor the average
 
 // Display ethical choices narrative
 RANGER LOG ENTRY:

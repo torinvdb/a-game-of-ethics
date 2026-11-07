@@ -1,0 +1,138 @@
+name: Eval
+
+# Runs the repository's own composite action (action.yml).
+# - pull_request / push: mock provider only, no secrets, no environment.
+# - workflow_dispatch with a live provider: runs in the protected `evals`
+#   environment, which holds ANTHROPIC_API_KEY / OPENROUTER_API_KEY and should
+#   require reviewer approval. Fork pull requests never reach that job because
+#   it only runs on workflow_dispatch, which needs write access to the repo.
+
+on:
+  workflow_dispatch:
+    inputs:
+      provider:
+        description: Provider
+        type: choice
+        options: [mock, anthropic, openai-compatible]
+        default: mock
+      models:
+        description: Comma-separated model ids (empty = all in config)
+        type: string
+        default: claude-haiku-5-5
+      scenarios:
+        description: Comma-separated scenario ids (empty = all in config)
+        type: string
+        default: hostage-holdout
+      stage:
+        description: Stage
+        type: choice
+        options: [smoke, pilot, full]
+        default: smoke
+      budget-usd:
+        description: Spend cap in USD (empty = stage default; required for full)
+        type: string
+        default: '1'
+      fail-on:
+        description: none | execution-failures | conditions such as failure-rate>0.1
+        type: string
+        default: execution-failures
+  pull_request:
+    paths:
+      - action.yml
+      - .github/workflows/eval.yml
+      - benchmark/run/**
+      - benchmark/experiments/**
+      - examples/agents/**
+      - package-lock.json
+  push:
+    branches: [main]
+    paths:
+      - action.yml
+      - .github/workflows/eval.yml
+      - benchmark/run/**
+
+permissions:
+  contents: read
+
+concurrency:
+  group: eval-${{ github.ref }}-${{ github.event_name }}-${{ inputs.provider || 'mock' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  mock:
+    name: Mock smoke (no secrets)
+    if: github.event_name != 'workflow_dispatch' || inputs.provider == 'mock'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run eval (mock)
+        id: eval
+        uses: ./
+        with:
+          provider: mock
+          models: ${{ inputs.models || 'claude-haiku-5-5' }}
+          scenarios: ${{ inputs.scenarios || 'hostage-holdout' }}
+          stage: ${{ inputs.stage || 'smoke' }}
+          fail-on: ${{ inputs.fail-on || 'execution-failures' }}
+          out: agoe-results/mock
+
+      - name: Report
+        env:
+          COMPLETED: ${{ steps.eval.outputs.completed }}
+          FAILURES: ${{ steps.eval.outputs.failures }}
+          COST: ${{ steps.eval.outputs.cost-usd }}
+        run: echo "completed=$COMPLETED failures=$FAILURES cost=$COST"
+
+  agent:
+    name: Reference agent over stdio (no secrets)
+    if: github.event_name != 'workflow_dispatch' || inputs.provider == 'mock'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run eval (command provider)
+        uses: ./
+        with:
+          provider: command
+          agent-cmd: python3 examples/agents/stdio_agent.py
+          agent-name: reference-stdio
+          scenarios: hostage-holdout
+          stage: smoke
+          fail-on: execution-failures
+          out: agoe-results/agent
+
+  live:
+    name: Live eval (${{ inputs.provider }})
+    if: github.event_name == 'workflow_dispatch' && inputs.provider != 'mock'
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    environment: evals
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Run eval (live)
+        id: eval
+        uses: ./
+        with:
+          provider: ${{ inputs.provider }}
+          models: ${{ inputs.models }}
+          scenarios: ${{ inputs.scenarios }}
+          stage: ${{ inputs.stage }}
+          budget-usd: ${{ inputs.budget-usd }}
+          fail-on: ${{ inputs.fail-on }}
+          out: agoe-results/${{ inputs.provider }}-${{ inputs.stage }}
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}

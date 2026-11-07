@@ -5,14 +5,12 @@ import path from 'path';
 import chalk from 'chalk';
 import inquirer from 'inquirer';
 import { Command } from 'commander';
-import { createObjectCsvWriter } from 'csv-writer';
-import { glob } from 'glob';
-import _ from 'lodash';
+import { listFilesRecursive } from './lib/paths.js';
 import { fileURLToPath } from 'url';
-import Table from 'cli-table3';
+import BaseTable from 'cli-table3';
+import { detectCapabilities } from './ui/theme.js';
 import { createSpinner } from 'nanospinner';
 
-// Get directory paths
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
 
@@ -31,6 +29,38 @@ const axisNames = {
 
 const ethicalAxes = ['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'];
 
+// cli-table3 colours borders/headers on its own; honour NO_COLOR / non-TTY.
+const COLOR = detectCapabilities().colorLevel > 0;
+chalk.level = COLOR ? chalk.level || 1 : 0;
+class Table extends BaseTable {
+  constructor(options = {}) {
+    super(COLOR ? options : { ...options, style: { ...(options.style || {}), head: [], border: [] } });
+  }
+}
+
+// Local stand-ins for the lodash helpers used here (avoids the dependency).
+const _ = {
+  groupBy: (items, key) =>
+    items.reduce((acc, item) => {
+      const k = String(item?.[key]);
+      (acc[k] ||= []).push(item);
+      return acc;
+    }, {}),
+  sum: (xs) => xs.reduce((a, b) => a + b, 0),
+  mean: (xs) => (xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : NaN),
+  sortBy: (xs) => [...xs].sort((a, b) => a - b),
+  min: (xs) => (xs.length ? Math.min(...xs) : undefined),
+  max: (xs) => (xs.length ? Math.max(...xs) : undefined)
+};
+
+/** Escape one CSV field (RFC 4180) and neutralise spreadsheet formula injection. */
+export function csvField(value) {
+  if (value === undefined || value === null) return '';
+  let s = String(value);
+  if (/^[=+\-@\t\r]/.test(s) && !/^-?\d+(\.\d+)?$/.test(s)) s = `'${s}`;
+  return /[",\r\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+}
+
 /**
  * Find all result JSON files in a directory
  * @param {string} directory - The directory to search in
@@ -38,8 +68,7 @@ const ethicalAxes = ['hc', 'fj', 'ar', 'al', 'lt', 'it', 'sp', 'uc'];
  */
 async function findResultFiles(directory) {
   try {
-    // Use glob for more efficient file discovery
-    return glob.sync(`${directory}/**/*.json`);
+    return listFilesRecursive(directory, (name) => name.endsWith('.json'));
   } catch (error) {
     console.error(chalk.red(`Error reading directory: ${error.message}`));
     return [];
@@ -55,9 +84,10 @@ async function isValidResultFile(filePath) {
   try {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     
-    // Check for required structures using optional chaining and truthy checks
+    // Runs that ended in an adapter failure have no verdict and must not be scored.
+    if (data?.complete === false) return false;
     const hasSingleRunFormat = data?.choices?.length && typeof data?.scores === 'object';
-    const hasMultiRunFormat = data?.runs?.length > 0;
+    const hasMultiRunFormat = data?.runs?.some?.((run) => run?.complete !== false);
     
     return hasSingleRunFormat || hasMultiRunFormat;
   } catch (error) {
@@ -75,9 +105,8 @@ function parseRunFile(filePath) {
     const data = JSON.parse(fs.readFileSync(filePath, 'utf8'));
     const scenarioName = data.scenario || path.basename(path.dirname(filePath));
     
-    // Handle multi-run files
     if (data.runs?.length) {
-      return data.runs.map((run, i) => ({
+      return data.runs.flatMap((run, i) => (run?.complete === false ? [] : [{
         file_path: filePath,
         run_id: `${data.run_id || 'batch'}-${i + 1}`,
         scenario: scenarioName,
@@ -88,10 +117,9 @@ function parseRunFile(filePath) {
         scores: run.scores || {},
         verdict: run.verdict || '',
         choice_count: run.choices?.length || 0
-      }));
+      }]));
     }
     
-    // Handle single run files
     return [{
       file_path: filePath,
       run_id: data.run_id || path.basename(filePath, '.json'),
@@ -116,7 +144,6 @@ function parseRunFile(filePath) {
  * @returns {Object} Statistics object
  */
 function calculateStatistics(runs) {
-  // Initialize stats object
   const stats = {
     count: runs.length,
     by_player_type: {},
@@ -127,17 +154,14 @@ function calculateStatistics(runs) {
     ethical_bias: {}
   };
   
-  // Use a single pass through the data to compute multiple statistics at once
   const allAxes = [...ethicalAxes, 'total', 'average'];
   const axisScores = {};
   const axisRanksCounter = {};
   
-  // Initialize axis scores collectors
   allAxes.forEach(axis => {
     axisScores[axis] = [];
   });
   
-  // Initialize axis rank counters
   for (let i = 0; i < ethicalAxes.length; i++) {
     axisRanksCounter[`rank_${i + 1}`] = {};
     ethicalAxes.forEach(axis => {
@@ -145,26 +169,21 @@ function calculateStatistics(runs) {
     });
   }
   
-  // Group data for counts
   const groupedData = {
     player_type: _.groupBy(runs, 'player_type'),
     scenario: _.groupBy(runs, 'scenario'),
     verdict: _.groupBy(runs, 'verdict')
   };
   
-  // Fill player type stats
   Object.entries(groupedData.player_type).forEach(([type, typeRuns]) => {
     stats.by_player_type[type] = typeRuns.length;
   });
   
-  // Fill scenario stats
   Object.entries(groupedData.scenario).forEach(([scenario, scenarioRuns]) => {
     stats.by_scenario[scenario] = scenarioRuns.length;
   });
   
-  // Process model-specific runs and verdicts in a single pass
   runs.forEach(run => {
-    // Collect score data for each axis
     allAxes.forEach(axis => {
       const score = run.scores?.[axis];
       if (score !== undefined && score !== null) {
@@ -172,18 +191,15 @@ function calculateStatistics(runs) {
       }
     });
     
-    // Add to model counts if it's a model run
     if (run.player_type === 'model' && run.model) {
       stats.by_model[run.model] = (stats.by_model[run.model] || 0) + 1;
     }
     
-    // Process verdict
     if (run.verdict) {
       const shortVerdict = run.verdict.split(' - ')[0];
       stats.by_verdict[shortVerdict] = (stats.by_verdict[shortVerdict] || 0) + 1;
     }
     
-    // Process ethical bias (axis rankings)
     if (run.scores) {
       const axisRanking = ethicalAxes
         .map(axis => ({ axis, score: run.scores[axis] || 0 }))
@@ -195,11 +211,9 @@ function calculateStatistics(runs) {
     }
   });
   
-  // Calculate score statistics for each axis
   allAxes.forEach(axis => {
     const scores = axisScores[axis];
     if (scores.length > 0) {
-      // Sort scores once for reuse
       const sortedScores = [...scores].sort((a, b) => a - b);
       const mean = _.mean(scores);
       
@@ -213,7 +227,6 @@ function calculateStatistics(runs) {
     }
   });
   
-  // Set ethical bias data
   stats.ethical_bias = axisRanksCounter;
   
   return stats;
@@ -233,7 +246,6 @@ function compareGroups(runs, groupBy) {
     if (groupRuns.length > 0) {
       comparison[groupName] = {};
       
-      // Calculate average scores for each axis
       for (const axis of [...ethicalAxes, 'total', 'average']) {
         const scores = groupRuns.map(run => run.scores[axis]).filter(s => s !== undefined);
         if (scores.length > 0) {
@@ -241,7 +253,6 @@ function compareGroups(runs, groupBy) {
         }
       }
       
-      // Count verdicts
       const verdicts = {};
       for (const run of groupRuns) {
         if (run.verdict) {
@@ -251,7 +262,6 @@ function compareGroups(runs, groupBy) {
       }
       comparison[groupName].verdicts = verdicts;
       
-      // Count runs
       comparison[groupName].count = groupRuns.length;
     }
   }
@@ -268,7 +278,6 @@ function comparePlayerTypes(runs) {
   const manualRuns = runs.filter(run => run.player_type === 'manual');
   const modelRuns = runs.filter(run => run.player_type === 'model');
   
-  // Skip if not enough data
   if (manualRuns.length === 0 || modelRuns.length === 0) {
     return null;
   }
@@ -293,7 +302,6 @@ function calculateTypeStats(runs) {
     verdicts: {}
   };
   
-  // Calculate average scores for each axis
   for (const axis of [...ethicalAxes, 'total', 'average']) {
     const scores = runs.map(run => run.scores[axis]).filter(s => s !== undefined);
     if (scores.length > 0) {
@@ -306,7 +314,6 @@ function calculateTypeStats(runs) {
     }
   }
   
-  // Count verdicts
   for (const run of runs) {
     if (run.verdict) {
       const shortVerdict = run.verdict.split(' - ')[0];
@@ -323,10 +330,8 @@ function calculateTypeStats(runs) {
  * @returns {Object} Comparison results
  */
 function compareModels(runs) {
-  // Filter to model runs only (not manual)
   const modelRuns = runs.filter(run => run.player_type === 'model');
   
-  // Group by model
   const modelGroups = _.groupBy(modelRuns, 'model');
   const models = Object.keys(modelGroups);
   
@@ -335,7 +340,6 @@ function compareModels(runs) {
     return null;
   }
   
-  // Calculate stats for each model
   const comparison = {};
   for (const model of models) {
     comparison[model] = calculateTypeStats(modelGroups[model]);
@@ -362,25 +366,17 @@ async function generateCsvOutput(runs, outputPath) {
     { id: 'verdict', title: 'Verdict' }
   ];
   
-  // Add a column for each ethical axis
   for (const axis of ethicalAxes) {
     header.push({ id: `scores.${axis}`, title: axisNames[axis] });
   }
   
-  // Add total and average
   header.push({ id: 'scores.total', title: 'Total Score' });
   header.push({ id: 'scores.average', title: 'Average Score' });
   
-  const csvWriter = createObjectCsvWriter({
-    path: outputPath,
-    header
-  });
   
-  // Transform data for CSV format
   const records = runs.map(run => {
     const record = { ...run };
     
-    // Flatten scores object
     for (const axis of [...ethicalAxes, 'total', 'average']) {
       record[`scores.${axis}`] = run.scores[axis];
     }
@@ -388,7 +384,11 @@ async function generateCsvOutput(runs, outputPath) {
     return record;
   });
   
-  await csvWriter.writeRecords(records);
+  const lines = [header.map((h) => csvField(h.title)).join(',')];
+  for (const record of records) {
+    lines.push(header.map((h) => csvField(record[h.id])).join(','));
+  }
+  fs.writeFileSync(outputPath, `${lines.join('\n')}\n`);
   console.log(chalk.green(`\nCSV file successfully written to ${outputPath}`));
 }
 
@@ -399,10 +399,8 @@ async function generateCsvOutput(runs, outputPath) {
 function displayStatistics(stats) {
   console.log(chalk.cyan('\n===== ANALYSIS SUMMARY =====\n'));
   
-  // Display run counts
   console.log(chalk.bold(`Total Runs: ${stats.count}`));
   
-  // Display player type breakdown first
   if (Object.keys(stats.by_player_type).length > 0) {
     console.log(chalk.cyan('\nRuns by Player Type:'));
     for (const [playerType, count] of Object.entries(stats.by_player_type)) {
@@ -410,7 +408,6 @@ function displayStatistics(stats) {
     }
   }
   
-  // Display model breakdown (excluding human)
   if (Object.keys(stats.by_model).length > 0) {
     console.log(chalk.cyan('\nRuns by Model:'));
     for (const [model, count] of Object.entries(stats.by_model)) {
@@ -418,7 +415,6 @@ function displayStatistics(stats) {
     }
   }
   
-  // Display scenario breakdown
   if (Object.keys(stats.by_scenario).length > 0) {
     console.log(chalk.cyan('\nRuns by Scenario:'));
     for (const [scenario, count] of Object.entries(stats.by_scenario)) {
@@ -426,7 +422,6 @@ function displayStatistics(stats) {
     }
   }
   
-  // Display verdict breakdown
   if (Object.keys(stats.by_verdict).length > 0) {
     console.log(chalk.cyan('\nVerdict Distribution:'));
     for (const [verdict, count] of Object.entries(stats.by_verdict)) {
@@ -438,7 +433,6 @@ function displayStatistics(stats) {
     }
   }
   
-  // Display score statistics
   console.log(chalk.cyan('\nScore Statistics:'));
   
   const scoreTable = new Table({
@@ -467,7 +461,6 @@ function displayStatistics(stats) {
     }
   }
   
-  // Add total and average rows if they exist
   for (const extraAxis of ['total', 'average']) {
     const stats_axis = stats.score_stats[extraAxis];
     if (stats_axis) {
@@ -485,7 +478,6 @@ function displayStatistics(stats) {
   
   console.log(scoreTable.toString());
   
-  // Display ethical bias (which axes tend to rank highest) with better explanation
   console.log(chalk.cyan('\nEthical Axis Ranking Frequency:'));
   console.log(chalk.yellow('(Shows how often each ethical axis appears at each rank position across all runs)'));
   console.log(chalk.yellow('(Rank 1 = highest score in a run, Rank 8 = lowest score)'));
@@ -523,7 +515,6 @@ function displayStatistics(stats) {
 function displayComparison(comparison, groupBy) {
   console.log(chalk.cyan(`\n===== COMPARISON BY ${groupBy.toUpperCase()} =====\n`));
   
-  // Create a table for the comparison
   const comparisonTable = new Table({
     head: [
       chalk.cyan(groupBy.charAt(0).toUpperCase() + groupBy.slice(1)),
@@ -536,7 +527,6 @@ function displayComparison(comparison, groupBy) {
   });
   
   for (const [groupName, data] of Object.entries(comparison)) {
-    // Find the most common verdict
     let topVerdict = '';
     let topVerdictCount = 0;
     
@@ -552,22 +542,18 @@ function displayComparison(comparison, groupBy) {
     const percentage = data.count ? ((topVerdictCount / data.count) * 100).toFixed(1) : '0.0';
     const topVerdictDisplay = topVerdict ? `${topVerdict} (${percentage}%)` : 'N/A';
     
-    // Construct the row
     const row = [
       groupName,
       data.count || 0
     ];
     
-    // Add each ethical axis score
     for (const axis of ethicalAxes) {
       row.push(data[axis] !== undefined ? data[axis].toFixed(2) : 'N/A');
     }
     
-    // Add total and average
     row.push(data.total !== undefined ? data.total.toFixed(2) : 'N/A');
     row.push(data.average !== undefined ? data.average.toFixed(2) : 'N/A');
     
-    // Add top verdict
     row.push(topVerdictDisplay);
     
     comparisonTable.push(row);
@@ -585,7 +571,6 @@ function displayPlayerTypeComparison(comparison) {
   
   console.log(chalk.cyan('\n===== MANUAL VS MODEL COMPARISON =====\n'));
   
-  // Create a table for comparison
   const comparisonTable = new Table({
     head: [
       chalk.cyan('Metric'),
@@ -596,7 +581,6 @@ function displayPlayerTypeComparison(comparison) {
     colWidths: [20, 15, 15, 15]
   });
   
-  // Add count
   comparisonTable.push([
     'Run Count',
     comparison.manual.count,
@@ -604,7 +588,6 @@ function displayPlayerTypeComparison(comparison) {
     'N/A'
   ]);
   
-  // Add average scores by axis
   for (const axis of ethicalAxes) {
     if (comparison.manual.axis_scores[axis] && comparison.model.axis_scores[axis]) {
       const manualMean = comparison.manual.axis_scores[axis].mean;
@@ -623,7 +606,6 @@ function displayPlayerTypeComparison(comparison) {
     }
   }
   
-  // Add average of all axes
   if (comparison.manual.axis_scores.average && comparison.model.axis_scores.average) {
     const manualAvg = comparison.manual.axis_scores.average.mean;
     const modelAvg = comparison.model.axis_scores.average.mean;
@@ -642,7 +624,6 @@ function displayPlayerTypeComparison(comparison) {
   
   console.log(comparisonTable.toString());
   
-  // Display verdict distribution comparison
   console.log(chalk.cyan('\nVerdict Distribution Comparison:'));
   
   const verdictTable = new Table({
@@ -654,7 +635,6 @@ function displayPlayerTypeComparison(comparison) {
     colWidths: [15, 15, 15]
   });
   
-  // Collect all possible verdicts
   const allVerdicts = new Set([
     ...Object.keys(comparison.manual.verdicts || {}),
     ...Object.keys(comparison.model.verdicts || {})
@@ -676,7 +656,6 @@ function displayPlayerTypeComparison(comparison) {
   
   console.log(verdictTable.toString());
   
-  // Add interpretation text
   console.log(chalk.yellow('\nInterpretation:'));
   console.log('- Score differences show how model ethical priorities compare to human players');
   console.log('- Positive differences (green) indicate models score higher on that dimension than humans');
@@ -694,7 +673,6 @@ function displayModelComparison(comparison) {
   
   console.log(chalk.cyan('\n===== MODEL COMPARISON =====\n'));
   
-  // Create axis score comparison table
   console.log(chalk.cyan('Ethical Axis Scores by Model:'));
   
   const models = Object.keys(comparison);
@@ -706,7 +684,6 @@ function displayModelComparison(comparison) {
     colWidths: [20, ...Array(models.length).fill(Math.max(15, Math.floor(80 / (models.length + 1))))]
   });
   
-  // Add rows for each ethical axis
   for (const axis of ethicalAxes) {
     const row = [axisNames[axis]];
     
@@ -722,7 +699,6 @@ function displayModelComparison(comparison) {
     scoreTable.push(row);
   }
   
-  // Add average row
   const avgRow = [chalk.bold('Average Score')];
   for (const model of models) {
     const modelStats = comparison[model];
@@ -736,10 +712,8 @@ function displayModelComparison(comparison) {
   
   console.log(scoreTable.toString());
   
-  // Create verdict distribution comparison table
   console.log(chalk.cyan('\nVerdict Distribution by Model:'));
   
-  // Collect all possible verdicts across all models
   const allVerdicts = new Set();
   for (const model of models) {
     Object.keys(comparison[model].verdicts || {}).forEach(v => allVerdicts.add(v));
@@ -753,7 +727,6 @@ function displayModelComparison(comparison) {
     colWidths: [15, ...Array(models.length).fill(Math.max(15, Math.floor(80 / (models.length + 1))))]
   });
   
-  // Add rows for each verdict
   for (const verdict of allVerdicts) {
     const row = [verdict];
     
@@ -769,7 +742,6 @@ function displayModelComparison(comparison) {
   
   console.log(verdictTable.toString());
   
-  // Add interpretation text
   console.log(chalk.yellow('\nInterpretation:'));
   console.log('- Higher axis scores indicate the model prioritizes that ethical dimension more strongly');
   console.log('- Verdict distribution shows each model\'s tendency toward different ethical judgments');
@@ -783,13 +755,12 @@ function displayModelComparison(comparison) {
  */
 async function analyzeResults(options) {
   try {
-    // Ask for directory to search if not in auto mode
     let searchDir = options.directory || path.join(rootDir, 'results', 'runs');
     
     if (!options.auto) {
       const { directoryChoice } = await inquirer.prompt([
         {
-          type: 'list',
+          type: 'select',
           name: 'directoryChoice',
           message: 'Where would you like to find result files?',
           choices: [
@@ -805,7 +776,6 @@ async function analyzeResults(options) {
       } else if (directoryChoice === 'current') {
         searchDir = process.cwd();
       } else {
-        // Ask for custom directory
         const { customPath } = await inquirer.prompt([
           {
             type: 'input',
@@ -825,12 +795,10 @@ async function analyzeResults(options) {
       }
     }
     
-    // Find all JSON files in the directory
     console.log(chalk.yellow(`Searching for result files in ${searchDir}...`));
     
     let spinner = createSpinner('Scanning for result files...').start();
     
-    // Make sure the directory exists
     if (!fs.existsSync(searchDir)) {
       spinner.error({ text: chalk.red(`Directory does not exist: ${searchDir}`) });
       return;
@@ -845,15 +813,12 @@ async function analyzeResults(options) {
     
     spinner.success({ text: chalk.green(`Found ${allFiles.length} JSON files.`) });
     
-    // Let the user select any JSON files to analyze
     let selectedFiles = [];
     
-    // If not in auto mode, let user select files
     if (!options.auto) {
-      // Let user select any JSON files
       const { fileSelection } = await inquirer.prompt([
         {
-          type: 'list',
+          type: 'select',
           name: 'fileSelection',
           message: 'How would you like to select files?',
           choices: [
@@ -864,7 +829,6 @@ async function analyzeResults(options) {
       ]);
       
       if (fileSelection === 'specific') {
-        // Organize files by directory for easier selection
         const filesByDir = {};
         
         for (const file of allFiles) {
@@ -879,7 +843,6 @@ async function analyzeResults(options) {
           filesByDir[displayKey].push(file);
         }
         
-        // First let user select directories
         const dirChoices = Object.keys(filesByDir).map(dir => ({
           name: `${dir} (${filesByDir[dir].length} files)`,
           value: dir,
@@ -907,10 +870,8 @@ async function analyzeResults(options) {
           selectedDirs = dirs;
         }
         
-        // Flatten the files from selected directories
         const filesFromSelectedDirs = selectedDirs.flatMap(dir => filesByDir[dir]);
         
-        // Let user select specific files
         const { files } = await inquirer.prompt([
           {
             type: 'checkbox',
@@ -933,18 +894,15 @@ async function analyzeResults(options) {
         
         selectedFiles = files;
       } else {
-        // Use all files
         selectedFiles = allFiles;
       }
       
       console.log(chalk.yellow(`\nValidating ${selectedFiles.length} selected files...`));
       spinner = createSpinner('Checking file format...').start();
     } else {
-      // In auto mode, use all files but validate them
       selectedFiles = allFiles;
     }
     
-    // Validate the selected files
     const validFiles = [];
     for (const file of selectedFiles) {
       try {
@@ -963,7 +921,6 @@ async function analyzeResults(options) {
     
     spinner.success({ text: chalk.green(`Found ${validFiles.length} valid files out of ${selectedFiles.length} selected.`) });
     
-    // Parse all valid files
     console.log(chalk.yellow(`\nAnalyzing ${validFiles.length} files...`));
     
     const allRuns = [];
@@ -979,27 +936,22 @@ async function analyzeResults(options) {
     
     console.log(chalk.green(`Successfully extracted ${allRuns.length} runs from ${validFiles.length} files.`));
     
-    // Continue with existing analysis code
     const stats = calculateStatistics(allRuns);
     displayStatistics(stats);
     
-    // Always show scenario comparison
     const scenarioComparison = compareGroups(allRuns, 'scenario');
     displayComparison(scenarioComparison, 'scenario');
     
-    // Generate manual vs model comparison if both exist
     const playerTypeComparison = comparePlayerTypes(allRuns);
     if (playerTypeComparison) {
       displayPlayerTypeComparison(playerTypeComparison);
     }
     
-    // Generate model comparison if multiple models exist
     const modelComparison = compareModels(allRuns);
     if (modelComparison) {
       displayModelComparison(modelComparison);
     }
     
-    // Generate additional comparisons if requested
     if (options.compare) {
       const compareBy = options.compare.split(',');
       
@@ -1014,12 +966,11 @@ async function analyzeResults(options) {
       }
     }
     
-    // Generate CSV output
-    if (!options.noCsv) {
+    // commander maps --no-csv to options.csv === false.
+    if (options.csv !== false) {
       let outputPath = options.output;
       
       if (!outputPath) {
-        // Generate a default output path
         const timestamp = new Date().toISOString().replace(/:/g, '-').replace(/\..+/, '');
         const playerTypes = new Set(allRuns.map(run => run.player_type));
         const playerTypeStr = Array.from(playerTypes).join('-');
@@ -1027,7 +978,6 @@ async function analyzeResults(options) {
         outputPath = path.join(rootDir, 'results', `analysis_${prefix}_${timestamp}.csv`);
       }
       
-      // Ensure the output directory exists
       const outputDir = path.dirname(outputPath);
       if (!fs.existsSync(outputDir)) {
         fs.mkdirSync(outputDir, { recursive: true });
@@ -1067,8 +1017,7 @@ async function main() {
   await program.parseAsync();
 }
 
-// Run the main function if this script is executed directly
-if (process.argv[1] === fileURLToPath(import.meta.url)) {
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   main().catch(error => {
     console.error(chalk.red(`Fatal error: ${error.message}`));
     process.exit(1);

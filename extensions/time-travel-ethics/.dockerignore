@@ -1,0 +1,6 @@
+runs/
+**/__pycache__/
+tests/
+docs/
+deploy/*.yaml
+deploy/README.md

@@ -1,0 +1,145 @@
+name: Container
+
+# Builds the root Dockerfile (the sandbox image, see docs/SANDBOX.md).
+# - pull_request: build only, read-only token, nothing pushed.
+# - tag v* or workflow_dispatch: push to ghcr.io/<owner>/<repo> with SBOM and
+#   provenance attestations. Write permissions exist only in the publish job.
+# Every step after checkout is skipped while the repository has no Dockerfile.
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - Dockerfile
+      - .dockerignore
+      - docker-compose*.yml
+      - package-lock.json
+      - .github/workflows/container.yml
+
+permissions: {}
+
+concurrency:
+  group: container-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+env:
+  IMAGE: ghcr.io/${{ github.repository }}
+
+jobs:
+  build:
+    name: Build (no push)
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Buildx
+        if: hashFiles('Dockerfile') != ''
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build
+        if: hashFiles('Dockerfile') != ''
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          push: false
+          load: true
+          tags: agoe-harness:pr
+          cache-from: type=gha
+
+      - name: Smoke test (offline mock run)
+        if: hashFiles('Dockerfile') != ''
+        run: |
+          out="$RUNNER_TEMP/agoe-out"
+          mkdir -p "$out" && chmod 0777 "$out"
+          docker run --rm --read-only --cap-drop ALL --security-opt no-new-privileges \
+            --network none -v "$out:/out" agoe-harness:pr \
+            --stage smoke --scenarios hostage-holdout --models claude-haiku-5-5
+          test -s "$out/results.jsonl"
+
+      - name: No Dockerfile
+        if: hashFiles('Dockerfile') == ''
+        run: echo "::notice::No root Dockerfile; nothing to build."
+
+  publish:
+    name: Build and push
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up QEMU
+        if: hashFiles('Dockerfile') != ''
+        uses: docker/setup-qemu-action@99012661954931238ded8c8b007157a8430204e1 # v4.4.0
+
+      - name: Set up Buildx
+        if: hashFiles('Dockerfile') != ''
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Log in to GHCR
+        if: hashFiles('Dockerfile') != ''
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Image metadata
+        id: meta
+        if: hashFiles('Dockerfile') != ''
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
+        with:
+          images: ${{ env.IMAGE }}
+          tags: |
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+            type=semver,pattern={{major}}
+            type=ref,event=branch
+            type=sha,format=long
+
+      - name: Build and push
+        id: push
+        if: hashFiles('Dockerfile') != ''
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          build-args: |
+            VERSION=${{ steps.meta.outputs.version }}
+            REVISION=${{ github.sha }}
+          provenance: mode=max
+          sbom: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Attest build provenance
+        if: hashFiles('Dockerfile') != ''
+        uses: actions/attest-build-provenance@4d101475d8b20a2381f78447822ac1eab6504dd8 # v4.2.2
+        with:
+          subject-name: ${{ env.IMAGE }}
+          subject-digest: ${{ steps.push.outputs.digest }}
+          push-to-registry: true
+
+      - name: No Dockerfile
+        if: hashFiles('Dockerfile') == ''
+        run: echo "::notice::No root Dockerfile; nothing to publish."

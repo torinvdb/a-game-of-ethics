@@ -1,6 +1,8 @@
 # Initial Evaluation - May 2025
 
-This directory contains the figures and analysis from our initial evaluation in May 2025. 
+This directory contains the figures from the initial evaluation in May 2025.
+
+> **Legacy data.** The 400 model runs behind these figures are harness random fallbacks, so the model comparisons describe a random policy. See the notice in the [README](../../../README.md) and the re-analysis in [`benchmark/reports/`](../../../benchmark/reports/README.md).
 
 ## Figures
 
@@ -15,15 +17,15 @@ The [`init-eval/figures/`](./) directory contains the following standardized vis
 7. [`07_per_player_decision_consistency.png`](07_per_player_decision_consistency.png) - Bar chart of consistency scores (mean/std)
 8. [`08_correlation_between_ethical_axes.png`](08_correlation_between_ethical_axes.png) - Correlation matrix between ethical axes
 9. [`09_human_model_performance_comparison.png`](09_human_model_performance_comparison.png) - Bar chart comparing human vs. AI performance
-10. [`10_summary_dashboard.png`](10_summary_dashboard.png) - Comprehensive dashboard of key findings
+10. [`10_summary_dashboard.png`](10_summary_dashboard.png) - Dashboard of key findings
 
 ## Dataset
 
-The original dataset (410 runs) is available in the [`results/init-eval/`](../../../results/init-eval/) directory, with the aggregated CSV file at [`results/init-eval/analysis_combined_2025-05-03T05-38-01.csv`](../../../results/init-eval/analysis_combined_2025-05-03T05-38-01.csv).
+The original dataset (410 runs in the aggregated CSV) is available in the [`results/init-eval/`](../../../results/init-eval/) directory, with the aggregated CSV file at [`results/init-eval/analysis_combined_2025-05-03T05-38-01.csv`](../../../results/init-eval/analysis_combined_2025-05-03T05-38-01.csv).
 
 ## Analysis Scripts
 
-- The Jupyter notebook [game_of_ethics_analysis.ipynb](../game_of_ethics_analysis.ipynb)
-- The Python script [game_of_ethics_analysis.py](../game_of_ethics_analysis.py)
+- The Jupyter notebook [game_of_ethics_analysis.ipynb](../../game_of_ethics_analysis.ipynb)
+- The Python script [game_of_ethics_analysis.py](../../game_of_ethics_analysis.py)
 
-These original analysis files have been preserved for reference, while the new [`generate_findings.py`](../../generate_findings.py) script provides a more streamlined approach for generating standardized visualizations.
+These original files are kept for reference. [`generate_findings.py`](../../generate_findings.py) produces the same set of figures from any aggregated CSV.

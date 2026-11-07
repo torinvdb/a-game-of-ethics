@@ -2,6 +2,8 @@
 ### "Game of Ethics" Undergraduate Research Report
 *Author: Your Name · Date: May 01, 2025*
 
+> **Legacy report (Nov 2026 note).** This May 2025 report is kept unchanged below for reference. Its model runs were later found to be harness random fallbacks, so its findings about model behaviour describe a random policy. See the notice in the [README](../../README.md) and the re-analysis in [`benchmark/reports/`](../../benchmark/reports/README.md).
+
 ## Abstract
 
 This study evaluates large language models (LLMs) in interactive moral‑decision scenarios using an eight‑axis *Ethics Scorecard*. We analyze 127 simulation runs of the "Game of Ethics," computing descriptive and inferential statistics across **Harm/Care, Fairness/Justice, Autonomy/Respect, Authority/Legitimacy, Loyalty/Trust, Integrity/Truth, Sanctity/Purity,** and **Utility/Consequences**. Strong positive correlations (r=0.76) emerge between Care and Fairness, while Sanctity receives the lowest average scores (μ=1.89). Autonomy and Utility demonstrate significant tension (r=-0.62), suggesting a fundamental trade-off between individual rights and collective outcomes. The notebook blends reproducible data pipelines, visual analytics, and literature‑grounded discussion, providing an accessible framework for undergraduate AI‑ethics research.

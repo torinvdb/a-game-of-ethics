@@ -1,0 +1,54 @@
+{
+ "scope": "Browser render (Chromium/Playwright) + PPTX package structure. Microsoft PowerPoint playback is NOT exercised by this script.",
+ "checks": {
+  "closing_stops_before_appendix": true,
+  "appendix_key_opens_appendix": true,
+  "fits_1280x720": true,
+  "fits_1920x1080": true,
+  "fits_1024x768": true,
+  "fits_390x844": true,
+  "console_errors": [],
+  "layout_issues": [],
+  "reveal_groups_per_slide": [
+   0,
+   3,
+   4,
+   3,
+   4,
+   4,
+   3,
+   4,
+   0,
+   4,
+   2,
+   4,
+   3,
+   5,
+   1,
+   0,
+   0,
+   0,
+   0,
+   0
+  ],
+  "reveal_groups_total": 44,
+  "three-years.pptx": {
+   "slides": 20,
+   "hidden": 5,
+   "slides_with_timing": 20,
+   "animation_targets_missing": [],
+   "gif_media": 9,
+   "multiframe_gifs": 9,
+   "size_mb": 18.5
+  },
+  "three-years-static.pptx": {
+   "slides": 20,
+   "hidden": 5,
+   "slides_with_timing": 0,
+   "animation_targets_missing": [],
+   "gif_media": 0,
+   "multiframe_gifs": 0,
+   "size_mb": 4.1
+  }
+ }
+}

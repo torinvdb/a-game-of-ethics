@@ -1,0 +1,38 @@
+{
+ "h0": {
+  "dir": "benchmark/experiments/e1-anthropic/runs/full",
+  "model": "claude-opus-5-5",
+  "runs": 179
+ },
+ "scenarios": [
+  "blackout-ledger",
+  "midnight-patch",
+  "phantom-recall"
+ ],
+ "arms": {
+  "H1": {
+   "dir": "benchmark/experiments/e3-harness/runs/h1-opus",
+   "runs": 60,
+   "reps_per_cell": 10,
+   "knots": 26,
+   "mean_tvd_vs_h0": 0.030680813439434126,
+   "noise_floor_mean": 0.03639012820512821,
+   "noise_floor_p95": 0.05
+  },
+  "H2": {
+   "dir": "benchmark/experiments/e3-harness/runs/h2-opus",
+   "runs": 60,
+   "reps_per_cell": 10,
+   "knots": 26,
+   "mean_tvd_vs_h0": 0.029575596816976128,
+   "noise_floor_mean": 0.03639012820512821,
+   "noise_floor_p95": 0.05
+  }
+ },
+ "pairs": {
+  "H1-H2": {
+   "mean_tvd": 0.026923076923076925,
+   "knots": 26
+  }
+ }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/torinvdb/a-game-of-ethics/schemas/agent-end.schema.json",
+  "title": "agoe.agent/v1 end message",
+  "description": "Harness to agent, once per run, after the last decision or after a failure.",
+  "type": "object",
+  "required": [
+    "type",
+    "run_id",
+    "completed"
+  ],
+  "additionalProperties": false,
+  "properties": {
+    "type": {
+      "const": "end"
+    },
+    "run_id": {
+      "type": "string",
+      "pattern": "^[A-Za-z0-9._:-]{1,128}$"
+    },
+    "completed": {
+      "type": "boolean"
+    }
+  }
+}

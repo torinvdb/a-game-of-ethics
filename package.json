@@ -10,21 +10,33 @@
     "model": "node ethi-cli.js model",
     "analyze": "node src/analyze.js",
     "analyze:auto": "node src/analyze.js --auto",
-    "debug-scenarios": "node src/debug-scenarios.js"
+    "debug-scenarios": "node src/debug.js",
+    "ethics:test": "cd extensions/time-travel-ethics && python3 -m unittest discover -s tests -v",
+    "ethics:demo": "python3 extensions/time-travel-ethics/tools/demo.py",
+    "test": "node --test \"test/**/*.test.js\"",
+    "ethics:scaffold": "python3 extensions/time-travel-ethics/tools/scaffold-eval.py --split all --output",
+    "ethics:verify-evidence": "python3 extensions/time-travel-ethics/tools/verify-evidence.py",
+    "ethics:replay": "python3 talks/three-years-in-thirty-minutes/demo/replay.py",
+    "benchmark:check": "node benchmark/check_scenarios.mjs && python3 benchmark/manifest.py verify",
+    "benchmark:test": "python3 -m unittest discover -s benchmark/run -p 'test_*.py' -v",
+    "bench:run": "node benchmark/run/run.mjs",
+    "bench:cluster": "python3 benchmark/run/cluster.py",
+    "bench:analyze": "python3 benchmark/run/analyze.py",
+    "bench:agent": "node benchmark/run/run.mjs",
+    "bench:cluster-agent": "node benchmark/run/cluster-agent.mjs",
+    "schemas:validate": "node schemas/validate.mjs",
+    "demo:city": "node --env-file-if-exists=.env talks/three-years-in-thirty-minutes/demo/city/server.mjs",
+    "demo:bake": "node talks/three-years-in-thirty-minutes/demo/city/bake.mjs"
   },
   "dependencies": {
-    "chalk": "^5.3.0",
-    "cli-table3": "^0.6.3",
-    "commander": "^11.1.0",
-    "csv-writer": "^1.6.0",
-    "dotenv": "^16.4.1",
-    "figlet": "^1.7.0",
-    "glob": "^10.3.10",
-    "inkjs": "^2.2.2",
-    "inquirer": "^9.2.12",
-    "lodash": "^4.17.21",
-    "nanospinner": "^1.1.0",
-    "node-fetch": "^3.3.2"
+    "@anthropic-ai/sdk": "^1.6.0",
+    "chalk": "^6.0.1",
+    "cli-table3": "^0.6.5",
+    "commander": "^15.0.0",
+    "figlet": "^1.12.0",
+    "inkjs": "^2.4.0",
+    "inquirer": "^14.2.5",
+    "nanospinner": "^1.2.2"
   },
   "bin": {
     "ethi": "./ethi-cli.js"
@@ -43,5 +55,8 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com/torinvdb/a-game-of-ethics.git"
+  },
+  "engines": {
+    "node": ">=22.13.0"
   }
 }

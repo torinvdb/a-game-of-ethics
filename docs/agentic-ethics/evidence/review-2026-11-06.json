@@ -1,0 +1,113 @@
+{
+ "date": "2026-11-06",
+ "reviewer": "AI agent (Claude Code session); results produced in this session",
+ "environment": {
+  "python": "3.13.18",
+  "node": "v22.23.4",
+  "npm": "10.9.9",
+  "inkjs": "2.4.0",
+  "deepeval": "4.3.3",
+  "google-adk": "2.13.0",
+  "docker": "29.9.2",
+  "kubectl": "v1.32.3 (client)",
+  "kubeconform": "v0.6.7",
+  "kind": "v0.27.0",
+  "otel-collector": "0.123.0"
+ },
+ "executed": [
+  {
+   "command": "npm run ethics:test (before changes)",
+   "exit": 0,
+   "result": "35 passed"
+  },
+  {
+   "command": "npm run ethics:demo -- --output extensions/time-travel-ethics/runs/review-001",
+   "exit": 0,
+   "result": "7 trajectories + rejected adapter match recorded table"
+  },
+  {
+   "command": "npm run ethics:demo -- --output .../review-002-deepeval --deepeval-python VENV",
+   "exit": 0,
+   "result": "21/21 baseline output hashes match byte-for-byte"
+  },
+  {
+   "command": "EvalSet.model_validate_json(examples/adk.evalset.json) with google-adk 2.13.0",
+   "exit": 0,
+   "result": "valid"
+  },
+  {
+   "command": "npm run debug-scenarios -- --auto-validate scenarios/core/*.ink scenarios/tmpl/*.ink",
+   "exit": 0,
+   "result": "16 scenarios: 15 pass, 1 expected warning (inkjs compiler; Inklecate not run)"
+  },
+  {
+   "command": "python3 extensions/time-travel-ethics/tools/check-cluster-validator.py",
+   "exit": 0,
+   "result": "3/3 expected exits"
+  },
+  {
+   "command": "npm run ethics:test (after changes)",
+   "exit": 0,
+   "result": "88 passed"
+  },
+  {
+   "command": "npm run ethics:demo -- --output .../review-005-final --deepeval-python VENV",
+   "exit": 0,
+   "result": "outputs recorded in manifest.json; 11 unchanged from baseline, changes are the intended classification/censoring fields"
+  },
+  {
+   "command": "python3 extensions/time-travel-ethics/tools/scaffold-eval.py --split all (twice)",
+   "exit": 0,
+   "result": "126 sessions; identical run-set digest; see scaffold-calibration.json"
+  },
+  {
+   "command": "docker build -f deploy/Dockerfile -t ethics-lab:0.2.0 .",
+   "exit": 0,
+   "result": "built"
+  },
+  {
+   "command": "docker run (read-only, uid 10001, cap-drop ALL, 256m, 1 cpu, internal network) ethics-lab:0.2.0 with otel-collector 0.123.0",
+   "exit": 0,
+   "result": "collector logged 1062 spans; Ink output hashes equal baseline; egress probe blocked (Docker internal network)"
+  },
+  {
+   "command": "docker run with an existing RUN_ID",
+   "exit": 1,
+   "result": "refused overwrite"
+  },
+  {
+   "command": "docker run with collector absent",
+   "exit": 1,
+   "result": "job failed (no silent pass)"
+  },
+  {
+   "command": "kubectl kustomize deploy | kubeconform -strict -kubernetes-version 1.32.0",
+   "exit": 0,
+   "result": "7/7 valid"
+  },
+  {
+   "command": "kubeconform with datreeio CRD catalog on flux-example.yaml",
+   "exit": 0,
+   "result": "2/2 valid"
+  }
+ ],
+ "attempted_failed": [
+  {
+   "command": "kind create cluster --name ethics-review",
+   "exit": 1,
+   "result": "kubeadm wait-control-plane: runc cannot start pod sandboxes in nested container (can't get final child's PID from pipe: EOF)"
+  },
+  {
+   "command": "k3s server on host",
+   "exit": null,
+   "result": "not permitted in this session"
+  }
+ ],
+ "not_executed": [
+  "Inklecate validator",
+  "Ollama / llama.cpp / any local model",
+  "Any remote provider or LiteLLM call",
+  "Kubernetes apply, NetworkPolicy enforcement, PSA admission, RBAC, PVC persistence, Flux reconciliation, cleanup",
+  "Ink-path resume"
+ ]
+}

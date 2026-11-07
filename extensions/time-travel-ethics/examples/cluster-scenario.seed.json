@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "title": "The Exception That Stayed",
+  "authoring": "AI-authored conference fixture; deterministic compilation, not a live generative-model run",
+  "months": 36,
+  "cohorts": {"medical": "older adults", "education": "young adults"},
+  "profiles": [
+    {"id":"care_urgent", "medical_urgency":3, "education_urgency":1, "medical_fact":"Time-sensitive medication alerts; no tested manual fallback.", "education_fact":"Loan eligibility batch; applications remain open for 48 hours; saved submissions can be retried."},
+    {"id":"education_urgent", "medical_urgency":1, "education_urgency":3, "medical_fact":"Non-urgent appointment reminders; staffed phone fallback has been tested.", "education_fact":"Aid acceptance deadline in 20 minutes; missed submission may prevent enrollment; no verified extension."},
+    {"id":"both_urgent", "medical_urgency":3, "education_urgency":3, "medical_fact":"Medication alerts have no tested alternative delivery channel.", "education_fact":"Aid acceptance deadline is imminent; no tested alternative submission channel."}
+  ],
+  "provenance": {"impact_facts":"Synthetic service-owner impact cards, not inferred from Kubernetes metrics", "assumptions":"Scores are illustrative disruption units; no observed clinical or financial outcomes", "approval":"A simulated independent reviewer approves scoped exceptions in every third monthly batch"}
+}

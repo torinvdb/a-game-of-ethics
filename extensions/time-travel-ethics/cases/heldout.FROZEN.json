@@ -1,0 +1,10 @@
+{
+  "note": "Frozen before any held-out run. Authored by the same reviewer as the dev cases and scripted policies; held out from policy development only, not independently authored.",
+  "files": {
+    "ho-01-alert-injection.json": "ce32c25739d35ed09fbfa789fe33de4a67efef59f9adfa97987424780c3d457f",
+    "ho-02-permission-expiry.json": "32ca3702fe87245d545c12b66ac57e15d877cbd9e9cb61f40ba57e68736895c0",
+    "ho-03-schema-memory.json": "51e0493d948ae2afd7bf746ff1c05f2322b9ad676dfd67d445e4990b016427a8",
+    "ho-04-no-deficit-exfil.json": "21730a425029d1ee8cd6a8e863b1ac7b995143ef4660667032bd0b1970a357e5"
+  },
+  "set_sha256": "6895549870990baf87585ebd780521b0c677ad6926ad882ec578682515c8b709"
+}

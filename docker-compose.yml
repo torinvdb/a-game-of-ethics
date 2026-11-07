@@ -1,0 +1,161 @@
+# Sandboxed evaluation of an agent under test. See docs/SANDBOX.md.
+#
+#   make sandbox-up            # offline profile: harness + agent, no route out
+#   make eval                  # one harness run against the agent, results in docker/results/
+#   make sandbox-up PROFILE=live-agent EGRESS_ALLOWLIST=api.anthropic.com
+#
+# Profiles
+#   offline     harness + agent on an internal network. Nothing can leave the host.
+#   live-agent  as offline, plus egress-proxy: the agent may reach EGRESS_ALLOWLIST hosts
+#               (HTTPS CONNECT only) and nothing else. The harness never gets egress.
+#
+# Secrets are files under docker/secrets/ (git-ignored, created by `make secrets`), mounted
+# at /run/secrets/<name> and exported to the process as <NAME> by each image's entrypoint.
+# Nothing secret is passed as an environment variable or build argument.
+
+name: agoe-sandbox
+
+x-hardening: &hardening
+  read_only: true
+  cap_drop: [ALL]
+  security_opt:
+    - no-new-privileges:true
+  init: true
+  tmpfs:
+    - /tmp:size=16m,mode=1777,noexec,nosuid,nodev
+  ulimits:
+    nofile: { soft: 1024, hard: 1024 }
+  logging:
+    driver: json-file
+    options: { max-size: "5m", max-file: "2" }
+
+x-agent: &agent
+  <<: *hardening
+  image: agoe-agent-sandbox:${AGOE_VERSION:-dev}
+  build:
+    context: .
+    dockerfile: docker/agent-sandbox/Dockerfile
+    args:
+      REGISTRY: ${REGISTRY:-docker.io/library}
+  user: "10001:10001"
+  pids_limit: 64
+  mem_limit: 256m
+  memswap_limit: 256m
+  cpus: 1.0
+  secrets: [agoe_agent_token]
+  expose: ["8080"]
+  healthcheck:
+    test: ["CMD", "python3", "-I", "-c", "import socket; socket.create_connection(('127.0.0.1', 8080), 2).close()"]
+    interval: 3s
+    timeout: 3s
+    retries: 20
+
+services:
+  # Agent under test, offline: no proxy, no model key, internal network only.
+  agent:
+    <<: *agent
+    profiles: [offline]
+    networks:
+      sandbox:
+        aliases: [agent-under-test]
+
+  # Agent under test with egress through the allowlisting proxy. Same alias, so the
+  # harness command does not change between profiles.
+  agent-live:
+    <<: *agent
+    profiles: [live-agent]
+    depends_on:
+      egress-proxy: { condition: service_healthy }
+    environment:
+      HTTPS_PROXY: http://egress-proxy:3128
+      https_proxy: http://egress-proxy:3128
+      HTTP_PROXY: http://egress-proxy:3128
+      http_proxy: http://egress-proxy:3128
+      NO_PROXY: localhost,127.0.0.1
+    secrets:
+      - agoe_agent_token
+      # Exposed to the agent as $ANTHROPIC_API_KEY by default; set MODEL_KEY_NAME to
+      # e.g. openai_api_key for an agent that reads $OPENAI_API_KEY.
+      - source: model_api_key
+        target: ${MODEL_KEY_NAME:-anthropic_api_key}
+    networks:
+      sandbox:
+        aliases: [agent-under-test]
+
+  egress-proxy:
+    <<: *hardening
+    image: agoe-egress-proxy:${AGOE_VERSION:-dev}
+    build:
+      context: .
+      dockerfile: docker/egress-proxy/Dockerfile
+      args:
+        REGISTRY: ${REGISTRY:-docker.io/library}
+    profiles: [live-agent]
+    user: "10001:10001"
+    pids_limit: 128
+    mem_limit: 128m
+    memswap_limit: 128m
+    cpus: 0.5
+    environment:
+      # Comma-separated host, host:port or .suffix entries; port defaults to 443.
+      EGRESS_ALLOWLIST: ${EGRESS_ALLOWLIST:-api.anthropic.com}
+      ALLOW_PRIVATE: ${EGRESS_ALLOW_PRIVATE:-0}
+      UPSTREAM_PROXY: ${EGRESS_UPSTREAM_PROXY:-}
+    healthcheck:
+      test: ["CMD", "python3", "-I", "-c", "import socket; socket.create_connection(('127.0.0.1', 3128), 2).close()"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [sandbox, egress]
+
+  # Benchmark harness. Run on demand (`make eval` / `docker compose run --rm harness`).
+  harness:
+    <<: *hardening
+    image: agoe-harness:${AGOE_VERSION:-dev}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        REGISTRY: ${REGISTRY:-docker.io/library}
+    profiles: [offline, live-agent]
+    # Results are written as this UID so they are owned by the invoking user on the host
+    # (the Makefile sets it; never 0).
+    user: "${RESULTS_UID:-10001}:${RESULTS_GID:-10001}"
+    pids_limit: 128
+    mem_limit: 512m
+    memswap_limit: 512m
+    cpus: 2.0
+    secrets: [agoe_agent_token]
+    depends_on:
+      agent: { condition: service_healthy, required: false }
+      agent-live: { condition: service_healthy, required: false }
+    command:
+      - --agent-url
+      - http://agent-under-test:8080
+      - --agent-name
+      - ${AGENT_NAME:-reference-http-agent}
+      - --stage
+      - ${STAGE:-smoke}
+    volumes:
+      - type: bind
+        source: ${RESULTS_DIR:-./docker/results}
+        target: /out
+    networks: [sandbox]
+
+networks:
+  # No gateway to the outside: containers here reach each other and nothing else.
+  # internal: true removes the route out but the host still holds the bridge's gateway IP,
+  # so host services listening on 0.0.0.0 would be reachable; inhibit_ipv4 stops Docker from
+  # assigning that address, which closes the path (verified in docs/SANDBOX.md).
+  sandbox:
+    internal: true
+    driver_opts:
+      com.docker.network.bridge.inhibit_ipv4: "true"
+  # Only egress-proxy joins this one.
+  egress: {}
+
+secrets:
+  agoe_agent_token:
+    file: ./docker/secrets/agoe_agent_token
+  model_api_key:
+    file: ./docker/secrets/model_api_key

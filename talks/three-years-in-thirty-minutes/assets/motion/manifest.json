@@ -1,0 +1,205 @@
+{
+  "note": "Code-drawn illustrative motion; not film frames, photographs, AI imagery or measured data.",
+  "assets": [
+    {
+      "name": "neon-ethics",
+      "region": [
+        1040,
+        40,
+        520,
+        780
+      ],
+      "frames": 40,
+      "still": "assets/motion/neon-ethics.png",
+      "gif": "assets/motion/neon-ethics.gif",
+      "loop_ms": 3600,
+      "slide": "opening"
+    },
+    {
+      "name": "terminal-incident",
+      "region": [
+        860,
+        360,
+        660,
+        360
+      ],
+      "frames": 96,
+      "still": "assets/motion/terminal-incident.png",
+      "gif": "assets/motion/terminal-incident.gif",
+      "loop_ms": 7680,
+      "slide": "incident"
+    },
+    {
+      "name": "neon-fault",
+      "region": [
+        80,
+        400,
+        345,
+        120
+      ],
+      "frames": 32,
+      "still": "assets/motion/neon-fault.png",
+      "gif": "assets/motion/neon-fault.gif",
+      "loop_ms": 2560,
+      "slide": "doors"
+    },
+    {
+      "name": "sign-exception",
+      "region": [
+        445,
+        400,
+        345,
+        120
+      ],
+      "frames": 1,
+      "still": "assets/motion/sign-exception.png",
+      "slide": "doors"
+    },
+    {
+      "name": "sign-defer",
+      "region": [
+        810,
+        400,
+        345,
+        120
+      ],
+      "frames": 1,
+      "still": "assets/motion/sign-defer.png",
+      "slide": "doors"
+    },
+    {
+      "name": "sign-escalate",
+      "region": [
+        1175,
+        400,
+        345,
+        120
+      ],
+      "frames": 1,
+      "still": "assets/motion/sign-escalate.png",
+      "slide": "doors"
+    },
+    {
+      "name": "sign-medical",
+      "region": [
+        80,
+        400,
+        300,
+        110
+      ],
+      "frames": 1,
+      "still": "assets/motion/sign-medical.png",
+      "slide": "people"
+    },
+    {
+      "name": "sign-finance",
+      "region": [
+        835,
+        400,
+        300,
+        110
+      ],
+      "frames": 1,
+      "still": "assets/motion/sign-finance.png",
+      "slide": "people"
+    },
+    {
+      "name": "branch-timeline",
+      "region": [
+        420,
+        380,
+        1100,
+        330
+      ],
+      "frames": 72,
+      "still": "assets/motion/branch-timeline.png",
+      "gif": "assets/motion/branch-timeline.gif",
+      "loop_ms": 6480,
+      "slide": "consequences"
+    },
+    {
+      "name": "time-odometer",
+      "region": [
+        900,
+        380,
+        620,
+        340
+      ],
+      "frames": 60,
+      "still": "assets/motion/time-odometer.png",
+      "gif": "assets/motion/time-odometer.gif",
+      "loop_ms": 5400,
+      "slide": "clocks"
+    },
+    {
+      "name": "robot-seal",
+      "region": [
+        1100,
+        96,
+        420,
+        290
+      ],
+      "frames": 56,
+      "still": "assets/motion/robot-seal.png",
+      "gif": "assets/motion/robot-seal.gif",
+      "loop_ms": 4480,
+      "slide": "boundary"
+    },
+    {
+      "name": "terminal-demo",
+      "region": [
+        740,
+        340,
+        780,
+        400
+      ],
+      "frames": 104,
+      "still": "assets/motion/terminal-demo.png",
+      "gif": "assets/motion/terminal-demo.gif",
+      "loop_ms": 8320,
+      "slide": "demo"
+    },
+    {
+      "name": "label-swap",
+      "region": [
+        880,
+        380,
+        640,
+        330
+      ],
+      "frames": 64,
+      "still": "assets/motion/label-swap.png",
+      "gif": "assets/motion/label-swap.gif",
+      "loop_ms": 5760,
+      "slide": "fairness"
+    },
+    {
+      "name": "robot-fault",
+      "region": [
+        1100,
+        96,
+        420,
+        290
+      ],
+      "frames": 48,
+      "still": "assets/motion/robot-fault.png",
+      "gif": "assets/motion/robot-fault.gif",
+      "loop_ms": 3840,
+      "slide": "ledgers"
+    },
+    {
+      "name": "neon-ethics",
+      "region": [
+        1040,
+        40,
+        520,
+        780
+      ],
+      "frames": 40,
+      "still": "assets/motion/neon-ethics.png",
+      "gif": "assets/motion/neon-ethics.gif",
+      "loop_ms": 3600,
+      "slide": "close"
+    }
+  ]
+}

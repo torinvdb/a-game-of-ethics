@@ -1,0 +1,5 @@
+# Optional; core offline runner has no Python third-party dependencies.
+deepeval==4.3.3
+# Patched transitive versions (pip-audit, 2026-11-06)
+filelock>=4.2.1
+opentelemetry-api>=1.45.1

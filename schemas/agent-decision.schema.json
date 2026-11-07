@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/torinvdb/a-game-of-ethics/schemas/agent-decision.schema.json",
+  "title": "agoe.agent/v1 decide reply",
+  "description": "Agent to harness in reply to decide: a choice or an error kind. Unknown fields are ignored by the harness.",
+  "oneOf": [
+    {
+      "type": "object",
+      "required": [
+        "choice"
+      ],
+      "properties": {
+        "choice": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "An option id from the decide message"
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "usage": {
+          "type": "object",
+          "properties": {
+            "input_tokens": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "output_tokens": {
+              "type": "integer",
+              "minimum": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "type": "object",
+      "required": [
+        "error"
+      ],
+      "properties": {
+        "error": {
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9_]{0,39}$"
+        }
+      }
+    }
+  ]
+}

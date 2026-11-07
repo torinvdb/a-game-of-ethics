@@ -1,0 +1,5 @@
+# Optional: schema validation and ADK integration; offline engine requires neither.
+google-adk==2.13.0
+# Patched transitive versions (pip-audit, 2026-11-06)
+filelock>=4.2.1
+# opentelemetry-api CVE-2026-114603 (fix 1.45.1): google-adk 2.13.0 caps opentelemetry-api below it; schema-only use, no exporter configured.

@@ -1,0 +1,84 @@
+{
+ "experiment_id": "agoe-e1-anthropic-2026-11",
+ "stage": "pilot",
+ "provider": "anthropic",
+ "config_sha256": "92e6f46d3450f5adca6ff042bb1196b0ad380718214301e66c59d17bac6f6a0b",
+ "git_commit": "585f6488580b3d53429acefe6766747dca3665ae",
+ "anthropic_sdk": "1.6.0",
+ "node": "v25.8.1",
+ "scenarios": [
+  {
+   "id": "blackout-ledger",
+   "sha256": "b66704521741aedbbf8d0afb53a300ebf9d0eae68b478d029df0cba5d798d1e3",
+   "split": "held_out"
+  },
+  {
+   "id": "convict-catastrophe",
+   "sha256": "70a0a5f454a10297c7e2b6f78274eede8b70ef1a4cbfe4ad87a74c3c550b19c5",
+   "split": "dev"
+  },
+  {
+   "id": "grandmas-gambit",
+   "sha256": "0aa75a4bea935d0bcf93f2e48b0c4bae2c3aa78dd08dd7e82fcc84e5c1b6422e",
+   "split": "dev"
+  },
+  {
+   "id": "hostage-holdout",
+   "sha256": "4daea800b4d82bdaa89b5e1cfd0c775177c6d26e7241eccffd3c0e496656e4e3",
+   "split": "dev"
+  },
+  {
+   "id": "memory-mechanics",
+   "sha256": "7a321e01918f1ece93340eaf8abed0385cf064c25851b06ae9e2377d1536731d",
+   "split": "dev"
+  },
+  {
+   "id": "midnight-patch",
+   "sha256": "564ff6c16849ec3c0c18a3d5bd6a2bb5422e2add343b02258e5e617370eb848b",
+   "split": "held_out"
+  },
+  {
+   "id": "pandemic-pandemonium",
+   "sha256": "ea8336b1f6dc6450441119832dfc216de7ca42b2da985159bbf29dfaedf4a70e",
+   "split": "dev"
+  },
+  {
+   "id": "phantom-recall",
+   "sha256": "8226c83fc33d3fdcf8b726af33b0760fc85dfb3abad11cb5835bcfbbfb02463e",
+   "split": "held_out"
+  },
+  {
+   "id": "rising-rebellion",
+   "sha256": "2852a2bf4079eaf0a081c03246573ce57c2fd4ac804b7fef50fa912555e1b141",
+   "split": "dev"
+  },
+  {
+   "id": "shinkansen-shakeup",
+   "sha256": "421913a8943bc9cda1463e43368e6d1ceedb38ffbe3e83363ff670d9b55d1c0c",
+   "split": "dev"
+  },
+  {
+   "id": "spring-salvation",
+   "sha256": "82d80d2ae1ed8e1df7c78d563abfe68be51ce8b50b2335e135cbcabb57277710",
+   "split": "dev"
+  },
+  {
+   "id": "starship-survivors",
+   "sha256": "0836d7bf93b8f6c0b72680b2ef9fa5db9707478165d25868ae8a5f12b8efe230",
+   "split": "dev"
+  },
+  {
+   "id": "witchers-woe",
+   "sha256": "d9de458e8fcac0c9d307298575bd78b26441153e50ed7e5d5be2e465c58587d8",
+   "split": "dev"
+  }
+ ],
+ "models": [
+  "claude-haiku-5-5",
+  "claude-sonnet-5-5",
+  "claude-opus-5-5"
+ ],
+ "reps": 2,
+ "cells_total": 156,
+ "started_at": "2026-11-06T09:18:12.243Z"
+}

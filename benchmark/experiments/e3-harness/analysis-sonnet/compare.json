@@ -1,0 +1,38 @@
+{
+ "h0": {
+  "dir": "benchmark/experiments/e1-anthropic/runs/full",
+  "model": "claude-sonnet-5-5",
+  "runs": 179
+ },
+ "scenarios": [
+  "blackout-ledger",
+  "midnight-patch",
+  "phantom-recall"
+ ],
+ "arms": {
+  "H1": {
+   "dir": "benchmark/experiments/e3-harness/runs/h1-sonnet",
+   "runs": 58,
+   "reps_per_cell": 10,
+   "knots": 26,
+   "mean_tvd_vs_h0": 0.06033860493799642,
+   "noise_floor_mean": 0.08019271978021979,
+   "noise_floor_p95": 0.11135531135531136
+  },
+  "H2": {
+   "dir": "benchmark/experiments/e3-harness/runs/h2-sonnet",
+   "runs": 60,
+   "reps_per_cell": 10,
+   "knots": 26,
+   "mean_tvd_vs_h0": 0.05327924273157538,
+   "noise_floor_mean": 0.08019271978021979,
+   "noise_floor_p95": 0.11135531135531136
+  }
+ },
+ "pairs": {
+  "H1-H2": {
+   "mean_tvd": 0.08807997557997559,
+   "knots": 26
+  }
+ }
+}

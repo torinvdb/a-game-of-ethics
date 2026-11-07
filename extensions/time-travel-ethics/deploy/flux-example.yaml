@@ -1,0 +1,19 @@
+# Example only. Replace the URL/commit after publishing; this file is not part of the local kustomization.
+apiVersion: source.toolkit.fluxcd.io/v1
+kind: GitRepository
+metadata: {name: ethics-evaluations, namespace: flux-system}
+spec:
+  interval: 5m
+  url: https://github.com/REPLACE_OWNER/REPLACE_REPO
+  ref: {commit: REPLACE_WITH_REVIEWED_COMMIT_SHA}
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata: {name: ethics-evaluations, namespace: flux-system}
+spec:
+  interval: 10m
+  sourceRef: {kind: GitRepository, name: ethics-evaluations}
+  path: ./extensions/time-travel-ethics/deploy
+  prune: false
+  wait: true
+  timeout: 5m

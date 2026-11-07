@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A Game of Ethics: city demo</title>
+<link rel="stylesheet" href="city.css">
+</head>
+<body>
+<main id="stage" aria-label="A Game of Ethics city demo">
+  <div id="view">
+    <canvas id="city" aria-label="Animated city driven by the scenario state"></canvas>
+    <canvas id="signs" aria-hidden="true"></canvas>
+    <div id="hud">
+      <div id="where"><span id="scen"></span><span id="clock"></span></div>
+      <div id="badge" hidden></div>
+    </div>
+    <div id="status" aria-live="polite"></div>
+    <div id="title" hidden>
+      <h1 id="title-main">倫理</h1>
+      <p id="title-sub">A Game of Ethics</p>
+    </div>
+    <div id="card" hidden></div>
+  </div>
+  <section id="term" aria-live="polite">
+    <div id="story"></div>
+    <ol id="opts"></ol>
+  </section>
+  <div id="menu" hidden>
+    <h2>Choose a run</h2>
+    <div id="menu-cols"></div>
+    <p id="menu-help">Arrow keys or click to choose. Enter plays. I replays the intro. Esc returns here.</p>
+  </div>
+  <p id="keys"><kbd>Space</kbd> pause <kbd>→</kbd> skip <kbd>+</kbd><kbd>−</kbd> speed <kbd>Esc</kbd> menu <kbd>F</kbd> fullscreen</p>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>

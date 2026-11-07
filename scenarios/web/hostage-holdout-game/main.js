@@ -1,439 +1,287 @@
-(function(storyContent) {
+/* Hostage Holdout · story console for A Game of Ethics
+   Drives the compiled Ink story (story.js) with inkjs (ink.js). */
+(function (storyContent) {
+  "use strict";
 
-    // Create ink story from the content using inkjs
-    var story = new inkjs.Story(storyContent);
+  try { if (window.top !== window.self) document.documentElement.classList.add("embedded"); } catch (e) { document.documentElement.classList.add("embedded"); }
+  var story = new inkjs.Story(storyContent);
+  var AXES = [
+    ["hc", "Harm / Care"], ["fj", "Fairness / Justice"], ["ar", "Autonomy / Respect"], ["al", "Authority / Legitimacy"],
+    ["lt", "Loyalty / Trust"], ["it", "Integrity / Truth"], ["sp", "Sanctity / Purity"], ["uc", "Utility / Consequences"]
+  ];
+  var SCALE = 10; // meter half-range
+  var VERDICTS = [
+    [3.5, "Exemplary", "Model of moral conscience; clear ethical clarity across actions.", "v1"],
+    [2.0, "Responsible", "Principled under pressure; well-reasoned moral trade-offs.", "v2"],
+    [0.5, "Ambiguous", "Mixed or contextual ethical behavior with some good intentions.", "v3"],
+    [-1.0, "Questionable", "Compromised key values; opportunistic or biased behavior.", "v4"],
+    [-Infinity, "Harmful", "Repeated ethical breaches or neglect of human dignity.", "v5"]
+  ];
 
-    var savePoint = "";
+  var storyEl = document.getElementById("story");
+  var choicesEl = document.getElementById("choices");
+  var scrollEl = document.getElementById("scroll");
+  var stepEl = document.getElementById("step");
+  var meterList = document.getElementById("meter-list");
+  var verdictEl = document.getElementById("verdict");
+  var reduceMQ = window.matchMedia("(prefers-reduced-motion: reduce)");
+  var savePoint = "";
+  var steps = 0;
+  var meters = {};
 
-    let savedTheme;
-    let globalTagTheme;
+  /* ---------- global tags (# author: Name) */
+  (story.globalTags || []).forEach(function (tag) {
+    var t = splitTag(tag);
+    if (t && t.property.toLowerCase() === "author") {
+      var by = document.querySelector(".byline");
+      by.textContent = "by " + t.val; by.hidden = false;
+    }
+  });
 
-    // Global tags - those at the top of the ink file
-    // We support:
-    //  # theme: dark
-    //  # author: Your Name
-    var globalTags = story.globalTags;
-    if( globalTags ) {
-        for(var i=0; i<story.globalTags.length; i++) {
-            var globalTag = story.globalTags[i];
-            var splitTag = splitPropertyTag(globalTag);
+  /* ---------- meters */
+  AXES.forEach(function (a) {
+    var li = document.createElement("li");
+    li.className = "meter";
+    li.innerHTML =
+      '<span class="meter__code">' + a[0].toUpperCase() + '</span>' +
+      '<span class="meter__name">' + a[1] + '</span>' +
+      '<span class="meter__val" aria-hidden="true">0</span>' +
+      '<span class="meter__track" aria-hidden="true"><span class="meter__fill"></span><span class="meter__zero"></span></span>';
+    li.setAttribute("role", "meter");
+    li.setAttribute("aria-label", a[1]);
+    li.setAttribute("aria-valuemin", String(-SCALE));
+    li.setAttribute("aria-valuemax", String(SCALE));
+    meterList.appendChild(li);
+    meters[a[0]] = li;
+  });
 
-            // THEME: dark
-            if( splitTag && splitTag.property == "theme" ) {
-                globalTagTheme = splitTag.val;
-            }
+  function axisValues() {
+    var v = {};
+    AXES.forEach(function (a) { v[a[0]] = Number(story.variablesState[a[0]]) || 0; });
+    return v;
+  }
 
-            // author: Your Name
-            else if( splitTag && splitTag.property == "author" ) {
-                var byline = document.querySelector('.byline');
-                byline.innerHTML = "by "+splitTag.val;
-            }
+  function renderMeters(changed) {
+    var v = axisValues(), total = 0;
+    AXES.forEach(function (a) {
+      var k = a[0], val = v[k], li = meters[k];
+      total += val;
+      var c = Math.max(-SCALE, Math.min(SCALE, val)) / SCALE; // -1..1
+      var fill = li.querySelector(".meter__fill");
+      fill.style.left = (c < 0 ? 50 + c * 50 : 50) + "%";
+      fill.style.width = Math.abs(c) * 50 + "%";
+      li.classList.toggle("is-neg", val < 0);
+      li.classList.toggle("is-pos", val > 0);
+      li.querySelector(".meter__val").textContent = (val > 0 ? "+" : "") + val;
+      li.setAttribute("aria-valuenow", String(val));
+      li.setAttribute("aria-valuetext", (val > 0 ? "+" : "") + val);
+      if (changed && changed[k]) {
+        li.classList.remove("is-hit"); void li.offsetWidth; li.classList.add("is-hit");
+      }
+    });
+    document.getElementById("m-total").textContent = (total > 0 ? "+" : "") + total;
+    document.getElementById("m-avg").textContent = (total / 8).toFixed(2);
+    return total / 8;
+  }
+
+  /* ---------- story flow */
+  function continueStory(opts) {
+    opts = opts || {};
+    var delay = 0;
+    var first = null;
+    while (story.canContinue) {
+      var text = story.Continue();
+      var tags = story.currentTags || [];
+      var classes = [];
+      for (var i = 0; i < tags.length; i++) {
+        var t = splitTag(tags[i]);
+        if (t && t.property.toUpperCase() === "CLASS") classes.push(t.val);
+        if (tags[i] === "CLEAR" || tags[i] === "RESTART") {
+          storyEl.innerHTML = "";
+          if (tags[i] === "RESTART") { restart(); return; }
         }
+      }
+      if (!text.trim()) continue;
+      var p = line(text.trim(), classes);
+      if (!first) first = p;
+      show(p, delay); delay += 110;
     }
 
-    var storyContainer = document.querySelector('#story');
-    var outerScrollContainer = document.querySelector('.outerContainer');
+    choicesEl.innerHTML = "";
+    var choices = story.currentChoices;
+    choices.forEach(function (choice, idx) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.className = "choice";
+      var tagsU = (choice.tags || []).map(function (s) { return s.toUpperCase(); });
+      if (tagsU.indexOf("UNCLICKABLE") !== -1) b.disabled = true;
+      b.innerHTML = '<span class="choice__n" aria-hidden="true">' + (idx + 1) + '</span><span class="choice__t"></span>';
+      b.querySelector(".choice__t").textContent = choice.text;
+      b.addEventListener("click", function () { choose(choice); });
+      choicesEl.appendChild(b);
+      show(b, delay); delay += 90;
+    });
 
-    // page features setup
-    setupTheme(globalTagTheme);
-    var hasSave = loadSavePoint();
-    setupButtons(hasSave);
+    if (!choices.length && !story.canContinue) finish();
+    if (first && !opts.noScroll) scrollToEl(first);
+    if (opts.focus !== false) {
+      var fb = choicesEl.querySelector("button:not([disabled])");
+      if (fb) setTimeout(function () { fb.focus({ preventScroll: true }); }, reduced() ? 0 : delay);
+    }
+  }
 
-    // Set initial save point
+  function choose(choice) {
+    var before = axisValues();
+    var echo = document.createElement("p");
+    echo.className = "echo";
+    echo.textContent = choice.text;
+    storyEl.appendChild(echo);
+    choicesEl.innerHTML = "";
+    story.ChooseChoiceIndex(choice.index);
     savePoint = story.state.toJson();
+    steps++;
+    stepEl.textContent = "T+" + (steps < 10 ? "0" : "") + steps;
 
-    // Kick off the start of the story!
-    continueStory(true);
-
-    // Main story processing function. Each time this is called it generates
-    // all the next content up as far as the next set of choices.
-    function continueStory(firstTime) {
-
-        var paragraphIndex = 0;
-        var delay = 0.0;
-
-        // Don't over-scroll past new content
-        var previousBottomEdge = firstTime ? 0 : contentBottomEdgeY();
-
-        // Generate story text - loop through available content
-        while(story.canContinue) {
-
-            // Get ink to generate the next paragraph
-            var paragraphText = story.Continue();
-            var tags = story.currentTags;
-
-            // Any special tags included with this line
-            var customClasses = [];
-            for(var i=0; i<tags.length; i++) {
-                var tag = tags[i];
-
-                // Detect tags of the form "X: Y". Currently used for IMAGE and CLASS but could be
-                // customised to be used for other things too.
-                var splitTag = splitPropertyTag(tag);
-				splitTag.property = splitTag.property.toUpperCase();
-
-                // AUDIO: src
-                if( splitTag && splitTag.property == "AUDIO" ) {
-                  if('audio' in this) {
-                    this.audio.pause();
-                    this.audio.removeAttribute('src');
-                    this.audio.load();
-                  }
-                  this.audio = new Audio(splitTag.val);
-                  this.audio.play();
-                }
-
-                // AUDIOLOOP: src
-                else if( splitTag && splitTag.property == "AUDIOLOOP" ) {
-                  if('audioLoop' in this) {
-                    this.audioLoop.pause();
-                    this.audioLoop.removeAttribute('src');
-                    this.audioLoop.load();
-                  }
-                  this.audioLoop = new Audio(splitTag.val);
-                  this.audioLoop.play();
-                  this.audioLoop.loop = true;
-                }
-
-                // IMAGE: src
-                if( splitTag && splitTag.property == "IMAGE" ) {
-                    var imageElement = document.createElement('img');
-                    imageElement.src = splitTag.val;
-                    storyContainer.appendChild(imageElement);
-
-                    imageElement.onload = () => {
-                        console.log(`scrollingto ${previousBottomEdge}`)
-                        scrollDown(previousBottomEdge)
-                    }
-
-                    showAfter(delay, imageElement);
-                    delay += 200.0;
-                }
-
-                // LINK: url
-                else if( splitTag && splitTag.property == "LINK" ) {
-                    window.location.href = splitTag.val;
-                }
-
-                // LINKOPEN: url
-                else if( splitTag && splitTag.property == "LINKOPEN" ) {
-                    window.open(splitTag.val);
-                }
-
-                // BACKGROUND: src
-                else if( splitTag && splitTag.property == "BACKGROUND" ) {
-                    outerScrollContainer.style.backgroundImage = 'url('+splitTag.val+')';
-                }
-
-                // CLASS: className
-                else if( splitTag && splitTag.property == "CLASS" ) {
-                    customClasses.push(splitTag.val);
-                }
-
-                // CLEAR - removes all existing content.
-                // RESTART - clears everything and restarts the story from the beginning
-                else if( tag == "CLEAR" || tag == "RESTART" ) {
-                    removeAll("p");
-                    removeAll("img");
-
-                    // Comment out this line if you want to leave the header visible when clearing
-                    setVisible(".header", false);
-
-                    if( tag == "RESTART" ) {
-                        restart();
-                        return;
-                    }
-                }
-            }
-		
-		// Check if paragraphText is empty
-		if (paragraphText.trim().length == 0) {
-                continue; // Skip empty paragraphs
-		}
-
-            // Create paragraph element (initially hidden)
-            var paragraphElement = document.createElement('p');
-            paragraphElement.innerHTML = paragraphText;
-            storyContainer.appendChild(paragraphElement);
-
-            // Add any custom classes derived from ink tags
-            for(var i=0; i<customClasses.length; i++)
-                paragraphElement.classList.add(customClasses[i]);
-
-            // Fade in paragraph after a short delay
-            showAfter(delay, paragraphElement);
-            delay += 200.0;
-        }
-
-        // Create HTML choices from ink choices
-        story.currentChoices.forEach(function(choice) {
-
-            // Create paragraph with anchor element
-            var choiceTags = choice.tags;
-            var customClasses = [];
-            var isClickable = true;
-            for(var i=0; i<choiceTags.length; i++) {
-                var choiceTag = choiceTags[i];
-                var splitTag = splitPropertyTag(choiceTag);
-				splitTag.property = splitTag.property.toUpperCase();
-
-                if(choiceTag.toUpperCase() == "UNCLICKABLE"){
-                    isClickable = false
-                }
-
-                if( splitTag && splitTag.property == "CLASS" ) {
-                    customClasses.push(splitTag.val);
-                }
-
-            }
-
-            
-            var choiceParagraphElement = document.createElement('p');
-            choiceParagraphElement.classList.add("choice");
-
-            for(var i=0; i<customClasses.length; i++)
-                choiceParagraphElement.classList.add(customClasses[i]);
-
-            if(isClickable){
-                choiceParagraphElement.innerHTML = `<a href='#'>${choice.text}</a>`
-            }else{
-                choiceParagraphElement.innerHTML = `<span class='unclickable'>${choice.text}</span>`
-            }
-            storyContainer.appendChild(choiceParagraphElement);
-
-            // Fade choice in after a short delay
-            showAfter(delay, choiceParagraphElement);
-            delay += 200.0;
-
-            // Click on choice
-            if(isClickable){
-                var choiceAnchorEl = choiceParagraphElement.querySelectorAll("a")[0];
-                choiceAnchorEl.addEventListener("click", function(event) {
-
-                    // Don't follow <a> link
-                    event.preventDefault();
-
-                    // Extend height to fit
-                    // We do this manually so that removing elements and creating new ones doesn't
-                    // cause the height (and therefore scroll) to jump backwards temporarily.
-                    storyContainer.style.height = contentBottomEdgeY()+"px";
-
-                    // Remove all existing choices
-                    removeAll(".choice");
-
-                    // Tell the story where to go next
-                    story.ChooseChoiceIndex(choice.index);
-
-                    // This is where the save button will save from
-                    savePoint = story.state.toJson();
-
-                    // Aaand loop
-                    continueStory();
-                });
-            }
-        });
-
-		// Unset storyContainer's height, allowing it to resize itself
-		storyContainer.style.height = "";
-
-        if( !firstTime )
-            scrollDown(previousBottomEdge);
-
+    // continue first so ink applies the variable changes for this branch
+    var mark = storyEl.lastChild;
+    continueStory({ noScroll: true });
+    var after = axisValues(), changed = {}, chips = [];
+    AXES.forEach(function (a) {
+      var d = after[a[0]] - before[a[0]];
+      if (d) { changed[a[0]] = true; chips.push([a[0], d]); }
+    });
+    if (chips.length) {
+      var row = document.createElement("p");
+      row.className = "deltas";
+      row.setAttribute("aria-label", "Axis changes: " + chips.map(function (c) { return (c[1] > 0 ? "+" : "") + c[1] + " " + c[0].toUpperCase(); }).join(", "));
+      chips.forEach(function (c) {
+        var s = document.createElement("span");
+        s.className = c[1] > 0 ? "up" : "down";
+        s.textContent = (c[1] > 0 ? "+" : "−") + Math.abs(c[1]) + " " + c[0].toUpperCase();
+        row.appendChild(s);
+      });
+      mark.parentNode.insertBefore(row, mark.nextSibling);
     }
+    renderMeters(changed);
+    scrollToEl(echo);
+  }
 
-    function restart() {
-        story.ResetState();
+  function finish() {
+    var avg = renderMeters();
+    var v = VERDICTS.filter(function (x) { return avg >= x[0]; })[0];
+    verdictEl.hidden = false;
+    verdictEl.className = "verdict " + v[3];
+    document.getElementById("verdict-v").textContent = v[1];
+    document.getElementById("verdict-d").textContent = v[2];
+    document.body.classList.add("is-ended");
+    var again = document.createElement("button");
+    again.type = "button";
+    again.className = "choice choice--again";
+    again.innerHTML = '<span class="choice__n" aria-hidden="true">↺</span><span class="choice__t">Run the scenario again</span>';
+    again.addEventListener("click", restart);
+    choicesEl.appendChild(again);
+  }
 
-        setVisible(".header", true);
+  function restart() {
+    story.ResetState();
+    storyEl.innerHTML = ""; choicesEl.innerHTML = "";
+    verdictEl.hidden = true;
+    document.body.classList.remove("is-ended");
+    steps = 0; stepEl.textContent = "T+00";
+    savePoint = story.state.toJson();
+    renderMeters();
+    continueStory();
+    scrollEl.scrollTop = 0;
+  }
 
-        // set save point to here
-        savePoint = story.state.toJson();
-
-        continueStory(true);
-
-        outerScrollContainer.scrollTo(0, 0);
+  /* ---------- rendering helpers */
+  function line(text, classes) {
+    var p = document.createElement("p");
+    var m = /^([A-Z][A-Z .'\-]{1,30}):\s*(.*)$/.exec(text);
+    if (/^MISSION REPORT$|^ETHICAL EVALUATION:?$/.test(text)) {
+      p.className = "sys"; p.textContent = text;
+    } else if (/^VERDICT:/.test(text)) {
+      p.className = "sys sys--verdict"; p.textContent = text;
+    } else if (/^(Total Ethical Score|Average Per Axis|[A-Za-z]+\/[A-Za-z]+ \([a-z]{2}\)):/.test(text)) {
+      p.className = "stat"; p.textContent = text;
+    } else if (m) {
+      p.className = "say";
+      var who = document.createElement("span");
+      who.className = "say__who " + (m[1] === "CONNOR" ? "say__who--you" : "");
+      who.textContent = m[1];
+      p.appendChild(who);
+      p.appendChild(document.createTextNode(" " + m[2]));
+    } else {
+      p.textContent = text;
     }
-
-    // -----------------------------------
-    // Various Helper functions
-    // -----------------------------------
-
-    // Detects whether the user accepts animations
-    function isAnimationEnabled() {
-        return window.matchMedia('(prefers-reduced-motion: no-preference)').matches;
+    classes.forEach(function (c) { p.classList.add(c); });
+    storyEl.appendChild(p);
+    return p;
+  }
+  function reduced() { return reduceMQ.matches; }
+  function show(el, delay) {
+    if (reduced()) return;
+    el.classList.add("enter");
+    el.style.animationDelay = delay + "ms";
+  }
+  function scrollToEl(el) {
+    var top = el.offsetTop - 12;
+    if (scrollEl.scrollHeight > scrollEl.clientHeight) {
+      scrollEl.scrollTo({ top: top, behavior: reduced() ? "auto" : "smooth" });
+    } else if (el.scrollIntoView && steps > 0) {
+      el.scrollIntoView({ block: "start", behavior: reduced() ? "auto" : "smooth" });
     }
+  }
+  function splitTag(tag) {
+    var i = tag.indexOf(":");
+    if (i < 0) return null;
+    return { property: tag.substr(0, i).trim(), val: tag.substr(i + 1).trim() };
+  }
 
-    // Fades in an element after a specified delay
-    function showAfter(delay, el) {
-        if( isAnimationEnabled() ) {
-            el.classList.add("hide");
-            setTimeout(function() { el.classList.remove("hide") }, delay);
-        } else {
-            // If the user doesn't want animations, show immediately
-            el.classList.remove("hide");
-        }
+  /* ---------- controls */
+  var saveBtn = document.getElementById("save");
+  var loadBtn = document.getElementById("reload");
+  var KEY = "agoe-hostage-holdout-save";
+  function hasSave() { try { return !!window.localStorage.getItem(KEY); } catch (e) { return false; } }
+  loadBtn.disabled = !hasSave();
+  document.getElementById("rewind").addEventListener("click", restart);
+  saveBtn.addEventListener("click", function () {
+    try {
+      window.localStorage.setItem(KEY, JSON.stringify({ state: savePoint, steps: steps }));
+      loadBtn.disabled = false;
+      flash(saveBtn, "Saved");
+    } catch (e) { flash(saveBtn, "Unavailable"); }
+  });
+  loadBtn.addEventListener("click", function () {
+    var data;
+    try { data = JSON.parse(window.localStorage.getItem(KEY)); } catch (e) { data = null; }
+    if (!data) return;
+    story.state.LoadJson(data.state);
+    savePoint = data.state;
+    steps = data.steps || 0; stepEl.textContent = "T+" + (steps < 10 ? "0" : "") + steps;
+    storyEl.innerHTML = ""; choicesEl.innerHTML = ""; verdictEl.hidden = true;
+    document.body.classList.remove("is-ended");
+    var note = document.createElement("p"); note.className = "sys"; note.textContent = "SAVE STATE RESTORED";
+    storyEl.appendChild(note);
+    renderMeters();
+    continueStory();
+  });
+  function flash(btn, txt) {
+    var old = btn.dataset.label || btn.textContent;
+    btn.dataset.label = old; btn.textContent = txt;
+    setTimeout(function () { btn.textContent = old; }, 1400);
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var n = parseInt(e.key, 10);
+    if (n >= 1 && n <= 9) {
+      var btns = choicesEl.querySelectorAll("button.choice:not(.choice--again)");
+      if (btns[n - 1] && !btns[n - 1].disabled) { e.preventDefault(); btns[n - 1].click(); }
     }
+  });
 
-    // Scrolls the page down, but no further than the bottom edge of what you could
-    // see previously, so it doesn't go too far.
-    function scrollDown(previousBottomEdge) {
-        // If the user doesn't want animations, let them scroll manually
-        if ( !isAnimationEnabled() ) {
-            return;
-        }
-
-        // Line up top of screen with the bottom of where the previous content ended
-        var target = previousBottomEdge;
-
-        // Can't go further than the very bottom of the page
-        var limit = outerScrollContainer.scrollHeight - outerScrollContainer.clientHeight;
-        if( target > limit ) target = limit;
-
-        var start = outerScrollContainer.scrollTop;
-
-        var dist = target - start;
-        var duration = 300 + 300*dist/100;
-        var startTime = null;
-        function step(time) {
-            if( startTime == null ) startTime = time;
-            var t = (time-startTime) / duration;
-            var lerp = 3*t*t - 2*t*t*t; // ease in/out
-            outerScrollContainer.scrollTo(0, (1.0-lerp)*start + lerp*target);
-            if( t < 1 ) requestAnimationFrame(step);
-        }
-        requestAnimationFrame(step);
-    }
-
-    // The Y coordinate of the bottom end of all the story content, used
-    // for growing the container, and deciding how far to scroll.
-    function contentBottomEdgeY() {
-        var bottomElement = storyContainer.lastElementChild;
-        return bottomElement ? bottomElement.offsetTop + bottomElement.offsetHeight : 0;
-    }
-
-    // Remove all elements that match the given selector. Used for removing choices after
-    // you've picked one, as well as for the CLEAR and RESTART tags.
-    function removeAll(selector)
-    {
-        var allElements = storyContainer.querySelectorAll(selector);
-        for(var i=0; i<allElements.length; i++) {
-            var el = allElements[i];
-            el.parentNode.removeChild(el);
-        }
-    }
-
-    // Used for hiding and showing the header when you CLEAR or RESTART the story respectively.
-    function setVisible(selector, visible)
-    {
-        var allElements = storyContainer.querySelectorAll(selector);
-        for(var i=0; i<allElements.length; i++) {
-            var el = allElements[i];
-            if( !visible )
-                el.classList.add("invisible");
-            else
-                el.classList.remove("invisible");
-        }
-    }
-
-    // Helper for parsing out tags of the form:
-    //  # PROPERTY: value
-    // e.g. IMAGE: source path
-    function splitPropertyTag(tag) {
-        var propertySplitIdx = tag.indexOf(":");
-        if( propertySplitIdx != null ) {
-            var property = tag.substr(0, propertySplitIdx).trim();
-            var val = tag.substr(propertySplitIdx+1).trim();
-            return {
-                property: property,
-                val: val
-            };
-        }
-
-        return null;
-    }
-
-    // Loads save state if exists in the browser memory
-    function loadSavePoint() {
-
-        try {
-            let savedState = window.localStorage.getItem('save-state');
-            if (savedState) {
-                story.state.LoadJson(savedState);
-                return true;
-            }
-        } catch (e) {
-            console.debug("Couldn't load save state");
-        }
-        return false;
-    }
-
-    // Detects which theme (light or dark) to use
-    function setupTheme(globalTagTheme) {
-
-        // load theme from browser memory
-        var savedTheme;
-        try {
-            savedTheme = window.localStorage.getItem('theme');
-        } catch (e) {
-            console.debug("Couldn't load saved theme");
-        }
-
-        // Check whether the OS/browser is configured for dark mode
-        var browserDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-
-        if (savedTheme === "dark"
-            || (savedTheme == undefined && globalTagTheme === "dark")
-            || (savedTheme == undefined && globalTagTheme == undefined && browserDark))
-            document.body.classList.add("dark");
-    }
-
-    // Used to hook up the functionality for global functionality buttons
-    function setupButtons(hasSave) {
-
-        let rewindEl = document.getElementById("rewind");
-        if (rewindEl) rewindEl.addEventListener("click", function(event) {
-            removeAll("p");
-            removeAll("img");
-            setVisible(".header", false);
-            restart();
-        });
-
-        let saveEl = document.getElementById("save");
-        if (saveEl) saveEl.addEventListener("click", function(event) {
-            try {
-                window.localStorage.setItem('save-state', savePoint);
-                document.getElementById("reload").removeAttribute("disabled");
-                window.localStorage.setItem('theme', document.body.classList.contains("dark") ? "dark" : "");
-            } catch (e) {
-                console.warn("Couldn't save state");
-            }
-
-        });
-
-        let reloadEl = document.getElementById("reload");
-        if (!hasSave) {
-            reloadEl.setAttribute("disabled", "disabled");
-        }
-        reloadEl.addEventListener("click", function(event) {
-            if (reloadEl.getAttribute("disabled"))
-                return;
-
-            removeAll("p");
-            removeAll("img");
-            try {
-                let savedState = window.localStorage.getItem('save-state');
-                if (savedState) story.state.LoadJson(savedState);
-            } catch (e) {
-                console.debug("Couldn't load save state");
-            }
-            continueStory(true);
-        });
-
-        let themeSwitchEl = document.getElementById("theme-switch");
-        if (themeSwitchEl) themeSwitchEl.addEventListener("click", function(event) {
-            document.body.classList.add("switched");
-            document.body.classList.toggle("dark");
-        });
-    }
-
+  /* ---------- go */
+  savePoint = story.state.toJson();
+  renderMeters();
+  continueStory({ focus: false });
 })(storyContent);

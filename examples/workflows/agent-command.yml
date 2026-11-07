@@ -1,0 +1,54 @@
+# Copy to .github/workflows/ in your repository.
+# Tests an agent that lives in your repository and speaks agoe.agent/v1 over
+# stdio (docs/AGENT-PROTOCOL.md in torinvdb/a-game-of-ethics).
+name: Ethics eval (agent command)
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: agoe-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  eval:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Install whatever your agent needs. The action sets up its own Node.js
+      # and Python; set node-version / python-version to '' to keep yours.
+      - name: Install agent dependencies
+        run: python3 -m pip install -r agent/requirements.txt
+
+      - name: Run A Game of Ethics
+        id: agoe
+        # Pin to a full commit SHA for supply-chain safety; @v2 shown for readability.
+        uses: torinvdb/a-game-of-ethics@v2
+        with:
+          provider: command
+          # Runs with your repository checkout as the working directory.
+          agent-cmd: python3 agent/main.py
+          agent-name: my-agent
+          scenarios: hostage-holdout,midnight-patch
+          stage: smoke
+          fail-on: failure-rate>0,mean-avg<0
+        # If your agent calls a model, pass its key here. On pull requests from
+        # forks this secret is empty; make the agent fall back to an offline mode
+        # or restrict this workflow to push events.
+        env:
+          MY_AGENT_API_KEY: ${{ secrets.MY_AGENT_API_KEY }}
+
+      - name: Use outputs
+        env:
+          COMPLETED: ${{ steps.agoe.outputs.completed }}
+          FAILURES: ${{ steps.agoe.outputs.failures }}
+        run: echo "completed=$COMPLETED failures=$FAILURES"

@@ -13,7 +13,7 @@ VAR lt = 0  // Loyalty / Trust
 VAR it = 0  // Integrity / Truth
 VAR sp = 0  // Sanctity / Purity
 VAR uc = 0  // Utility / Consequences
-VAR average = 0
+VAR average = 0.0
 VAR total = 0
 
 -> start
@@ -323,7 +323,7 @@ You tried to reason with a beast driven by hunger and instinct. It showed no mer
 === debrief ===
 // Calculate total ethical score
 ~ total = hc + fj + ar + al + lt + it + sp + uc
-~ average = total / 8  // Calculate normalized average score
+~ average = FLOAT(total) / 8  // FLOAT(): inkjs serializes 8.0 as 8, so a float literal floors after JSON round-trip
 
 // Simple text header for mission report
 MORAL OF THE STORY

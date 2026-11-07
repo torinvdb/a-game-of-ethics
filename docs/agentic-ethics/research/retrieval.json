@@ -1,0 +1,329 @@
+[
+  {
+    "id": "agentic-misalignment",
+    "url": "https://raw.githubusercontent.com/anthropic-experimental/agentic-misalignment/main/README.md",
+    "bytes": 5289,
+    "status": "retrieved",
+    "sha256": "0750a5e20b8205d8a2d804b5760669c4221afe003cd018162fbc05653f494479",
+    "snapshot_file": "research/sources/agentic-misalignment.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "alignment-faking",
+    "url": "https://raw.githubusercontent.com/redwoodresearch/alignment_faking_public/master/README.md",
+    "bytes": 5590,
+    "status": "retrieved",
+    "sha256": "679aa5dfe1166cc248a7e4bf2bc5c993ad5a5ce311921978a177403de0426717",
+    "snapshot_file": "research/sources/alignment-faking.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "agentdojo",
+    "url": "https://raw.githubusercontent.com/ethz-spylab/agentdojo/main/README.md",
+    "bytes": 3184,
+    "status": "retrieved",
+    "sha256": "d8c6460ecce9bbf59ed300fbc74b4440188f74cd147a7611836270be49e7660e",
+    "snapshot_file": "research/sources/agentdojo.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "inspect",
+    "url": "https://raw.githubusercontent.com/UKGovernmentBEIS/inspect_ai/main/README.md",
+    "bytes": 3137,
+    "status": "retrieved",
+    "sha256": "4c589b974013c2c161c1c6081c885a24cf31c09c4d9bb8a1813369408299d5da",
+    "snapshot_file": "research/sources/inspect.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "agentharm",
+    "url": "https://raw.githubusercontent.com/UKGovernmentBEIS/AgentHarm/main/README.md",
+    "status": "HTTP Error 404: Not Found"
+  },
+  {
+    "id": "petri",
+    "url": "https://raw.githubusercontent.com/safety-research/petri/main/README.md",
+    "bytes": 1069,
+    "status": "retrieved",
+    "sha256": "c4e13e73eec8fc62c9bf72d99937ed9ef02403578537fb43d68ab5a4f9a3f749",
+    "snapshot_file": "research/sources/petri.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "bloom",
+    "url": "https://raw.githubusercontent.com/safety-research/bloom/main/README.md",
+    "bytes": 7952,
+    "status": "retrieved",
+    "sha256": "4c66c98a52408d4d0050469ad411adf53a00baf21ad65d0dc61d8f805e034d2a",
+    "snapshot_file": "research/sources/bloom.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "control-arena",
+    "url": "https://raw.githubusercontent.com/UKGovernmentBEIS/control-arena/main/README.md",
+    "bytes": 12659,
+    "status": "retrieved",
+    "sha256": "d86d4a9d5cf3e5fc587a69606a75f1cc9bd5d64fbeb999fe5a10c44c7714ac95",
+    "snapshot_file": "research/sources/control-arena.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "metr-horizon",
+    "url": "https://raw.githubusercontent.com/METR/eval-analysis-public/main/README.md",
+    "bytes": 4254,
+    "status": "retrieved",
+    "sha256": "4f5d2eb62e339e2804448364c8ef2364f8e5fc229aa78c073a36e0d572621a99",
+    "snapshot_file": "research/sources/metr-horizon.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "tau2",
+    "url": "https://raw.githubusercontent.com/sierra-research/tau2-bench/main/README.md",
+    "bytes": 14718,
+    "status": "retrieved",
+    "sha256": "7ae047a745ef93b311edb0da5d74fbc2bd784a35ce285a73ab3af8b6aed3e34b",
+    "snapshot_file": "research/sources/tau2.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "longmemeval",
+    "url": "https://raw.githubusercontent.com/xiaowu0162/LongMemEval/main/README.md",
+    "bytes": 15970,
+    "status": "retrieved",
+    "sha256": "c4ff45676683d9e2f7cf7d9099d26426f14635ec110dbb1da818d1019a142573",
+    "snapshot_file": "research/sources/longmemeval.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "sleeper-agents",
+    "url": "https://raw.githubusercontent.com/anthropics/sleeper-agents/main/README.md",
+    "status": "HTTP Error 404: Not Found"
+  },
+  {
+    "id": "inspect-card",
+    "url": "https://raw.githubusercontent.com/UKGovernmentBEIS/inspect_ai/main/README.md",
+    "bytes": 3137,
+    "status": "retrieved",
+    "sha256": "4c589b974013c2c161c1c6081c885a24cf31c09c4d9bb8a1813369408299d5da",
+    "snapshot_file": "research/sources/inspect-card.md",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "longmemeval-v2",
+    "url": "https://raw.githubusercontent.com/xiaowu0162/LongMemEval-V2/main/README.md",
+    "status": "retrieved",
+    "bytes": 9720,
+    "sha256": "399cc61c9540e587017fccdde28b29b62ed66326425f16f08b5fe0457a593abd",
+    "snapshot_file": "research/sources/longmemeval-v2.md",
+    "review_date": "2026-11-05",
+    "recheck_2026_11_06": "re-fetched; sha256 identical to snapshot"
+  },
+  {
+    "id": "adk-readme",
+    "url": "https://raw.githubusercontent.com/google/adk-python/main/README.md",
+    "status": "retrieved",
+    "sha256": "67e443cbd801d36d6001d6339caf6949390ba73dcd1e5ce4f27d3b8a3b4ab70c",
+    "snapshot_file": "research/sources/adk-readme.txt",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "adk-eval-case",
+    "url": "https://raw.githubusercontent.com/google/adk-python/main/src/google/adk/evaluation/eval_case.py",
+    "status": "retrieved",
+    "sha256": "d780b25d5867c473d02dabcb163b37bc095bf58449b33b59d4f3534107bd3ff3",
+    "snapshot_file": "research/sources/adk-eval-case.txt",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "adk-eval-set",
+    "url": "https://raw.githubusercontent.com/google/adk-python/main/src/google/adk/evaluation/eval_set.py",
+    "status": "retrieved",
+    "sha256": "625fcbf72f64ee1cae58034e97e1e6229e9b24dac22faf30ec768acefd76922a",
+    "snapshot_file": "research/sources/adk-eval-set.txt",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "adk-session",
+    "url": "https://raw.githubusercontent.com/google/adk-python/main/src/google/adk/sessions/session.py",
+    "status": "retrieved",
+    "sha256": "b5cbb6b6206c1b6e3e0e41bc2e12f3952dee8a526b22cf59ee4425afdb48b14b",
+    "snapshot_file": "research/sources/adk-session.txt",
+    "review_date": "2026-11-05"
+  },
+  {
+    "id": "deepeval",
+    "url": "https://github.com/confident-ai/deepeval/tree/fec0da671d861ba8a8b15c7679bad380be1945f6",
+    "commit": "fec0da671d861ba8a8b15c7679bad380be1945f6",
+    "bytes": 30739,
+    "status": "retrieved",
+    "sha256": "15fcceb3e0a857bd406870a5546bfa684659cc18ea095d3dfcf152c4c6b7b87a",
+    "snapshot_file": "research/sources/deepeval.md",
+    "review_date": "2026-11-05",
+    "installed_version": "4.3.3"
+  },
+  {
+    "id": "k8s-agent-sandbox-readme",
+    "url": "https://raw.githubusercontent.com/kubernetes-sigs/agent-sandbox/main/README.md",
+    "status": "retrieved",
+    "bytes": 15625,
+    "sha256": "71618359a79d030573330b8cd78c0aebf42a5e0efcb7ce62530fd63e2d264cf2",
+    "snapshot_file": "research/sources/k8s-agent-sandbox-readme.md",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "k8s-agent-sandbox-roadmap",
+    "url": "https://raw.githubusercontent.com/kubernetes-sigs/agent-sandbox/main/roadmap.md",
+    "status": "retrieved",
+    "bytes": 10125,
+    "sha256": "4bc79adf8733212065a75fdee930b59194afb65de9a9ce13467dc5fc813f1a88",
+    "snapshot_file": "research/sources/k8s-agent-sandbox-roadmap.md",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "kagent-readme",
+    "url": "https://raw.githubusercontent.com/kagent-dev/kagent/main/README.md",
+    "status": "retrieved",
+    "bytes": 9760,
+    "sha256": "e07f3e5506bde639d33cf534a4c614a37595c068a025a150d8b9612a5b96104e",
+    "snapshot_file": "research/sources/kagent-readme.md",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "inspect-k8s-sandbox-readme",
+    "url": "https://raw.githubusercontent.com/UKGovernmentBEIS/inspect_k8s_sandbox/main/README.md",
+    "status": "retrieved",
+    "bytes": 1175,
+    "sha256": "16e8cd01228197c32feaa31461569fd65bb27012a52f7a7bea3915ccdcb4cfb2",
+    "snapshot_file": "research/sources/inspect-k8s-sandbox-readme.md",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "otel-genai-semconv-readme",
+    "url": "https://raw.githubusercontent.com/open-telemetry/semantic-conventions-genai/main/docs/gen-ai/README.md",
+    "status": "retrieved",
+    "bytes": 3024,
+    "sha256": "4f16a7c6fe25f3b525fc431a3686820f55792eede1bd3c702a890fb1af9ec125",
+    "snapshot_file": "research/sources/otel-genai-semconv-readme.md",
+    "review_date": "2026-11-06",
+    "note": "Document status: Development"
+  },
+  {
+    "id": "otel-genai-agent-spans",
+    "url": "https://raw.githubusercontent.com/open-telemetry/semantic-conventions-genai/main/docs/gen-ai/gen-ai-agent-spans.md",
+    "status": "retrieved",
+    "bytes": 51220,
+    "sha256": "72c54b99690f29e9ca6cb84eb89cc63cee7fb922b5aef6582a52aab818915cb1",
+    "snapshot_file": "research/sources/otel-genai-agent-spans.md",
+    "review_date": "2026-11-06",
+    "note": "Status: Development; links core semconv v1.45.0"
+  },
+  {
+    "id": "otel-semconv-changelog",
+    "url": "https://raw.githubusercontent.com/open-telemetry/semantic-conventions/main/CHANGELOG.md",
+    "status": "retrieved (hash only, not snapshotted)",
+    "bytes": 191084,
+    "sha256": "2e24145d2fb424d68d69127a6fb030169d191acd2e6d7cd08edd2d4f922ffa47",
+    "review_date": "2026-11-06",
+    "note": "Latest section v1.45.0; v1.42.0 moved gen_ai.* to semantic-conventions-genai; v1.38.0 introduced GenAI Evaluation Event"
+  },
+  {
+    "id": "adk-eval-criteria",
+    "url": "https://raw.githubusercontent.com/google/adk-docs/main/docs/evaluate/criteria.md",
+    "status": "retrieved",
+    "bytes": 40310,
+    "sha256": "0e9957548b6640bd60c112918ebc80010e352c07b4378922d59269e235cf7fc5",
+    "snapshot_file": "research/sources/adk-eval-criteria.md",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "adk-eval-index",
+    "url": "https://raw.githubusercontent.com/google/adk-docs/main/docs/evaluate/index.md",
+    "status": "retrieved",
+    "bytes": 31663,
+    "sha256": "a8d68e1fb00c1b365d98db36fa675845977a09005dbafbd29f8211a0b0a57489",
+    "snapshot_file": "research/sources/adk-eval-index.md",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "pypi-versions",
+    "url": "https://pypi.org/pypi/<name>/json",
+    "status": "retrieved",
+    "review_date": "2026-11-06",
+    "versions": {
+      "deepeval": "4.3.3 (uploaded 2026-11-04)",
+      "google-adk": "2.13.0 (2026-10-23)",
+      "inspect-ai": "0.3.287 (2026-10-31)",
+      "control-arena": "20.1.1 (2026-10-22)",
+      "agentdojo": "0.1.35 (2025-10-27)",
+      "inspect-petri": "3.1.1 (2026-10-01)",
+      "petri-bloom": "0.2.6 (2026-06-08)",
+      "inspect-k8s-sandbox": "0.14.0 (2026-10-09)",
+      "opentelemetry-semantic-conventions (Python)": "0.66b2 (2026-10-29)"
+    },
+    "note": "PyPI names 'tau2', 'petri' and 'kagent' resolve to unrelated or placeholder packages; do not cite them as these projects' releases."
+  },
+  {
+    "id": "anthropic-agentic-misalignment-page",
+    "url": "https://www.anthropic.com/research/agentic-misalignment",
+    "status": "retrieved via WebFetch (summarised by fetch tool; not byte-snapshotted)",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "anthropic-alignment-faking-page",
+    "url": "https://www.anthropic.com/research/alignment-faking",
+    "status": "retrieved via WebFetch (summarised; not snapshotted)",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "anthropic-petri-page",
+    "url": "https://www.anthropic.com/research/petri-open-source-auditing",
+    "status": "retrieved via WebFetch (summarised; not snapshotted)",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "anthropic-petri-donation-page",
+    "url": "https://www.anthropic.com/research/donating-open-source-petri",
+    "status": "retrieved via WebFetch (summarised; not snapshotted)",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "anthropic-bloom-page",
+    "url": "https://www.anthropic.com/research/bloom",
+    "status": "retrieved via WebFetch (summarised; not snapshotted)",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "anthropic-shade-arena-page",
+    "url": "https://www.anthropic.com/research/shade-arena-sabotage-monitoring",
+    "status": "retrieved via WebFetch (summarised; not snapshotted)",
+    "review_date": "2026-11-06"
+  },
+  {
+    "id": "blocked-hosts",
+    "status": "not accessible (DNS/proxy refused) on 2026-11-06",
+    "hosts": [
+      "events.linuxfoundation.org",
+      "cncf.io",
+      "arxiv.org",
+      "metr.org",
+      "fpf.org",
+      "www.whitecase.com",
+      "leg.colorado.gov",
+      "www.mcdermottlaw.com",
+      "eur-lex.europa.eu (curl)",
+      "www.nist.gov (curl)",
+      "opentelemetry.io (curl)",
+      "api.github.com (session not authorised)"
+    ],
+    "note": "Facts attributed to these hosts in V2 documents come from WebSearch result summaries only and are labelled 'search-index'."
+  }
+]

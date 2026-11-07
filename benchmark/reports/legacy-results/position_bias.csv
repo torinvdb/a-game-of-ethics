@@ -1,0 +1,10 @@
+model,n_options,n_decisions,counts_by_position,first_option_rate,expected_uniform,chi2,p_uniform
+RANDOM-BASELINE (harness fallback),2,306,"[158, 148]",0.5163,0.5,0.3268,0.5676
+RANDOM-BASELINE (harness fallback),3,1159,"[401, 367, 391]",0.346,0.3333,1.5807,0.4537
+RANDOM-BASELINE (harness fallback),4,40,"[8, 10, 12, 10]",0.2,0.25,0.8,0.8495
+human,2,10,"[5, 5]",0.5,0.5,0.0,1.0
+human,3,29,"[7, 9, 13]",0.2414,0.3333,1.931,0.3808
+human,4,1,"[0, 0, 1, 0]",0.0,0.25,3.0,0.3916
+openai/gpt-oss-20b,2,79,"[30, 49]",0.3797,0.5,4.5696,0.0325
+openai/gpt-oss-20b,3,192,"[77, 46, 69]",0.401,0.3333,8.0938,0.0175
+openai/gpt-oss-20b,4,22,"[11, 8, 1, 2]",0.5,0.25,12.5455,0.0057

@@ -1,40 +1,70 @@
 ﻿<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-
-    <title>Hostage Holdout</title>
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- relative for github -->
-    <link rel="stylesheet" href="style.css">
-
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Hostage Holdout · A Game of Ethics</title>
+  <meta name="description" content="Play the Hostage Holdout scenario from A Game of Ethics and watch the eight ethical axes respond to every choice.">
+  <meta name="theme-color" content="#050807">
+  <link rel="icon" type="image/x-icon" href="../../../static/images/favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;600;700&family=Share+Tech+Mono&family=Noto+Sans+JP:wght@900&display=swap">
+  <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+  <a class="skip" href="#choices">Skip to choices</a>
+  <div class="shell">
+    <header class="bar">
+      <a class="bar__home" href="../../../index.html#scenarios" target="_top" aria-label="Back to A Game of Ethics">
+        <span class="bar__mark" aria-hidden="true">倫</span><span class="bar__back">AGoE</span>
+      </a>
+      <div class="bar__title">
+        <p class="bar__kicker">STORY CONSOLE · CASE 02</p>
+        <h1>Hostage Holdout</h1>
+        <p class="byline" hidden></p>
+      </div>
+      <div class="bar__controls" role="group" aria-label="Story controls">
+        <button type="button" id="rewind" title="Restart story from beginning">Restart</button>
+        <button type="button" id="save" title="Save progress in this browser">Save</button>
+        <button type="button" id="reload" title="Load saved progress">Load</button>
+      </div>
+    </header>
 
-    <div class="outerContainer">
-        <h3 class="written-in-ink"><a href="https://www.inklestudios.com/ink">WRITTEN IN INK</a></h3>
-
-        <div id="controls" class="buttons">
-          <a id="rewind" title="Restart story from beginning">restart</a>
-          <a id="save" title="Save progress">save</a>
-          <a id="reload" title="Reload from save point">load</a>
-          <a id="theme-switch" title="Switch theme">theme</a>
+    <main class="console">
+      <section class="screen" aria-labelledby="log-h">
+        <h2 id="log-h" class="visually-hidden">Story</h2>
+        <div class="screen__bar" aria-hidden="true"><span></span><span></span><span></span><b>negotiation.log</b><i id="step">T+00</i></div>
+        <div class="screen__scroll" id="scroll">
+          <div id="story" class="story" aria-live="polite"></div>
+          <div id="choices" class="choices" tabindex="-1" aria-label="Choices"></div>
         </div>
+        <p class="hint" aria-hidden="true">Press <kbd>1</kbd>–<kbd>3</kbd> to choose</p>
+      </section>
 
-        <div id="story" class="container">
-            <div class="header">
-                <h1>Hostage Holdout</h1>
-                <h2 class="byline"></h2>
-            </div>
+      <aside class="meters" aria-labelledby="meters-h">
+        <h2 id="meters-h" class="meters__h"><span lang="ja" aria-hidden="true">倫理</span> Axis meters</h2>
+        <ul id="meter-list" class="meter-list"></ul>
+        <dl class="totals">
+          <div><dt>Total</dt><dd id="m-total">0</dd></div>
+          <div><dt>Average</dt><dd id="m-avg">0.00</dd></div>
+        </dl>
+        <div id="verdict" class="verdict" hidden>
+          <p class="verdict__k">VERDICT</p>
+          <p class="verdict__v" id="verdict-v"></p>
+          <p class="verdict__d" id="verdict-d"></p>
         </div>
-    </div>
+        <p class="meters__note">Bars run from −10 to +10; each choice moves 3–4 axes.</p>
+      </aside>
+    </main>
 
-    <!-- relative for local testing -->
-    <script src="ink.js"></script>
-    <script src="Untitled.js"></script>
-    <script src="main.js"></script>
+    <footer class="foot">
+      <p><a href="https://www.inklestudios.com/ink/">Written in Ink</a> · part of <a href="../../../index.html" target="_top">A Game of Ethics</a></p>
+    </footer>
+  </div>
+
+  <script src="ink.js"></script>
+  <script src="story.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>

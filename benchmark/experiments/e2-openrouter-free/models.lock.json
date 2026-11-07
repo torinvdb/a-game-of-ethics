@@ -1,0 +1,241 @@
+{
+ "selected_on": "2026-11-06",
+ "source": "GET https://openrouter.ai/api/v1/models",
+ "rule": "largest open-weights instruction/reasoning :free model per developer",
+ "excluded": {
+  "dots-studio/dots-3-note-preview:free": "no hugging_face_id to verify open weights; preview ID may change behind the name",
+  "recursive/flint-v1.0:free": "coding-agent model",
+  "cohere/north-mini-code:free": "coding model",
+  "liquid/lfm-2.5-2.6b:free": "2.6B, smallest",
+  "nvidia/* (other variants)": "one model per developer; Ultra 550B is the largest",
+  "google/gemma-4-31b-it:free": "selected 2026-11-06, replaced before passing smoke: upstream shared pool (Google AI Studio) returned 429 on every smoke attempt",
+  "google/gemma-4-26b-a4b-it:free": "replacement for gemma-4-31b; dropped 2026-11-06 before passing smoke: same Google AI Studio shared pool, 429 on every attempt"
+ },
+ "models": [
+  {
+   "id": "nvidia/nemotron-3-ultra-550b-a55b:free",
+   "canonical_slug": "nvidia/nemotron-3-ultra-550b-a55b-20260604",
+   "hugging_face_id": "nvidia/NVIDIA-Nemotron-3-Ultra-550B-A55B-BF16",
+   "name": "NVIDIA: Nemotron 3 Ultra (free)",
+   "created": 1780551208,
+   "description": "NVIDIA Nemotron 3 Ultra is an open frontier-reasoning and orchestration model from NVIDIA, with 55B active parameters out of 550B total (MoE). Built on a hybrid Transformer-Mamba mixture-of-experts architecture, it...",
+   "context_length": 1000000,
+   "architecture": {
+    "modality": "text->text",
+    "input_modalities": [
+     "text"
+    ],
+    "output_modalities": [
+     "text"
+    ],
+    "tokenizer": "Other",
+    "instruct_type": null
+   },
+   "pricing": {
+    "prompt": "0",
+    "completion": "0"
+   },
+   "top_provider": {
+    "context_length": 1000000,
+    "max_completion_tokens": 65536,
+    "is_moderated": false
+   },
+   "per_request_limits": null,
+   "supported_parameters": [
+    "include_reasoning",
+    "max_tokens",
+    "reasoning",
+    "reasoning_effort",
+    "seed",
+    "temperature",
+    "tool_choice",
+    "tools",
+    "top_p"
+   ],
+   "default_parameters": {
+    "temperature": 1,
+    "top_p": 0.95,
+    "top_k": null,
+    "frequency_penalty": null,
+    "presence_penalty": null,
+    "repetition_penalty": null
+   },
+   "supported_voices": null,
+   "knowledge_cutoff": null,
+   "expiration_date": null,
+   "links": {
+    "details": "/api/v1/models/nvidia/nemotron-3-ultra-550b-a55b-20260604/endpoints"
+   },
+   "endpoints": [
+    "/api/v1/chat/completions",
+    "/api/v1/completions",
+    "/api/v1/messages",
+    "/api/v1/responses"
+   ],
+   "benchmarks": {
+    "design_arena": [
+     {
+      "arena": "models",
+      "category": "3d",
+      "elo": 1127,
+      "win_rate": 38.1,
+      "rank": 81
+     },
+     {
+      "arena": "models",
+      "category": "asciiart",
+      "elo": 1097,
+      "win_rate": 37.1,
+      "rank": 63
+     },
+     {
+      "arena": "models",
+      "category": "codecategories",
+      "elo": 1145,
+      "win_rate": 36,
+      "rank": 90
+     },
+     {
+      "arena": "models",
+      "category": "dataviz",
+      "elo": 1142,
+      "win_rate": 37.5,
+      "rank": 86
+     },
+     {
+      "arena": "models",
+      "category": "gamedev",
+      "elo": 1139,
+      "win_rate": 36,
+      "rank": 80
+     },
+     {
+      "arena": "models",
+      "category": "svg",
+      "elo": 1066,
+      "win_rate": 32.1,
+      "rank": 75
+     },
+     {
+      "arena": "models",
+      "category": "uicomponent",
+      "elo": 1136,
+      "win_rate": 36,
+      "rank": 85
+     },
+     {
+      "arena": "models",
+      "category": "website",
+      "elo": 1144,
+      "win_rate": 35.2,
+      "rank": 98
+     }
+    ],
+    "artificial_analysis": {
+     "intelligence_index": 11.8,
+     "coding_index": 49.3,
+     "agentic_index": 20.1
+    }
+   },
+   "reasoning": {
+    "mandatory": false,
+    "default_enabled": true,
+    "supports_max_tokens": true,
+    "supported_efforts": [
+     "high",
+     "medium",
+     "none"
+    ],
+    "default_effort": "high"
+   }
+  },
+  {
+   "id": "xingchen-agi/xing4.0-29b-a4b:free",
+   "canonical_slug": "xingchen-agi/xing4.0-29b-a4b-20261015",
+   "hugging_face_id": "XingChen-AGI/Xing4.0-29B-A4B",
+   "name": "XingChen: Xing4.0 29B A4B (free)",
+   "created": 1792177496,
+   "description": "Xing4.0-29B-A4B is an open-weight mixture-of-experts language model from China Telecom's AI team (TeleAI) and the successor to the TeleChat series. It has 29B total parameters with 4B active per token...",
+   "context_length": 262144,
+   "architecture": {
+    "modality": "text->text",
+    "input_modalities": [
+     "text"
+    ],
+    "output_modalities": [
+     "text"
+    ],
+    "tokenizer": "Other",
+    "instruct_type": null
+   },
+   "pricing": {
+    "prompt": "0",
+    "completion": "0"
+   },
+   "top_provider": {
+    "context_length": 262144,
+    "max_completion_tokens": 235929,
+    "is_moderated": false
+   },
+   "per_request_limits": null,
+   "supported_parameters": [
+    "frequency_penalty",
+    "include_reasoning",
+    "max_tokens",
+    "min_p",
+    "presence_penalty",
+    "reasoning",
+    "repetition_penalty",
+    "response_format",
+    "seed",
+    "stop",
+    "structured_outputs",
+    "temperature",
+    "tool_choice",
+    "tools",
+    "top_k",
+    "top_p"
+   ],
+   "default_parameters": {
+    "temperature": 1,
+    "top_p": 0.95,
+    "repetition_penalty": 1.05
+   },
+   "supported_voices": null,
+   "knowledge_cutoff": null,
+   "expiration_date": null,
+   "links": {
+    "details": "/api/v1/models/xingchen-agi/xing4.0-29b-a4b-20261015/endpoints"
+   },
+   "endpoints": [
+    "/api/v1/chat/completions",
+    "/api/v1/completions",
+    "/api/v1/messages",
+    "/api/v1/responses"
+   ],
+   "reasoning": {
+    "mandatory": false,
+    "default_enabled": true
+   }
+  }
+ ],
+ "changes": [
+  {
+   "date": "2026-11-06",
+   "replaced": "google/gemma-4-31b-it:free",
+   "with": "google/gemma-4-26b-a4b-it:free",
+   "stage": "before smoke passed",
+   "reason": "persistent upstream 429 from the shared free pool"
+  },
+  {
+   "date": "2026-11-06",
+   "dropped": "google/gemma-4-26b-a4b-it:free",
+   "stage": "before smoke passed",
+   "reason": "same upstream shared pool as gemma-4-31b; no Google model is reachable on the free tier"
+  }
+ ],
+ "roles": {
+  "nvidia/nemotron-3-ultra-550b-a55b:free": "primary",
+  "xingchen-agi/xing4.0-29b-a4b:free": "exploratory: 31% of pilot attempts failed (threshold 10%); reported with its failure rate, excluded from the primary comparison"
+ }
+}

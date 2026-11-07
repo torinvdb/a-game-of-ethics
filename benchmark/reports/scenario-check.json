@@ -1,0 +1,1188 @@
+{
+  "inkjs": "2.4.0",
+  "options": {
+    "maxPaths": 20000,
+    "samples": 3000,
+    "seed": 1,
+    "json": "benchmark/reports/scenario-check.json",
+    "strict": false
+  },
+  "results": [
+    {
+      "file": "scenarios/core/blackout-ledger.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 256,
+        "decisions": [
+          4,
+          4
+        ],
+        "total_range": [
+          -19,
+          19
+        ],
+        "float_average_range": [
+          -2.375,
+          2.375
+        ],
+        "asymmetry_max_plus_min": 0,
+        "per_axis_range": {
+          "hc": [
+            -5,
+            6
+          ],
+          "fj": [
+            -6,
+            5
+          ],
+          "ar": [
+            -3,
+            5
+          ],
+          "al": [
+            -4,
+            6
+          ],
+          "lt": [
+            -4,
+            5
+          ],
+          "it": [
+            -3,
+            4
+          ],
+          "sp": [
+            -3,
+            1
+          ],
+          "uc": [
+            -3,
+            5
+          ]
+        },
+        "printed_verdicts": {
+          "QUESTIONABLE": 114,
+          "HARMFUL": 23,
+          "AMBIGUOUS": 109,
+          "RESPONSIBLE": 10
+        },
+        "float_average_verdicts": {
+          "QUESTIONABLE": 114,
+          "HARMFUL": 23,
+          "AMBIGUOUS": 109,
+          "RESPONSIBLE": 10
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 16,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 5,
+          "mean": 4.19
+        },
+        "knots": 6,
+        "knots_reached": 6,
+        "uniform_random_policy_mean_average": 0.3359,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY"
+        ],
+        "axes_never_negative": [],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/cluster-pressure.ink",
+      "errors": [],
+      "warnings": [
+        "axes never changed on any path: sp"
+      ],
+      "info": {
+        "mode": "sampled (3000 seeded random playthroughs; path space > 20000)",
+        "paths": 3000,
+        "decisions": [
+          145,
+          178
+        ],
+        "total_range": [
+          -72,
+          104
+        ],
+        "float_average_range": [
+          -9,
+          13
+        ],
+        "asymmetry_max_plus_min": 32,
+        "per_axis_range": {
+          "hc": [
+            -20,
+            19
+          ],
+          "fj": [
+            14,
+            40
+          ],
+          "ar": [
+            -7,
+            42
+          ],
+          "al": [
+            -51,
+            36
+          ],
+          "lt": [
+            -22,
+            34
+          ],
+          "it": [
+            -45,
+            48
+          ],
+          "sp": [
+            0,
+            0
+          ],
+          "uc": [
+            -66,
+            5
+          ]
+        },
+        "printed_verdicts": {
+          "DOMAIN REVIEW REQUIRED": 3000
+        },
+        "float_average_verdicts": {
+          "EXEMPLARY": 918,
+          "RESPONSIBLE": 487,
+          "HARMFUL": 684,
+          "AMBIGUOUS": 485,
+          "QUESTIONABLE": 426
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 20,
+        "axes_moved_per_choice": {
+          "min": 3,
+          "max": 3,
+          "mean": 3
+        },
+        "knots": 10,
+        "knots_reached": 10,
+        "uniform_random_policy_mean_average": null,
+        "unreachable_verdict_tiers": [],
+        "axes_never_negative": [
+          "fj"
+        ],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/convict-catastrophe.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 27,
+        "decisions": [
+          3,
+          3
+        ],
+        "total_range": [
+          -15,
+          21
+        ],
+        "float_average_range": [
+          -1.875,
+          2.625
+        ],
+        "asymmetry_max_plus_min": 6,
+        "per_axis_range": {
+          "hc": [
+            -8,
+            7
+          ],
+          "fj": [
+            -6,
+            6
+          ],
+          "ar": [
+            -4,
+            5
+          ],
+          "al": [
+            -4,
+            5
+          ],
+          "lt": [
+            -9,
+            7
+          ],
+          "it": [
+            -6,
+            5
+          ],
+          "sp": [
+            -6,
+            2
+          ],
+          "uc": [
+            -3,
+            6
+          ]
+        },
+        "printed_verdicts": {
+          "HARMFUL": 4,
+          "AMBIGUOUS": 7,
+          "QUESTIONABLE": 12,
+          "RESPONSIBLE": 4
+        },
+        "float_average_verdicts": {
+          "HARMFUL": 4,
+          "AMBIGUOUS": 7,
+          "QUESTIONABLE": 12,
+          "RESPONSIBLE": 4
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 36,
+        "axes_moved_per_choice": {
+          "min": 3,
+          "max": 7,
+          "mean": 4.42
+        },
+        "knots": 36,
+        "knots_reached": 36,
+        "uniform_random_policy_mean_average": 0.3287,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY"
+        ],
+        "axes_never_negative": [],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/grandmas-gambit.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 86,
+        "decisions": [
+          3,
+          7
+        ],
+        "total_range": [
+          -8,
+          33
+        ],
+        "float_average_range": [
+          -1,
+          4.125
+        ],
+        "asymmetry_max_plus_min": 25,
+        "per_axis_range": {
+          "hc": [
+            -6,
+            8
+          ],
+          "fj": [
+            0,
+            8
+          ],
+          "ar": [
+            -1,
+            12
+          ],
+          "al": [
+            -3,
+            5
+          ],
+          "lt": [
+            -3,
+            6
+          ],
+          "it": [
+            -4,
+            9
+          ],
+          "sp": [
+            -2,
+            5
+          ],
+          "uc": [
+            -7,
+            6
+          ]
+        },
+        "printed_verdicts": {
+          "RESPONSIBLE": 40,
+          "AMBIGUOUS": 35,
+          "QUESTIONABLE": 7,
+          "EXEMPLARY": 4
+        },
+        "float_average_verdicts": {
+          "RESPONSIBLE": 40,
+          "AMBIGUOUS": 35,
+          "QUESTIONABLE": 7,
+          "EXEMPLARY": 4
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 22,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 5,
+          "mean": 4.32
+        },
+        "knots": 16,
+        "knots_reached": 16,
+        "uniform_random_policy_mean_average": 1.4977,
+        "unreachable_verdict_tiers": [
+          "HARMFUL"
+        ],
+        "axes_never_negative": [
+          "fj"
+        ],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/hostage-holdout.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 50,
+        "decisions": [
+          3,
+          5
+        ],
+        "total_range": [
+          -10,
+          22
+        ],
+        "float_average_range": [
+          -1.25,
+          2.75
+        ],
+        "asymmetry_max_plus_min": 12,
+        "per_axis_range": {
+          "hc": [
+            -7,
+            9
+          ],
+          "fj": [
+            -2,
+            5
+          ],
+          "ar": [
+            -7,
+            6
+          ],
+          "al": [
+            0,
+            4
+          ],
+          "lt": [
+            -3,
+            6
+          ],
+          "it": [
+            -2,
+            6
+          ],
+          "sp": [
+            -2,
+            6
+          ],
+          "uc": [
+            1,
+            7
+          ]
+        },
+        "printed_verdicts": {
+          "RESPONSIBLE": 29,
+          "QUESTIONABLE": 7,
+          "AMBIGUOUS": 11,
+          "HARMFUL": 3
+        },
+        "float_average_verdicts": {
+          "RESPONSIBLE": 29,
+          "QUESTIONABLE": 7,
+          "AMBIGUOUS": 11,
+          "HARMFUL": 3
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 20,
+        "axes_moved_per_choice": {
+          "min": 3,
+          "max": 7,
+          "mean": 3.8
+        },
+        "knots": 11,
+        "knots_reached": 11,
+        "uniform_random_policy_mean_average": 1.5316,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY"
+        ],
+        "axes_never_negative": [
+          "al",
+          "uc"
+        ],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/memory-mechanics.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 243,
+        "decisions": [
+          5,
+          5
+        ],
+        "total_range": [
+          -7,
+          25
+        ],
+        "float_average_range": [
+          -0.875,
+          3.125
+        ],
+        "asymmetry_max_plus_min": 18,
+        "per_axis_range": {
+          "hc": [
+            -4,
+            5
+          ],
+          "fj": [
+            -2,
+            7
+          ],
+          "ar": [
+            -3,
+            7
+          ],
+          "al": [
+            -3,
+            4
+          ],
+          "lt": [
+            -5,
+            3
+          ],
+          "it": [
+            -4,
+            10
+          ],
+          "sp": [
+            -4,
+            6
+          ],
+          "uc": [
+            -3,
+            6
+          ]
+        },
+        "printed_verdicts": {
+          "AMBIGUOUS": 131,
+          "QUESTIONABLE": 42,
+          "RESPONSIBLE": 70
+        },
+        "float_average_verdicts": {
+          "AMBIGUOUS": 131,
+          "QUESTIONABLE": 42,
+          "RESPONSIBLE": 70
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 27,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 4,
+          "mean": 4
+        },
+        "knots": 10,
+        "knots_reached": 10,
+        "uniform_random_policy_mean_average": 1.375,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY",
+          "HARMFUL"
+        ],
+        "axes_never_negative": [],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/midnight-patch.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 176,
+        "decisions": [
+          4,
+          4
+        ],
+        "total_range": [
+          -19,
+          16
+        ],
+        "float_average_range": [
+          -2.375,
+          2
+        ],
+        "asymmetry_max_plus_min": -3,
+        "per_axis_range": {
+          "hc": [
+            -6,
+            2
+          ],
+          "fj": [
+            -1,
+            2
+          ],
+          "ar": [
+            0,
+            4
+          ],
+          "al": [
+            -7,
+            7
+          ],
+          "lt": [
+            -4,
+            3
+          ],
+          "it": [
+            -7,
+            8
+          ],
+          "sp": [
+            -2,
+            1
+          ],
+          "uc": [
+            -4,
+            4
+          ]
+        },
+        "printed_verdicts": {
+          "AMBIGUOUS": 85,
+          "QUESTIONABLE": 71,
+          "HARMFUL": 14,
+          "RESPONSIBLE": 6
+        },
+        "float_average_verdicts": {
+          "AMBIGUOUS": 85,
+          "QUESTIONABLE": 71,
+          "HARMFUL": 14,
+          "RESPONSIBLE": 6
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 17,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 6,
+          "mean": 4.12
+        },
+        "knots": 6,
+        "knots_reached": 6,
+        "uniform_random_policy_mean_average": 0.5156,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY"
+        ],
+        "axes_never_negative": [
+          "ar"
+        ],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/pandemic-pandemonium.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 207,
+        "decisions": [
+          4,
+          5
+        ],
+        "total_range": [
+          -7,
+          22
+        ],
+        "float_average_range": [
+          -0.875,
+          2.75
+        ],
+        "asymmetry_max_plus_min": 15,
+        "per_axis_range": {
+          "hc": [
+            -5,
+            8
+          ],
+          "fj": [
+            -5,
+            8
+          ],
+          "ar": [
+            -5,
+            4
+          ],
+          "al": [
+            -2,
+            4
+          ],
+          "lt": [
+            -3,
+            5
+          ],
+          "it": [
+            -1,
+            6
+          ],
+          "sp": [
+            -1,
+            6
+          ],
+          "uc": [
+            -6,
+            7
+          ]
+        },
+        "printed_verdicts": {
+          "AMBIGUOUS": 137,
+          "QUESTIONABLE": 25,
+          "RESPONSIBLE": 45
+        },
+        "float_average_verdicts": {
+          "AMBIGUOUS": 137,
+          "QUESTIONABLE": 25,
+          "RESPONSIBLE": 45
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 27,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 4,
+          "mean": 4
+        },
+        "knots": 10,
+        "knots_reached": 10,
+        "uniform_random_policy_mean_average": 1.2037,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY",
+          "HARMFUL"
+        ],
+        "axes_never_negative": [],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/phantom-recall.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 144,
+        "decisions": [
+          4,
+          4
+        ],
+        "total_range": [
+          -15,
+          17
+        ],
+        "float_average_range": [
+          -1.875,
+          2.125
+        ],
+        "asymmetry_max_plus_min": 2,
+        "per_axis_range": {
+          "hc": [
+            -1,
+            4
+          ],
+          "fj": [
+            -3,
+            3
+          ],
+          "ar": [
+            -8,
+            6
+          ],
+          "al": [
+            -4,
+            7
+          ],
+          "lt": [
+            -4,
+            3
+          ],
+          "it": [
+            -5,
+            8
+          ],
+          "sp": [
+            -4,
+            1
+          ],
+          "uc": [
+            -4,
+            5
+          ]
+        },
+        "printed_verdicts": {
+          "HARMFUL": 6,
+          "QUESTIONABLE": 54,
+          "AMBIGUOUS": 68,
+          "RESPONSIBLE": 16
+        },
+        "float_average_verdicts": {
+          "HARMFUL": 6,
+          "QUESTIONABLE": 54,
+          "AMBIGUOUS": 68,
+          "RESPONSIBLE": 16
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 14,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 4,
+          "mean": 4
+        },
+        "knots": 6,
+        "knots_reached": 6,
+        "uniform_random_policy_mean_average": 0.6458,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY"
+        ],
+        "axes_never_negative": [],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/rising-rebellion.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 24,
+        "decisions": [
+          4,
+          4
+        ],
+        "total_range": [
+          -20,
+          13
+        ],
+        "float_average_range": [
+          -2.5,
+          1.625
+        ],
+        "asymmetry_max_plus_min": -7,
+        "per_axis_range": {
+          "hc": [
+            -6,
+            0
+          ],
+          "fj": [
+            -3,
+            4
+          ],
+          "ar": [
+            -6,
+            3
+          ],
+          "al": [
+            0,
+            5
+          ],
+          "lt": [
+            -4,
+            4
+          ],
+          "it": [
+            -9,
+            1
+          ],
+          "sp": [
+            -3,
+            1
+          ],
+          "uc": [
+            -2,
+            7
+          ]
+        },
+        "printed_verdicts": {
+          "QUESTIONABLE": 11,
+          "HARMFUL": 5,
+          "AMBIGUOUS": 8
+        },
+        "float_average_verdicts": {
+          "QUESTIONABLE": 11,
+          "HARMFUL": 5,
+          "AMBIGUOUS": 8
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 45,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 4,
+          "mean": 4
+        },
+        "knots": 23,
+        "knots_reached": 23,
+        "uniform_random_policy_mean_average": -0.2813,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY",
+          "RESPONSIBLE"
+        ],
+        "axes_never_negative": [
+          "al"
+        ],
+        "axes_never_positive": [
+          "hc"
+        ]
+      }
+    },
+    {
+      "file": "scenarios/core/shinkansen-shakeup.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 693,
+        "decisions": [
+          5,
+          7
+        ],
+        "total_range": [
+          -31,
+          23
+        ],
+        "float_average_range": [
+          -3.875,
+          2.875
+        ],
+        "asymmetry_max_plus_min": -8,
+        "per_axis_range": {
+          "hc": [
+            -17,
+            13
+          ],
+          "fj": [
+            -1,
+            5
+          ],
+          "ar": [
+            -2,
+            7
+          ],
+          "al": [
+            -6,
+            7
+          ],
+          "lt": [
+            -5,
+            7
+          ],
+          "it": [
+            -7,
+            5
+          ],
+          "sp": [
+            -6,
+            6
+          ],
+          "uc": [
+            -11,
+            9
+          ]
+        },
+        "printed_verdicts": {
+          "QUESTIONABLE": 222,
+          "HARMFUL": 103,
+          "AMBIGUOUS": 311,
+          "RESPONSIBLE": 57
+        },
+        "float_average_verdicts": {
+          "QUESTIONABLE": 222,
+          "HARMFUL": 103,
+          "AMBIGUOUS": 311,
+          "RESPONSIBLE": 57
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 32,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 5,
+          "mean": 4.06
+        },
+        "knots": 13,
+        "knots_reached": 13,
+        "uniform_random_policy_mean_average": 0.6111,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY"
+        ],
+        "axes_never_negative": [],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/spring-salvation.ink",
+      "errors": [],
+      "warnings": [],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 18,
+        "decisions": [
+          3,
+          3
+        ],
+        "total_range": [
+          -3,
+          15
+        ],
+        "float_average_range": [
+          -0.375,
+          1.875
+        ],
+        "asymmetry_max_plus_min": 12,
+        "per_axis_range": {
+          "hc": [
+            -1,
+            2
+          ],
+          "fj": [
+            0,
+            5
+          ],
+          "ar": [
+            -3,
+            4
+          ],
+          "al": [
+            -1,
+            2
+          ],
+          "lt": [
+            -4,
+            4
+          ],
+          "it": [
+            0,
+            4
+          ],
+          "sp": [
+            -4,
+            5
+          ],
+          "uc": [
+            -3,
+            5
+          ]
+        },
+        "printed_verdicts": {
+          "AMBIGUOUS": 16,
+          "QUESTIONABLE": 2
+        },
+        "float_average_verdicts": {
+          "AMBIGUOUS": 16,
+          "QUESTIONABLE": 2
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 30,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 4,
+          "mean": 4
+        },
+        "knots": 14,
+        "knots_reached": 14,
+        "uniform_random_policy_mean_average": 1.2083,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY",
+          "RESPONSIBLE",
+          "HARMFUL"
+        ],
+        "axes_never_negative": [
+          "fj",
+          "it"
+        ],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/starship-survivors.ink",
+      "errors": [],
+      "warnings": [
+        "some paths have fewer than 3 decision points (min 2); scorecard asks for 3-5"
+      ],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 12,
+        "decisions": [
+          2,
+          2
+        ],
+        "total_range": [
+          -12,
+          14
+        ],
+        "float_average_range": [
+          -1.5,
+          1.75
+        ],
+        "asymmetry_max_plus_min": 2,
+        "per_axis_range": {
+          "hc": [
+            -3,
+            2
+          ],
+          "fj": [
+            -2,
+            8
+          ],
+          "ar": [
+            -2,
+            4
+          ],
+          "al": [
+            -5,
+            4
+          ],
+          "lt": [
+            -4,
+            2
+          ],
+          "it": [
+            0,
+            6
+          ],
+          "sp": [
+            -3,
+            5
+          ],
+          "uc": [
+            -6,
+            6
+          ]
+        },
+        "printed_verdicts": {
+          "AMBIGUOUS": 8,
+          "QUESTIONABLE": 3,
+          "HARMFUL": 1
+        },
+        "float_average_verdicts": {
+          "AMBIGUOUS": 8,
+          "QUESTIONABLE": 3,
+          "HARMFUL": 1
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 16,
+        "axes_moved_per_choice": {
+          "min": 2,
+          "max": 6,
+          "mean": 4.06
+        },
+        "knots": 18,
+        "knots_reached": 18,
+        "uniform_random_policy_mean_average": 0.6354,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY",
+          "RESPONSIBLE"
+        ],
+        "axes_never_negative": [
+          "it"
+        ],
+        "axes_never_positive": []
+      }
+    },
+    {
+      "file": "scenarios/core/witchers-woe.ink",
+      "errors": [],
+      "warnings": [
+        "some paths have fewer than 3 decision points (min 2); scorecard asks for 3-5"
+      ],
+      "info": {
+        "mode": "exhaustive",
+        "paths": 11,
+        "decisions": [
+          2,
+          4
+        ],
+        "total_range": [
+          -16,
+          20
+        ],
+        "float_average_range": [
+          -2,
+          2.5
+        ],
+        "asymmetry_max_plus_min": 4,
+        "per_axis_range": {
+          "hc": [
+            -4,
+            7
+          ],
+          "fj": [
+            -3,
+            1
+          ],
+          "ar": [
+            -3,
+            4
+          ],
+          "al": [
+            -4,
+            2
+          ],
+          "lt": [
+            -2,
+            5
+          ],
+          "it": [
+            -2,
+            4
+          ],
+          "sp": [
+            -7,
+            5
+          ],
+          "uc": [
+            -3,
+            6
+          ]
+        },
+        "printed_verdicts": {
+          "RESPONSIBLE": 2,
+          "AMBIGUOUS": 3,
+          "QUESTIONABLE": 4,
+          "HARMFUL": 2
+        },
+        "float_average_verdicts": {
+          "RESPONSIBLE": 2,
+          "AMBIGUOUS": 3,
+          "QUESTIONABLE": 4,
+          "HARMFUL": 2
+        },
+        "printed_tier_verdict_inconsistent_with_float_average": 0,
+        "distinct_choices": 17,
+        "axes_moved_per_choice": {
+          "min": 4,
+          "max": 8,
+          "mean": 5
+        },
+        "knots": 12,
+        "knots_reached": 12,
+        "uniform_random_policy_mean_average": 0.2344,
+        "unreachable_verdict_tiers": [
+          "EXEMPLARY"
+        ],
+        "axes_never_negative": [],
+        "axes_never_positive": []
+      }
+    }
+  ]
+}

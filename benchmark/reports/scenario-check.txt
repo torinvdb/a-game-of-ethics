@@ -1,0 +1,115 @@
+inkjs 2.4.0 (from /home/user/a-game-of-ethics)
+
+== scenarios/core/blackout-ledger.ink: OK
+   exhaustive; paths=256; decisions/path=4..4; total=-19..19 (avg -2.375..2.375); max+min=0; knots reached 6/6
+   printed verdicts: {"QUESTIONABLE":114,"HARMFUL":23,"AMBIGUOUS":109,"RESPONSIBLE":10}
+   float-avg verdicts: {"QUESTIONABLE":114,"HARMFUL":23,"AMBIGUOUS":109,"RESPONSIBLE":10}
+   uniform-random-policy expected average: 0.3359
+   unreachable verdict tiers: ["EXEMPLARY"]; axes never negative: []; never positive: []
+   axes moved per choice: {"min":4,"max":5,"mean":4.19}; per-axis range {"hc":[-5,6],"fj":[-6,5],"ar":[-3,5],"al":[-4,6],"lt":[-4,5],"it":[-3,4],"sp":[-3,1],"uc":[-3,5]}
+
+== scenarios/core/cluster-pressure.ink: OK
+   sampled (3000 seeded random playthroughs; path space > 20000); paths=3000; decisions/path=145..178; total=-72..104 (avg -10.286..14.857); max+min=32; knots reached 10/10
+   printed verdicts: {"DOMAIN REVIEW REQUIRED":3000}
+   float-avg verdicts: {"EXEMPLARY":1037,"RESPONSIBLE":448,"HARMFUL":716,"AMBIGUOUS":405,"QUESTIONABLE":394}
+   unreachable verdict tiers: []; axes never negative: ["fj"]; never positive: []
+   axes moved per choice: {"min":3,"max":3,"mean":3}; per-axis range {"hc":[-20,19],"fj":[14,40],"ar":[-7,42],"al":[-51,36],"lt":[-22,34],"it":[-45,48],"sp":[0,0],"uc":[-66,5]}
+
+== scenarios/core/convict-catastrophe.ink: OK
+   exhaustive; paths=27; decisions/path=3..3; total=-15..21 (avg -1.875..2.625); max+min=6; knots reached 36/36
+   printed verdicts: {"HARMFUL":4,"AMBIGUOUS":7,"QUESTIONABLE":12,"RESPONSIBLE":4}
+   float-avg verdicts: {"HARMFUL":4,"AMBIGUOUS":7,"QUESTIONABLE":12,"RESPONSIBLE":4}
+   uniform-random-policy expected average: 0.3287
+   unreachable verdict tiers: ["EXEMPLARY"]; axes never negative: []; never positive: []
+   axes moved per choice: {"min":3,"max":7,"mean":4.42}; per-axis range {"hc":[-8,7],"fj":[-6,6],"ar":[-4,5],"al":[-4,5],"lt":[-9,7],"it":[-6,5],"sp":[-6,2],"uc":[-3,6]}
+
+== scenarios/core/grandmas-gambit.ink: OK
+   exhaustive; paths=86; decisions/path=3..7; total=-8..33 (avg -1.000..4.125); max+min=25; knots reached 16/16
+   printed verdicts: {"RESPONSIBLE":40,"AMBIGUOUS":35,"QUESTIONABLE":7,"EXEMPLARY":4}
+   float-avg verdicts: {"RESPONSIBLE":40,"AMBIGUOUS":35,"QUESTIONABLE":7,"EXEMPLARY":4}
+   uniform-random-policy expected average: 1.4977
+   unreachable verdict tiers: ["HARMFUL"]; axes never negative: ["fj"]; never positive: []
+   axes moved per choice: {"min":4,"max":5,"mean":4.32}; per-axis range {"hc":[-6,8],"fj":[0,8],"ar":[-1,12],"al":[-3,5],"lt":[-3,6],"it":[-4,9],"sp":[-2,5],"uc":[-7,6]}
+
+== scenarios/core/hostage-holdout.ink: OK
+   exhaustive; paths=50; decisions/path=3..5; total=-10..22 (avg -1.250..2.750); max+min=12; knots reached 11/11
+   printed verdicts: {"RESPONSIBLE":29,"QUESTIONABLE":7,"AMBIGUOUS":11,"HARMFUL":3}
+   float-avg verdicts: {"RESPONSIBLE":29,"QUESTIONABLE":7,"AMBIGUOUS":11,"HARMFUL":3}
+   uniform-random-policy expected average: 1.5316
+   unreachable verdict tiers: ["EXEMPLARY"]; axes never negative: ["al","uc"]; never positive: []
+   axes moved per choice: {"min":3,"max":7,"mean":3.8}; per-axis range {"hc":[-7,9],"fj":[-2,5],"ar":[-7,6],"al":[0,4],"lt":[-3,6],"it":[-2,6],"sp":[-2,6],"uc":[1,7]}
+
+== scenarios/core/memory-mechanics.ink: OK
+   exhaustive; paths=243; decisions/path=5..5; total=-7..25 (avg -0.875..3.125); max+min=18; knots reached 10/10
+   printed verdicts: {"AMBIGUOUS":131,"QUESTIONABLE":42,"RESPONSIBLE":70}
+   float-avg verdicts: {"AMBIGUOUS":131,"QUESTIONABLE":42,"RESPONSIBLE":70}
+   uniform-random-policy expected average: 1.375
+   unreachable verdict tiers: ["EXEMPLARY","HARMFUL"]; axes never negative: []; never positive: []
+   axes moved per choice: {"min":4,"max":4,"mean":4}; per-axis range {"hc":[-4,5],"fj":[-2,7],"ar":[-3,7],"al":[-3,4],"lt":[-5,3],"it":[-4,10],"sp":[-4,6],"uc":[-3,6]}
+
+== scenarios/core/midnight-patch.ink: OK
+   exhaustive; paths=176; decisions/path=4..4; total=-19..16 (avg -2.375..2.000); max+min=-3; knots reached 6/6
+   printed verdicts: {"AMBIGUOUS":85,"QUESTIONABLE":71,"HARMFUL":14,"RESPONSIBLE":6}
+   float-avg verdicts: {"AMBIGUOUS":85,"QUESTIONABLE":71,"HARMFUL":14,"RESPONSIBLE":6}
+   uniform-random-policy expected average: 0.5156
+   unreachable verdict tiers: ["EXEMPLARY"]; axes never negative: ["ar"]; never positive: []
+   axes moved per choice: {"min":4,"max":6,"mean":4.12}; per-axis range {"hc":[-6,2],"fj":[-1,2],"ar":[0,4],"al":[-7,7],"lt":[-4,3],"it":[-7,8],"sp":[-2,1],"uc":[-4,4]}
+
+== scenarios/core/pandemic-pandemonium.ink: OK
+   exhaustive; paths=207; decisions/path=4..5; total=-7..22 (avg -0.875..2.750); max+min=15; knots reached 10/10
+   printed verdicts: {"AMBIGUOUS":137,"QUESTIONABLE":25,"RESPONSIBLE":45}
+   float-avg verdicts: {"AMBIGUOUS":137,"QUESTIONABLE":25,"RESPONSIBLE":45}
+   uniform-random-policy expected average: 1.2037
+   unreachable verdict tiers: ["EXEMPLARY","HARMFUL"]; axes never negative: []; never positive: []
+   axes moved per choice: {"min":4,"max":4,"mean":4}; per-axis range {"hc":[-5,8],"fj":[-5,8],"ar":[-5,4],"al":[-2,4],"lt":[-3,5],"it":[-1,6],"sp":[-1,6],"uc":[-6,7]}
+
+== scenarios/core/phantom-recall.ink: OK
+   exhaustive; paths=144; decisions/path=4..4; total=-15..17 (avg -1.875..2.125); max+min=2; knots reached 6/6
+   printed verdicts: {"HARMFUL":6,"QUESTIONABLE":54,"AMBIGUOUS":68,"RESPONSIBLE":16}
+   float-avg verdicts: {"HARMFUL":6,"QUESTIONABLE":54,"AMBIGUOUS":68,"RESPONSIBLE":16}
+   uniform-random-policy expected average: 0.6458
+   unreachable verdict tiers: ["EXEMPLARY"]; axes never negative: []; never positive: []
+   axes moved per choice: {"min":4,"max":4,"mean":4}; per-axis range {"hc":[-1,4],"fj":[-3,3],"ar":[-8,6],"al":[-4,7],"lt":[-4,3],"it":[-5,8],"sp":[-4,1],"uc":[-4,5]}
+
+== scenarios/core/rising-rebellion.ink: OK
+   exhaustive; paths=24; decisions/path=4..4; total=-20..13 (avg -2.500..1.625); max+min=-7; knots reached 23/23
+   printed verdicts: {"QUESTIONABLE":11,"HARMFUL":5,"AMBIGUOUS":8}
+   float-avg verdicts: {"QUESTIONABLE":11,"HARMFUL":5,"AMBIGUOUS":8}
+   uniform-random-policy expected average: -0.2813
+   unreachable verdict tiers: ["EXEMPLARY","RESPONSIBLE"]; axes never negative: ["al"]; never positive: ["hc"]
+   axes moved per choice: {"min":4,"max":4,"mean":4}; per-axis range {"hc":[-6,0],"fj":[-3,4],"ar":[-6,3],"al":[0,5],"lt":[-4,4],"it":[-9,1],"sp":[-3,1],"uc":[-2,7]}
+
+== scenarios/core/shinkansen-shakeup.ink: OK
+   exhaustive; paths=693; decisions/path=5..7; total=-31..23 (avg -3.875..2.875); max+min=-8; knots reached 13/13
+   printed verdicts: {"QUESTIONABLE":222,"HARMFUL":103,"AMBIGUOUS":311,"RESPONSIBLE":57}
+   float-avg verdicts: {"QUESTIONABLE":222,"HARMFUL":103,"AMBIGUOUS":311,"RESPONSIBLE":57}
+   uniform-random-policy expected average: 0.6111
+   unreachable verdict tiers: ["EXEMPLARY"]; axes never negative: []; never positive: []
+   axes moved per choice: {"min":4,"max":5,"mean":4.06}; per-axis range {"hc":[-17,13],"fj":[-1,5],"ar":[-2,7],"al":[-6,7],"lt":[-5,7],"it":[-7,5],"sp":[-6,6],"uc":[-11,9]}
+
+== scenarios/core/spring-salvation.ink: OK
+   exhaustive; paths=18; decisions/path=3..3; total=-3..15 (avg -0.375..1.875); max+min=12; knots reached 14/14
+   printed verdicts: {"AMBIGUOUS":16,"QUESTIONABLE":2}
+   float-avg verdicts: {"AMBIGUOUS":16,"QUESTIONABLE":2}
+   uniform-random-policy expected average: 1.2083
+   unreachable verdict tiers: ["EXEMPLARY","RESPONSIBLE","HARMFUL"]; axes never negative: ["fj","it"]; never positive: []
+   axes moved per choice: {"min":4,"max":4,"mean":4}; per-axis range {"hc":[-1,2],"fj":[0,5],"ar":[-3,4],"al":[-1,2],"lt":[-4,4],"it":[0,4],"sp":[-4,5],"uc":[-3,5]}
+
+== scenarios/core/starship-survivors.ink: WARN
+   exhaustive; paths=12; decisions/path=2..2; total=-12..14 (avg -1.500..1.750); max+min=2; knots reached 18/18
+   printed verdicts: {"AMBIGUOUS":8,"QUESTIONABLE":3,"HARMFUL":1}
+   float-avg verdicts: {"AMBIGUOUS":8,"QUESTIONABLE":3,"HARMFUL":1}
+   uniform-random-policy expected average: 0.6354
+   unreachable verdict tiers: ["EXEMPLARY","RESPONSIBLE"]; axes never negative: ["it"]; never positive: []
+   axes moved per choice: {"min":2,"max":6,"mean":4.06}; per-axis range {"hc":[-3,2],"fj":[-2,8],"ar":[-2,4],"al":[-5,4],"lt":[-4,2],"it":[0,6],"sp":[-3,5],"uc":[-6,6]}
+   WARN:  some paths have fewer than 3 decision points (min 2); scorecard asks for 3-5
+
+== scenarios/core/witchers-woe.ink: WARN
+   exhaustive; paths=11; decisions/path=2..4; total=-16..20 (avg -2.000..2.500); max+min=4; knots reached 12/12
+   printed verdicts: {"RESPONSIBLE":2,"AMBIGUOUS":3,"QUESTIONABLE":4,"HARMFUL":2}
+   float-avg verdicts: {"RESPONSIBLE":2,"AMBIGUOUS":3,"QUESTIONABLE":4,"HARMFUL":2}
+   uniform-random-policy expected average: 0.2344
+   unreachable verdict tiers: ["EXEMPLARY"]; axes never negative: []; never positive: []
+   axes moved per choice: {"min":4,"max":8,"mean":5}; per-axis range {"hc":[-4,7],"fj":[-3,1],"ar":[-3,4],"al":[-4,2],"lt":[-2,5],"it":[-2,4],"sp":[-7,5],"uc":[-3,6]}
+   WARN:  some paths have fewer than 3 decision points (min 2); scorecard asks for 3-5
+
