@@ -79,6 +79,12 @@ class ProviderContractTests(unittest.TestCase):
         sent = json.loads(mock.requests[0]['body'])
         self.assertEqual((sent['model'], sent['temperature'], mock.requests[0]['auth']), ('fixture-model', 0, 'Bearer k'))
 
+    def test_usage_and_served_model_reported_when_present(self):
+        body = dict(completion('{"action":"keep","reason":"r"}'), model='served/x',
+                    usage={'prompt_tokens': 120, 'completion_tokens': 30})
+        out, _, _ = self.call([ok(body)])
+        self.assertEqual((out['usage'], out['served_model']), ({'input_tokens': 120, 'output_tokens': 30}, 'served/x'))
+
     def test_tool_call_style_reply(self):
         call = [{'id': 'c1', 'type': 'function', 'function': {'name': 'choose_action',
                  'arguments': '{"action":"redact","reason":"consent expired"}'}}]

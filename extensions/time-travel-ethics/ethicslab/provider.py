@@ -83,6 +83,17 @@ def parse_decision(data):
     return {'action': answer['action'], 'reason': str(answer.get('reason', ''))[:1000]}
 
 
+def _with_usage(result, data):
+    """Attach token counts and the served model when the envelope reports them (for cost caps)."""
+    usage = data.get('usage') if isinstance(data, dict) else None
+    if isinstance(usage, dict):
+        result['usage'] = {'input_tokens': int(usage.get('prompt_tokens') or 0),
+                           'output_tokens': int(usage.get('completion_tokens') or 0)}
+    if isinstance(data, dict) and isinstance(data.get('model'), str):
+        result['served_model'] = data['model'][:200]
+    return result
+
+
 def _retry_after(headers):
     value = headers.get('Retry-After') if headers else None
     try:
@@ -114,9 +125,10 @@ def chat_completion(endpoint, model, messages, api_key=None, timeout=60, retries
             except (json.JSONDecodeError, UnicodeDecodeError):
                 raise ProviderError('non_json', attempt)
             try:
-                return parse_decision(data)
+                result = parse_decision(data)
             except ProviderError as error:
                 raise ProviderError(error.kind, attempt)
+            return _with_usage(result, data)
         except ProviderError as error:
             if error.kind == 'redirect_refused':
                 raise ProviderError('redirect_refused', attempt)

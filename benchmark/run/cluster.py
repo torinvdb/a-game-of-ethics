@@ -7,7 +7,8 @@
       [--stage pilot|full] [--models a,b] [--reps N] [--budget-usd X] [--dry-run]
 
 Each replay calls the model once per decision through ethicslab.cluster_agent with
-ETHICS_PROVIDER=anthropic. Adapter failures end the trajectory and are reported as
+ETHICS_PROVIDER=anthropic, or through an OpenAI-compatible endpoint when the config has
+e1b_cluster.openai. Adapter failures end the trajectory and are reported as
 execution failures. Results: <out>/<model>/<variant>/rep-<n>.json and summary.json.
 """
 import argparse
@@ -82,23 +83,39 @@ def stage_params(e1b, stage, reps=None, budget=None):
 CLUSTER_MAX_RETRIES = 3
 
 
-def replay_env(base):
-    return dict(base, ETHICS_PROVIDER='anthropic', ETHICS_ANTHROPIC_MAX_RETRIES=str(CLUSTER_MAX_RETRIES))
+# OpenAI-compatible endpoints (e1b_cluster.openai in the config): a request may take up to
+# OPENAI_TIMEOUT_S and is retried twice by ethicslab/provider.py, inside the decision budget.
+OPENAI_TIMEOUT_S = 75
 
 
-def replay_command(model, story, out, dry_run):
-    return ['node', str(EXT / 'tools/replay-cluster.mjs'), '--story', str(story), '--output', str(out),
-            '--policy', 'impact-aware' if dry_run else 'live', '--model', model, '--repo', str(ROOT),
-            '--decision-timeout-ms', str(DECISION_TIMEOUT_MS)]
+def replay_env(base, openai=None):
+    if not openai:
+        return dict(base, ETHICS_PROVIDER='anthropic', ETHICS_ANTHROPIC_MAX_RETRIES=str(CLUSTER_MAX_RETRIES))
+    env = {k: v for k, v in base.items() if k != 'ETHICS_PROVIDER'}
+    env['ETHICS_API_KEY'] = base.get('OPENROUTER_API_KEY') or base.get('ETHICS_API_KEY', '')
+    env['ETHICS_TIMEOUT_S'] = str(OPENAI_TIMEOUT_S)
+    env['ETHICS_TEMPERATURE'] = str(openai.get('temperature', 0))
+    if openai.get('max_tokens'):
+        env['ETHICS_MAX_TOKENS'] = str(openai['max_tokens'])
+    if str(openai.get('response_format', '')).startswith('json_schema'):
+        env['ETHICS_JSON_SCHEMA'] = '1'
+    return env
 
 
-def one(job, dry_run):
+def replay_command(model, story, out, dry_run, endpoint=None):
+    cmd = ['node', str(EXT / 'tools/replay-cluster.mjs'), '--story', str(story), '--output', str(out),
+           '--policy', 'impact-aware' if dry_run else 'live', '--model', model, '--repo', str(ROOT),
+           '--decision-timeout-ms', str(DECISION_TIMEOUT_MS)]
+    return cmd + ['--endpoint', endpoint] if endpoint and not dry_run else cmd
+
+
+def one(job, dry_run, openai=None):
     model, variant, rep, story, out = job
     out.parent.mkdir(parents=True, exist_ok=True)
     if out.exists():
         return json.loads(out.read_text())
-    env = replay_env(os.environ)
-    cmd = replay_command(model, story, out, dry_run)
+    env = replay_env(os.environ, openai)
+    cmd = replay_command(model, story, out, dry_run, (openai or {}).get('endpoint'))
     proc = subprocess.run(cmd, cwd=EXT, env=env, check=False, capture_output=True, text=True, timeout=36000)
     if out.exists():
         return json.loads(out.read_text())
@@ -124,14 +141,17 @@ def main():
     models = a.models.split(',') if a.models else [m['id'] for m in cfg['models']]
     prices = {m['id']: m['price_per_mtok'] for m in cfg['models']}
     reps, budget = stage_params(e1b, a.stage, a.reps, a.budget_usd)
-    if not a.dry_run and not (os.environ.get('ANTHROPIC_API_KEY') or os.environ.get('ANTHROPIC_AUTH_TOKEN')):
+    openai = e1b.get('openai')
+    if openai and not a.dry_run and not (os.environ.get('OPENROUTER_API_KEY') or os.environ.get('ETHICS_API_KEY')):
+        sys.exit('Set OPENROUTER_API_KEY before a live run (or pass --dry-run).')
+    if not openai and not a.dry_run and not (os.environ.get('ANTHROPIC_API_KEY') or os.environ.get('ANTHROPIC_AUTH_TOKEN')):
         sys.exit('Set ANTHROPIC_API_KEY before a live run (or pass --dry-run).')
     jobs = [(m, v, r, story_path(a.stories, v), a.out / m / v / f'rep-{r}.json')
             for m in models for v in e1b['variants'] for r in range(reps)]
     for _, v, _, s, _ in jobs:
         if not s.exists():
             sys.exit(f'missing story for variant {v}: {s}')
-    done, spent, not_started = schedule(jobs, lambda job: one(job, a.dry_run),
+    done, spent, not_started = schedule(jobs, lambda job: one(job, a.dry_run, openai),
                                         lambda job, run: cost_of(run.get('records', []), prices[job[0]])[0],
                                         budget, e1b.get('concurrency', 3))
     if not_started:
