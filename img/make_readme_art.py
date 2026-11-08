@@ -29,7 +29,7 @@ FONTS = TALK / 'assets/fonts'
 # The deck's Dela Gothic One is subset to the deck's own kanji; the demo subset covers the section labels.
 KANJI_FONT = TALK / 'demo/city/type/DelaGothicOne-demo.ttf'
 BW, BH = 1280, 400
-SW, SH = 1280, 64
+SW, SH = 1280, 112
 GIF_LIMIT = 1_500_000
 
 BG = (7, 6, 13)
@@ -150,26 +150,25 @@ def banner_frame(base: np.ndarray, frame: int) -> Image.Image:
 def strip(num: str, kanji: str, label: str, color) -> Image.Image:
     a = np.zeros((SH, SW, 3), np.float32) + np.array(BG, np.float32)
     x = np.linspace(0, 1, SW)[None, :, None]
-    a = a + np.array(color, np.float32) * 0.10 * np.clip(1 - x * 1.6, 0, 1)
+    a = a + np.array(color, np.float32) * 0.12 * np.clip(1 - x * 1.6, 0, 1)
     back = Image.new('RGB', (SW, SH), 0)
     light = Image.new('RGB', (SW, SH), 0)
     ld = ImageDraw.Draw(light)
     dim = tuple(int(c * 0.45) for c in color)
-    ld.line((0, 2, SW, 2), fill=dim, width=1)
-    ld.line((0, SH - 3, SW, SH - 3), fill=color, width=2)
-    ld.rectangle((16, 12, 70, SH - 14), outline=color, width=2)
-    mono = font('ShareTechMono-Regular.ttf', 26)
-    ld.text((25, 16), num, font=mono, fill=AMBER if color != AMBER else MAGENTA)
-    kf = ImageFont.truetype(str(KANJI_FONT), 36)
-    ld.text((92, 8), kanji, font=kf, fill=color)
-    ld.text((max(196, 92 + int(ld.textlength(kanji, font=kf)) + 20), 9), label, font=font('Oswald-Bold.ttf', 34), fill=PAPER)
+    ld.rectangle((16, 22, 104, SH - 22), outline=color, width=3)
+    mono = font('ShareTechMono-Regular.ttf', 44)
+    ld.text((60, SH // 2), num, font=mono, fill=AMBER if color != AMBER else MAGENTA, anchor='mm')
+    kf = ImageFont.truetype(str(KANJI_FONT), 64)
+    ld.text((132, SH // 2), kanji, font=kf, fill=color, anchor='lm')
+    lx = 132 + int(ld.textlength(kanji, font=kf)) + 32
+    ld.text((lx, SH // 2), label, font=font('Oswald-Bold.ttf', 60), fill=PAPER, anchor='lm')
     # right-hand HUD: tick ruler and a status readout
-    for i, xx in enumerate(range(SW - 420, SW - 140, 10)):
-        h = 14 if i % 5 == 0 else 7
-        ld.line((xx, SH - 10 - h, xx, SH - 10), fill=dim, width=1)
-    ld.text((SW - 124, 20), f'SEC.{num}', font=font('ShareTechMono-Regular.ttf', 20), fill=dim)
+    for i, xx in enumerate(range(SW - 420, SW - 160, 10)):
+        h = 22 if i % 5 == 0 else 11
+        ld.line((xx, SH - 24 - h, xx, SH - 24), fill=dim, width=2)
+    ld.text((SW - 30, SH // 2 - 8), f'SEC.{num}', font=font('ShareTechMono-Regular.ttf', 26), fill=dim, anchor='rm')
     a = a + arr(back)
-    a = bloom(a, light, 8, 0.3)
+    a = bloom(a, light, 10, 0.3)
     return img(scanlines(a, 3, 0.25))
 
 

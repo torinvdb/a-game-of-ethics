@@ -14,8 +14,6 @@ A Game of Ethics evaluates how large language models and agents make ethical dec
 
 <img src="img/readme/section-01-overview.png" alt="Section 01: 概要 Overview" width="100%">
 
-## Overview
-
 | Path | Contents |
 |---|---|
 | [`ethi-cli.js`](ethi-cli.js), [`src/`](src/) | CLI: manual play, model runs over OpenRouter or any OpenAI-compatible endpoint, analysis, scenario validator |
@@ -29,8 +27,6 @@ A Game of Ethics evaluates how large language models and agents make ethical dec
 | [`index.html`](index.html) | Project site ([GitHub Pages](https://torinvdb.github.io/a-game-of-ethics/)) |
 
 <img src="img/readme/section-02-scoring.png" alt="Section 02: 採点 Scoring" width="100%">
-
-## Scoring
 
 Each choice moves several axes (about 4 on average), typically by -3 to +3 each, with a comment giving the rationale. Per-scenario counts are in [`benchmark/reports/scenario-check.txt`](benchmark/reports/scenario-check.txt).
 
@@ -59,8 +55,6 @@ A uniformly random policy already scores between -0.28 and 1.53 depending on the
 
 <img src="img/readme/section-03-scenarios.png" alt="Section 03: シナリオ Scenarios" width="100%">
 
-## Scenarios
-
 | Scenario | Split | Setting | Main tensions |
 |---|---|---|---|
 | [Convict Catastrophe](scenarios/core/convict-catastrophe.ink) | dev | Prison warden during a facility emergency | Authority vs. care, justice vs. utility |
@@ -82,8 +76,6 @@ Held-out scenarios are not used for prompt, scaffold or harness tuning. They are
 
 <img src="img/readme/section-04-time-travel.png" alt="Section 04: 時間旅行 Time-travel" width="100%">
 
-## Time-travel extension
-
 [`extensions/time-travel-ethics/`](extensions/time-travel-ethics/README.md) tests whether earlier decisions change later ones over 36 logical months: a global bypass persists, exceptions expire, capacity credits run out and backlogs grow. It contains:
 
 - the **Cluster Pressure** Ink scenario, replayed through the same inkjs runtime as the core CLI ([scenario spec](extensions/time-travel-ethics/docs/CLUSTER-SCENARIO.md));
@@ -96,12 +88,14 @@ The KubeCon talk built on this extension, *Three Years in Thirty Minutes*, is in
 
 <img src="img/readme/section-05-results.png" alt="Section 05: 結果 Results" width="100%">
 
-## Results
-
-None of the existing data was collected under the v2 protocol; read it with the notice at the top of this page.
+The experiments in `benchmark/experiments/` ran under the v2 protocol. The older data predates it; read it with the notice at the top of this page.
 
 | Data | Contents |
 |---|---|
+| [`benchmark/experiments/e1-anthropic/`](benchmark/experiments/e1-anthropic/RUN-NOTES.md) | E1: Claude Haiku, Sonnet and Opus 5.5 on 13 scenarios × 2 framings × 30 reps (2,335 runs), and 36-month Cluster Pressure (45 trajectories) |
+| [`benchmark/experiments/e4-generations/`](benchmark/experiments/e4-generations/RUN-NOTES.md) | E4: the same protocol on Claude Opus 5 and Sonnet 5 and on Qwen3.8-27B, plus a combined six-model analysis |
+| [`benchmark/experiments/e3-harness/`](benchmark/experiments/e3-harness/analysis-opus/compare.md) | E3: the same models under three harnesses; choice shifts stay inside run-to-run noise |
+| [`benchmark/experiments/e2-openrouter-free/`](benchmark/experiments/e2-openrouter-free/RUN-NOTES.md) | E2: free open-weights models on OpenRouter (in progress) |
 | [`results/init-eval/`](results/init-eval/) | May 2025 hackathon runs: 400 model runs (random fallbacks), 11 human runs. Original analysis in [`report/`](report/game_of_ethics_analysis.py) and [`report/init-eval/`](report/init-eval/init-report.md) |
 | [`results/gpt-oss-20b/`](results/gpt-oss-20b/) | 130 gpt-oss-20b runs, 87 valid |
 | [`benchmark/reports/`](benchmark/reports/README.md) | Re-analysis: validity, chance levels, bootstrap CIs, replay against current scenarios |
@@ -110,8 +104,6 @@ None of the existing data was collected under the v2 protocol; read it with the 
 New model runs are written to `results/runs/` by default (one JSON file per run, with choices, reasoning, axis scores and verdict).
 
 <img src="img/readme/section-06-protocol.png" alt="Section 06: 手順 Protocol" width="100%">
-
-## Protocol
 
 Results meant for comparison follow the pre-registered [evaluation protocol](benchmark/PROTOCOL.md):
 
@@ -122,11 +114,9 @@ Results meant for comparison follow the pre-registered [evaluation protocol](ben
 - Two or more independent reviewers score the axis deltas; Krippendorff's alpha is reported. This review is still pending.
 - `python3 benchmark/stats.py` reports bootstrap 95% CIs, Holm-corrected pairwise tests and effect sizes. Models with overlapping CIs are not ranked.
 
-First pre-registered experiment: [E1, Claude Haiku/Sonnet/Opus 5.5](benchmark/experiments/e1-anthropic/DESIGN.md) (design and runner ready, not yet run). `node benchmark/run/run.mjs --provider mock` rehearses it offline.
+First pre-registered experiment: [E1, Claude Haiku/Sonnet/Opus 5.5](benchmark/experiments/e1-anthropic/DESIGN.md), run in November 2026 ([run notes](benchmark/experiments/e1-anthropic/RUN-NOTES.md), [analysis](benchmark/experiments/e1-anthropic/runs/full/analysis/summary.md)). `node benchmark/run/run.mjs --provider mock` rehearses a run offline.
 
 <img src="img/readme/section-07-quickstart.png" alt="Section 07: 導入 Quickstart" width="100%">
-
-## Quickstart
 
 Requires Node.js ≥ 22.13 and, for the extension and benchmark statistics, Python ≥ 3.10. Ink is compiled in-process by `inkjs`; no separate Ink compiler is needed.
 
@@ -172,8 +162,6 @@ npm run bench:agent -- --stage smoke --scenarios hostage-holdout --agent-cmd "py
 | Inspect AI | `inspect eval agoe/agoe --model <provider/model>` | [Inspect](docs/INSPECT.md) |
 
 <img src="img/readme/section-08-credits.png" alt="Section 08: 謝辞 Credits" width="100%">
-
-## Credits
 
 Released under the [MIT license](LICENSE). Research references: [resources.md](resources.md).
 
