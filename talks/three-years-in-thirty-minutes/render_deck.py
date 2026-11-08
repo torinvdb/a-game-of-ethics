@@ -281,18 +281,20 @@ def layout(s: Scene):
         top = 360 if appendix else 392
         for x, w, txt in zip(xs, ws, sl['columns']):
             s.text(x, top, w, txt, 18, MUTED, 'mono')
-        step = 52 if appendix else 70
-        size = 26 if appendix else 30
+        dense = appendix or len(items) > 5
+        step = 52 if dense else 70
+        size = 26 if dense else 30
+        plain = sl.get('plain', False)  # numeric tables: no red/amber flags on columns 2 and 4
         for j, row in enumerate(items):
             y = top + 40 + j * step
             g = 0 if appendix else j + 1
-            bad = row[2] not in ('0',)
+            bad = row[2] not in ('0',) and not plain
             s.line(104, y - 10, 1400, color='24393A', thick=1, g=g)
             s.text(xs[0], y, ws[0], row[0], size - 2, FG, 'display', g=g, upper=True)
             for k in range(1, 5):
-                c = RED if (k == 2 and bad) else (AMBER if (k == 4 and row[4] != '0') else TEAL)
+                c = RED if (k == 2 and bad) else (AMBER if (k == 4 and row[4] != '0' and not plain) else TEAL)
                 s.text(xs[k], y, ws[k], row[k], size, c, 'mono', g=g)
-        s.text(104, 770, 1400, sl['takeaway'], 26 if not appendix else 22, AMBER, 'body', g=0 if appendix else 4,
+        s.text(104, 770, 1400, sl['takeaway'], 26 if not appendix else 22, AMBER, 'body', g=0 if appendix else len(items),
                delay=400)
     elif kind == 'fairness':
         title_block(s)

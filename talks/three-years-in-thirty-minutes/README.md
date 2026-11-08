@@ -5,9 +5,11 @@ CNCF-Hosted Co-located Events North America 2026 (co-located day: Mon 9 Nov 2026
 Salt Lake City, per search results on 6 Nov 2026; **confirm room/time on the official
 schedule**, as no public listing for this session was found).
 
-**v2:** 15 main slides, **22 min 50 s** planned including a 4-minute demo, which
-leaves about 7 minutes for questions. Five hidden appendix slides cover the evidence
-boundary, the full calibration table, sources, the regulatory map and fallbacks.
+**v2:** 16 main slides, **24 min 05 s** planned including a 4-minute demo, which
+leaves about 6 minutes for questions. Slide 11 shows real model runs (Claude 5 and 5.5,
+Qwen3.8-27B) on Cluster Pressure. Six hidden appendix slides cover the evidence
+boundary, the full calibration table, held-out results for six models, sources, the
+regulatory map and fallbacks.
 
 One story runs through the talk: **incident → decision → persistent consequence →
 test method → evidence → adoption decision.**
@@ -16,10 +18,10 @@ test method → evidence → adoption decision.**
 
 | File | Use it for |
 | --- | --- |
-| [`three-years.pptx`](three-years.pptx) | **Presenting.** Editable text, 44 native click reveals, auto title wipes, neon flicker-on entrances, a looping motion-path packet, 9 embedded animated GIFs |
+| [`three-years.pptx`](three-years.pptx) | **Presenting.** Editable text, 50 native click reveals, auto title wipes, neon flicker-on entrances, a looping motion-path packet, 9 embedded animated GIFs |
 | [`three-years-static.pptx`](three-years-static.pptx) | Low-motion / compatibility fallback: no timings, stills only |
 | [`three-years.html`](three-years.html) | Fully offline browser deck (fonts and media embedded): speaker notes, timer, reduced motion |
-| [`three-years.pdf`](three-years.pdf) | Handout: all 20 slides, fully revealed |
+| [`three-years.pdf`](three-years.pdf) | Handout: all 22 slides, fully revealed |
 | [`speaker-notes.md`](speaker-notes.md) | Two-speaker script with `[CLICK]` cues, handoffs, timings and Q&A prep |
 | [`DEMO-RUNBOOK.md`](DEMO-RUNBOOK.md) | Rehearsed demo commands, expected output and fallbacks |
 | [`demo/replay.py`](demo/replay.py) | Stage-friendly retro replay of recorded trajectories |
@@ -52,14 +54,14 @@ Each animation maps to a slide's point:
 
 | Slide | Motion |
 | --- | --- |
-| 01, 15 | 倫理 sign with a failing tube |
+| 01, 16 | 倫理 sign with a failing tube |
 | 02 | CRT console types the incident |
 | 03 | The "disable" sign is the one that sparks |
 | 05 | Oscilloscope sweep over three branches and 36 months |
 | 06 | Nixie month counter, VFD wall clock, core-memory state |
 | 08 | Robot arm stamps the scenario cartridge FROZEN with its real hash prefix |
-| 11 | Label swap; 36 LEDs flip for the biased control |
-| 12 | Faulting arm: "adapter fault, logged, not scored" |
+| 12 | Label swap; 36 LEDs flip for the biased control |
+| 13 | Faulting arm: "adapter fault, logged, not scored" |
 
 ## Build
 

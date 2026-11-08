@@ -1,7 +1,7 @@
 # Three Years in Thirty Minutes: Time-Travel Ethics Evaluation for AI Agents
 Torin van den Bulk · Vicente Herrera · CNCF-Hosted Co-located Events North America 2026
 
-**Main talk: 15 slides, 22 min 50 s planned** (incl. a 4-minute demo) → about 7 minutes for questions in a 30-minute slot. 5 hidden appendix slides follow the closing slide.
+**Main talk: 16 slides, 24 min 05 s planned** (incl. a 4-minute demo) → about 6 minutes for questions in a 30-minute slot. 6 hidden appendix slides follow the closing slide.
 
 | # | Slide | Speaker | Seconds | Cumulative |
 | ---: | --- | --- | ---: | ---: |
@@ -15,11 +15,12 @@ Torin van den Bulk · Vicente Herrera · CNCF-Hosted Co-located Events North Ame
 | 08 | Freeze the scenario. Test the whole agent. | VICENTE | 90 | 11:10 |
 | 09 | Live: replay one incident for 36 months. | VICENTE | 240 | 15:10 |
 | 10 | Same incident. Different costs. | TORIN | 90 | 16:40 |
-| 11 | Zero violations can still be unfair. | TORIN | 80 | 18:00 |
-| 12 | Keep four ledgers, not one score. | VICENTE | 80 | 19:20 |
-| 13 | Run it on the stack you already operate. | VICENTE | 80 | 20:40 |
-| 14 | Before you grant more autonomy… | TORIN | 90 | 22:10 |
-| 15 | Start with one hard incident. | BOTH | 40 | 22:50 |
+| 11 | Real models. Same incident. | TORIN | 75 | 17:55 |
+| 12 | Zero violations can still be unfair. | TORIN | 80 | 19:15 |
+| 13 | Keep four ledgers, not one score. | VICENTE | 80 | 20:35 |
+| 14 | Run it on the stack you already operate. | VICENTE | 80 | 21:55 |
+| 15 | Before you grant more autonomy… | TORIN | 90 | 23:25 |
+| 16 | Start with one hard incident. | BOTH | 40 | 24:05 |
 
 `[CLICK]` marks a presenter click (one reveal group). Handoffs are marked **HANDOFF**.
 
@@ -111,7 +112,16 @@ TORIN: One incident, four policies. [CLICK] Impact-aware: no violations, disrupt
 
 Sources: docs/agentic-ethics/evidence/cluster-calibration.json
 
-## 11. Zero violations can still be unfair.
+## 11. Real models. Same incident.
+*TORIN · 75 s*
+
+TORIN: Now the same incident with real models: 36 months, about 150 decisions per run, recorded. [CLICK] Opus 5.5: no violations, but it disrupts medical care about 6 times a run. [CLICK] Sonnet 5.5 protects care and pays in escalations, about 38 a run, and overdue exceptions. [CLICK] Haiku 5.5 keeps its exceptions on time and disrupts care instead. [CLICK] [CLICK] The previous Claude generation almost never disrupts care, and lets more exceptions run past their deadline. [CLICK] Qwen3.8-27B, an open-weights model, sits on the same table. Every row has zero violations, and every row still has a cost.
+
+> Means over the three E1b variants (generated, swapped, revenue-medical), 5 reps each: n = 15 complete trajectories per Claude model, n = 15 for Qwen. Violations = hard violations + exposure windows + disclosure failures, summed over all runs. Execution failures were re-run from month 1 and never scored. Impact units are authored, not clinical. Qwen ran through OpenRouter with temperature 1.0 and a JSON schema; Claude with adaptive thinking at medium effort.
+
+Sources: benchmark/experiments/e1-anthropic/RUN-NOTES.md; benchmark/experiments/e4-generations/RUN-NOTES.md
+
+## 12. Zero violations can still be unfair.
 *TORIN · 80 s*
 
 TORIN: Both of these policies have zero violations. [CLICK] We swap the labels, medical and education, and keep every operational fact identical. The impact-aware control changes no decisions. [CLICK] The label-biased control flips all 36. We injected that bias deliberately to check that the probe detects it. The next step is to run it on your own agent. Vicente.
@@ -120,7 +130,7 @@ TORIN: Both of these policies have zero violations. [CLICK] We swap the labels, 
 
 Sources: docs/agentic-ethics/evidence/cluster-calibration.json
 
-## 12. Keep four ledgers, not one score.
+## 13. Keep four ledgers, not one score.
 *VICENTE · 80 s*
 
 VICENTE: We keep four ledgers. [CLICK] Execution: timeouts and malformed output. A crashed adapter is a bug report. Scoring it as an ethical failure corrupts the data. [CLICK] Rules: did it use authority it lacked, or that had expired? [CLICK] Work: did it complete the tasks? [CLICK] People: who absorbed the disruption? In our mocked-tool scaffold, the permission guard blocked every forbidden tool call and still passed all 93 misleading reports, because a report is not a forbidden tool. Checking each report against the ledger caught every one that omitted something. Torin.
@@ -129,7 +139,7 @@ VICENTE: We keep four ledgers. [CLICK] Execution: timeouts and malformed output.
 
 Sources: docs/agentic-ethics/evidence/scaffold-calibration.json; DeepEval custom metrics
 
-## 13. Run it on the stack you already operate.
+## 14. Run it on the stack you already operate.
 *VICENTE · 80 s*
 
 VICENTE: This runs on the platform you already operate. [CLICK] Each evaluation is a Kubernetes Job: isolated, with no external egress. [CLICK] Flux reconciles the scenario and agent configuration from Git, so every result points at a commit. [CLICK] OpenTelemetry carries decisions as traces, next to your ops data. Status: the Job's container runs against a real collector, and a real Kubernetes API server admits the manifests under restricted pod security. No pod has run on a node yet. Torin.
@@ -138,7 +148,7 @@ VICENTE: This runs on the platform you already operate. [CLICK] Each evaluation 
 
 Sources: extensions/time-travel-ethics/deploy/
 
-## 14. Before you grant more autonomy…
+## 15. Before you grant more autonomy…
 *TORIN · 90 s*
 
 TORIN: Five questions for your release review. [CLICK] What is it for, and who is affected? [CLICK] What authority does it have, what expires, and who approves? [CLICK] When does it escalate? [CLICK] What evidence exists, including cases it never saw during development? [CLICK] Which changes trigger a re-test: a new model, prompt or tool? None of this is a compliance certificate. The evidence supports a human decision. A score does not grant authority.
@@ -147,7 +157,7 @@ TORIN: Five questions for your release review. [CLICK] What is it for, and who i
 
 Sources: NIST AI RMF 1.0; ISO/IEC 42001:2023; EU AI Act (Regulation (EU) 2024/1689)
 
-## 15. Start with one hard incident.
+## 16. Start with one hard incident.
 *BOTH · 40 s*
 
 TORIN: Start with the one incident that worries you most. VICENTE: Replay it, inspect the consequences, and challenge the result. TORIN: The code is open source. Thank you; we're happy to take questions.
@@ -170,21 +180,28 @@ Sources: docs/agentic-ethics/VALIDATION.md
 
 Sources: docs/agentic-ethics/evidence/cluster-calibration.json
 
-## A3. Research behind the method
+## A3. Held-out scenarios, six models
+*hidden appendix*
+
+> Mean and CI over held-out runs only; COMPLETED counts all 13 scenarios. Framing shift = mean total-variation distance between evaluation and deployment choice distributions per knot. Qwen: 9.7% of cells gave no parseable choice and are excluded, which can flatter its mean. Blackout Ledger for the 5.5 models comes from the E4 re-run on the current text.
+
+Sources: benchmark/experiments/e4-generations/runs/combined/analysis/summary.md
+
+## A4. Research behind the method
 *hidden appendix*
 
 > Do not cite anything not in the dossier.
 
 Sources: docs/agentic-ethics/research/
 
-## A4. Map the evidence to the actual use
+## A5. Map the evidence to the actual use
 *hidden appendix*
 
 > Dates verified from search-result summaries on 2026-11-06 (primary EUR-Lex/NIST/Colorado sites blocked from the build environment). Re-check before presenting: docs/agentic-ethics/research/REGULATORY-MAP.md.
 
 Sources: docs/agentic-ethics/research/
 
-## A5. If something breaks
+## A6. If something breaks
 *hidden appendix*
 
 Sources: DEMO-RUNBOOK.md
