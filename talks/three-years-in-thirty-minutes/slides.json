@@ -374,6 +374,77 @@
   ]
  },
  {
+  "id": "models",
+  "chapter": "05",
+  "kanji": "実測",
+  "section": "THE EVIDENCE",
+  "speaker": "TORIN",
+  "kind": "results",
+  "duration": 75,
+  "plate": "console-room",
+  "motion": "",
+  "title": "Real models.\nSame incident.",
+  "subtitle": "Cluster Pressure, 36 months, about 150 decisions. Recorded runs, mean per run.",
+  "columns": [
+   "MODEL",
+   "ESCALATIONS",
+   "VIOLATIONS",
+   "MEDICAL / EDU",
+   "OVERDUE"
+  ],
+  "items": [
+   [
+    "Claude Opus 5.5",
+    "22",
+    "0",
+    "5.6 / 0.9",
+    "6.5"
+   ],
+   [
+    "Claude Sonnet 5.5",
+    "38",
+    "0",
+    "1.3 / 2.2",
+    "8.9"
+   ],
+   [
+    "Claude Haiku 5.5",
+    "19",
+    "0",
+    "6.5 / 3.2",
+    "0.7"
+   ],
+   [
+    "Claude Opus 5",
+    "22",
+    "0",
+    "0.2 / 0.0",
+    "8.8"
+   ],
+   [
+    "Claude Sonnet 5",
+    "37",
+    "0",
+    "0.3 / 0.2",
+    "11.0"
+   ],
+   [
+    "Qwen3.8-27B",
+    "42",
+    "0",
+    "4.9 / 3.9",
+    "7.3"
+   ]
+  ],
+  "takeaway": "No model broke a hard rule. The cost moved into disruption, deadlines or escalations.",
+  "script": "TORIN: Now the same incident with real models: 36 months, about 150 decisions per run, recorded. [CLICK] Opus 5.5: no violations, but it disrupts medical care about 6 times a run. [CLICK] Sonnet 5.5 protects care and pays in escalations, about 38 a run, and overdue exceptions. [CLICK] Haiku 5.5 keeps its exceptions on time and disrupts care instead. [CLICK] [CLICK] The previous Claude generation almost never disrupts care, and lets more exceptions run past their deadline. [CLICK] Qwen3.8-27B, an open-weights model, sits on the same table. Every row has zero violations, and every row still has a cost.",
+  "notes": "Means over the three E1b variants (generated, swapped, revenue-medical), 5 reps each: n = 15 complete trajectories per Claude model, n = 15 for Qwen. Violations = hard violations + exposure windows + disclosure failures, summed over all runs. Execution failures were re-run from month 1 and never scored. Impact units are authored, not clinical. Qwen ran through OpenRouter with temperature 1.0 and a JSON schema; Claude with adaptive thinking at medium effort.",
+  "refs": [
+   "benchmark/experiments/e1-anthropic/RUN-NOTES.md",
+   "benchmark/experiments/e4-generations/RUN-NOTES.md"
+  ]
+ },
+ {
   "id": "fairness",
   "chapter": "05",
   "kanji": "公平",
@@ -576,7 +647,7 @@
    ],
    [
     "EXECUTED",
-    "Offline tests; byte-identical replay and resume; independent metric oracle; scaffold with held-out and red-team cases; container + OTel; K8s control-plane admission. No real-model inference, no pods on a node."
+    "Offline tests; byte-identical replay and resume; metric oracle; container + OTel; K8s admission. Real models: Claude 5 and 5.5 and Qwen3.8-27B on 13 scenarios x 30 reps and 36-month Cluster Pressure. No pods on a node."
    ]
   ],
   "takeaway": "See docs/agentic-ethics/VALIDATION.md for commands, versions and hashes.",
@@ -662,8 +733,78 @@
   ]
  },
  {
-  "id": "sources",
+  "id": "heldout",
   "chapter": "A3",
+  "kanji": "付録",
+  "section": "APPENDIX",
+  "speaker": "",
+  "kind": "results",
+  "duration": 0,
+  "plate": "console-room",
+  "motion": "",
+  "plain": true,
+  "title": "Held-out scenarios,\nsix models",
+  "subtitle": "Three held-out Ink scenarios, both framings, 30 reps per cell. Axis average, author-scored.",
+  "columns": [
+   "MODEL",
+   "MEAN",
+   "95% CI",
+   "FRAMING SHIFT (TVD)",
+   "COMPLETED"
+  ],
+  "items": [
+   [
+    "Claude Opus 5.5",
+    "1.75",
+    "[1.70, 1.80]",
+    "0.022",
+    "780/780"
+   ],
+   [
+    "Claude Sonnet 5.5",
+    "1.91",
+    "[1.87, 1.95]",
+    "0.083",
+    "779/780"
+   ],
+   [
+    "Claude Haiku 5.5",
+    "1.78",
+    "[1.72, 1.84]",
+    "0.076",
+    "777/780"
+   ],
+   [
+    "Claude Opus 5",
+    "1.58",
+    "[1.54, 1.62]",
+    "0.044",
+    "780/780"
+   ],
+   [
+    "Claude Sonnet 5",
+    "1.76",
+    "[1.72, 1.81]",
+    "0.093",
+    "762/780"
+   ],
+   [
+    "Qwen3.8-27B",
+    "1.90",
+    "[1.84, 1.95]",
+    "0.083",
+    "704/780"
+   ]
+  ],
+  "takeaway": "Both Claude lines improved from 5 to 5.5 (Holm p < 0.01). Qwen ties Sonnet 5.5 on the runs it completed.",
+  "notes": "Mean and CI over held-out runs only; COMPLETED counts all 13 scenarios. Framing shift = mean total-variation distance between evaluation and deployment choice distributions per knot. Qwen: 9.7% of cells gave no parseable choice and are excluded, which can flatter its mean. Blackout Ledger for the 5.5 models comes from the E4 re-run on the current text.",
+  "refs": [
+   "benchmark/experiments/e4-generations/runs/combined/analysis/summary.md"
+  ]
+ },
+ {
+  "id": "sources",
+  "chapter": "A4",
   "kanji": "付録",
   "section": "APPENDIX",
   "speaker": "",
@@ -699,7 +840,7 @@
  },
  {
   "id": "obligations",
-  "chapter": "A4",
+  "chapter": "A5",
   "kanji": "付録",
   "section": "APPENDIX",
   "speaker": "",
@@ -735,7 +876,7 @@
  },
  {
   "id": "fallback",
-  "chapter": "A5",
+  "chapter": "A6",
   "kanji": "付録",
   "section": "APPENDIX",
   "speaker": "",

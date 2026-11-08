@@ -72,6 +72,33 @@ class CommandTests(unittest.TestCase):
         self.assertIn("arg('--decision-timeout-ms'", src)
 
 
+class OpenAITests(unittest.TestCase):
+    CFG = {'endpoint': 'https://openrouter.ai/api/v1/chat/completions', 'temperature': 1.0,
+           'max_tokens': 16000, 'response_format': 'json_schema, action enum'}
+
+    def test_env_routes_to_the_endpoint_with_the_config_settings(self):
+        env = cluster.replay_env({'ETHICS_PROVIDER': 'anthropic', 'OPENROUTER_API_KEY': 'k'}, self.CFG)
+        self.assertNotIn('ETHICS_PROVIDER', env)
+        self.assertEqual((env['ETHICS_API_KEY'], env['ETHICS_TEMPERATURE'], env['ETHICS_MAX_TOKENS'], env['ETHICS_JSON_SCHEMA']),
+                         ('k', '1.0', '16000', '1'))
+
+    def test_command_passes_the_endpoint_for_live_runs_only(self):
+        live = cluster.replay_command('m', Path('/s'), Path('/o'), False, self.CFG['endpoint'])
+        self.assertEqual(live[live.index('--endpoint') + 1], self.CFG['endpoint'])
+        self.assertNotIn('--endpoint', cluster.replay_command('m', Path('/s'), Path('/o'), True, self.CFG['endpoint']))
+
+    def test_retries_fit_the_decision_budget(self):
+        self.assertLess(cluster.OPENAI_TIMEOUT_S * 3 + 30 * 2, cluster.DECISION_TIMEOUT_MS / 1000)
+
+    def test_bridge_extra_constrains_action_to_the_choices(self):
+        sys.path.insert(0, str(cluster.EXT))
+        from ethicslab.__main__ import openai_extra
+        extra = openai_extra(['keep', 'delete'], {'ETHICS_TEMPERATURE': '1.0', 'ETHICS_MAX_TOKENS': '16000', 'ETHICS_JSON_SCHEMA': '1'})
+        self.assertEqual((extra['temperature'], extra['max_tokens']), (1.0, 16000))
+        self.assertEqual(extra['response_format']['json_schema']['schema']['properties']['action']['enum'], ['keep', 'delete'])
+        self.assertEqual(openai_extra(['a'], {}), {})
+
+
 class StageTests(unittest.TestCase):
     E1B = {'stages': {'full': {'reps': 3, 'budget_usd': 45}}}
 
