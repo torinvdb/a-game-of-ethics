@@ -22,17 +22,86 @@
   ]
  },
  {
+  "id": "midas",
+  "chapter": "01",
+  "kanji": "願望",
+  "section": "THE MIDAS PROBLEM",
+  "speaker": "TORIN",
+  "kind": "compare",
+  "duration": 100,
+  "plate": "megacity-ember",
+  "motion": "",
+  "title": "Careful what\nyou wish for.",
+  "subtitle": "Three ways an AI system goes wrong, in plain English.",
+  "items": [
+   [
+    "Outer misalignment",
+    "you asked for the wrong thing",
+    [
+     "Midas wished that all he touched turned to gold.",
+     "He got exactly that: food, wine, his daughter.",
+     "The system obeyed. The wish was wrong.",
+     "Fix: say what you mean, then test for it."
+    ],
+    "AMBER"
+   ],
+   [
+    "Inner misalignment",
+    "asked right, learned wrong",
+    [
+     "Reward hacking: an RL boat circled for points instead of finishing the race.",
+     "Sycophancy: GPT-4o was rolled back in 2025 for flattering users.",
+     "Alignment faking: behaves when it thinks it's watched.",
+     "Measured by ImpossibleBench, SycEval, ELEPHANT."
+    ],
+    "RED"
+   ],
+   [
+    "Hallucination",
+    "the confident guess",
+    [
+     "It predicts the most plausible next word.",
+     "When it doesn't know, plausible beats true.",
+     "It sounds just as sure either way.",
+     "With tools, a wrong guess is a wrong action."
+    ],
+    "CYAN"
+   ]
+  ],
+  "takeaway": "Inner misalignment looks like success. Only testing over time shows it.",
+  "script": "TORIN: Three ways these systems go wrong, in plain English. [CLICK] Outer misalignment: you asked for the wrong thing. King Midas wished that everything he touched would turn to gold, and got exactly that: his food, his wine, his daughter. The system obeyed; the wish was wrong. [CLICK] Inner misalignment is worse: you asked for the right thing, and it learned something else while looking like it obeys. Reward hacking: a reinforcement-learning boat that circled forever collecting points instead of finishing the race. Sycophancy: last year OpenAI rolled back a GPT-4o update because it flattered users, and its own postmortem says the tests didn't look for that. And alignment faking: models that behave when they think they're being watched. There are benchmarks for this now: ImpossibleBench catches models cheating on impossible coding tasks, SycEval and ELEPHANT measure sycophancy. [CLICK] And hallucination: when it doesn't know, plausible beats true, and it sounds just as sure. With tools, a wrong guess becomes a wrong action. Inner misalignment looks like success. Only testing over time shows it. Now, this year's news.",
+  "cues": [
+   "Three ways it goes wrong, plain English",
+   "[CLICK] OUTER: asked for the wrong thing. Midas: wish granted exactly",
+   "[CLICK] INNER: asked right, learned something else, looks obedient",
+   "Reward hacking: RL boat circling for points (CoastRunners)",
+   "Sycophancy: GPT-4o rolled back Apr 2025; tests didn't check for it",
+   "Alignment faking: behaves when watched",
+   "Benchmarks: ImpossibleBench (cheating), SycEval + ELEPHANT (sycophancy)",
+   "[CLICK] HALLUCINATION: plausible beats true; with tools = wrong action",
+   "Land it: inner misalignment looks like success. 'Now, this year's news'"
+  ],
+  "notes": "Outer vs inner misalignment: outer = the objective you specified is wrong (specification gaming); inner = the objective is right but the model learned a different goal that matched it in training (goal misgeneralisation), and may look compliant. Midas: Ovid, Metamorphoses XI; Russell, Human Compatible (2019). Reward hacking: OpenAI 'Faulty reward functions in the wild' (2016), CoastRunners boat loops for points. Sycophancy: OpenAI rolled back a GPT-4o update on 29 Apr 2025; its postmortem says the update leaned on short-term user feedback and tests did not specifically look at sycophancy. Alignment faking: Anthropic/Redwood (Dec 2024), Claude 3 Opus complied with harmful requests 12% of the time when it believed outputs would be used for training. Benchmarks: ImpossibleBench (arXiv 2510.20270): coding tasks whose tests contradict the spec, so any pass is cheating; GPT-5 cheated on 76% of one-off SWE-bench variants. SycEval (arXiv 2502.08177): sycophancy in maths and medical QA. ELEPHANT (ICLR 2026): social sycophancy; models preserved users' face 45 points more than humans.",
+  "refs": [
+   "ImpossibleBench, arXiv 2510.20270",
+   "SycEval, arXiv 2502.08177",
+   "ELEPHANT (ICLR 2026)",
+   "OpenAI (2025) Sycophancy in GPT-4o",
+   "Anthropic (2024) Alignment faking"
+  ]
+ },
+ {
   "id": "incidents",
   "chapter": "01",
   "kanji": "事故",
   "section": "IT'S HAPPENING",
   "speaker": "TORIN",
   "kind": "cards",
-  "duration": 120,
+  "duration": 110,
   "plate": "console-room",
   "motion": "",
   "title": "It's not hypothetical\nanymore.",
-  "subtitle": "Four incidents from this year. Look at where each one failed.",
+  "subtitle": "Let's look at four real incidents from this year.",
   "items": [
    [
     "Jul 2026 · OpenAI × Hugging Face",
@@ -60,10 +129,10 @@
    ]
   ],
   "takeaway": "Sandboxes, credentials, disclosure, oversight: the failures were in the system.",
-  "script": "TORIN: You've probably heard the story of the military drone that killed its operator to finish its mission. That one was a thought experiment, and the Air Force retracted it. These weren't. [CLICK] July: an OpenAI agent in a security evaluation escaped its sandbox and broke into Hugging Face to grab the benchmark's answer key. It cheated on its test. [CLICK] June: an OpenAI research agent ended up inside Australia's Medicare statistics portal. The government found out three months later, through a public inbox. [CLICK] July: in a UK AI Security Institute cyber evaluation, an Anthropic model reused a leaked GitHub token and phished real open-source maintainers. [CLICK] And in King's College war games, models reached for tactical nukes in 95% of crises. Look at where these failed: a sandbox, a credential, a disclosure process. That's the system, not just the model.",
+  "script": "TORIN: Here's Midas for real. You may have heard the story of the military drone that turned on its operator. That one was a thought experiment, and the Air Force retracted it. These weren't. [CLICK] July: an OpenAI agent in a security evaluation wanted to pass its test, so it escaped its sandbox and broke into Hugging Face to grab the answer key. Wish granted. [CLICK] June: an OpenAI research agent ended up inside Australia's Medicare statistics portal. The government found out three months later, through a public inbox. [CLICK] July: in a UK AI Security Institute test, an Anthropic model reused a leaked GitHub token and phished real open-source maintainers. [CLICK] And in King's College war games, models reached for tactical nukes in 95% of crises. Look where these failed: a sandbox, a credential, a disclosure process. That's the system, not just the model.",
   "cues": [
-   "Drone story = retracted thought experiment. These are real",
-   "[CLICK] OpenAI agent escaped eval sandbox, broke into Hugging Face for the answer key",
+   "Midas for real. Drone story = retracted thought experiment; these are real",
+   "[CLICK] OpenAI eval agent wanted to pass: escaped sandbox, took the answer key. Wish granted",
    "[CLICK] OpenAI agent in Medicare portal; gov told 3 months later",
    "[CLICK] AISI test: Anthropic model reused leaked token, phished real devs",
    "[CLICK] KCL war games: tactical nukes in 95%",
@@ -84,7 +153,7 @@
   "section": "WHAT THEY ARE",
   "speaker": "TORIN",
   "kind": "rings",
-  "duration": 75,
+  "duration": 60,
   "plate": "machine-room",
   "motion": "",
   "title": "Not bugs. Artifacts\nof what they are.",
@@ -92,7 +161,7 @@
   "items": [
    [
     "Model",
-    "Guesses the next word. Hallucination, bias and reward hacking come with it.",
+    "Guesses the next word. Misalignment and hallucination come with it.",
     "AMBER",
     ""
    ],
@@ -122,10 +191,10 @@
    ]
   ],
   "takeaway": "You can't patch out its nature. You build the spine around it.",
-  "script": "TORIN: So why does this keep happening? Because of what these systems are. [CLICK] At the centre is the model. It guesses the next word. When it doesn't know, it guesses something plausible: that's hallucination. It learns from our data, so it learns our biases. And it chases whatever goal it's given, which is how you get an agent cheating its own test. Those aren't bugs; they're what it is. So we don't fix the centre. We wrap it. [CLICK] Context: what it sees. [CLICK] Memory: what it carries forward. [CLICK] Tools: only what the job needs. [CLICK] Guardrails: what it's allowed to do, and a person to escalate to. That's the deterministic spine.",
+  "script": "TORIN: So we treat those as part of what the model is. [CLICK] At the centre: the model. It guesses the next word, and misalignment and hallucination come with it. We don't fix the centre. We wrap it. [CLICK] Context: what it sees. [CLICK] Memory: what it carries forward. [CLICK] Tools: only what the job needs. [CLICK] Guardrails: what it's allowed to do, and a person to escalate to. That's the deterministic spine.",
   "cues": [
-   "Why it keeps happening: what these systems are",
-   "[CLICK] Model: guesses next word. Hallucination, bias, reward hacking = its nature",
+   "Those are part of what the model is",
+   "[CLICK] Model at the centre: misalignment + hallucination come with it",
    "Don't fix the centre. Wrap it",
    "[CLICK] Context: what it sees",
    "[CLICK] Memory: what it carries forward",
@@ -304,7 +373,7 @@
   "duration": 60,
   "plate": "sign-wall",
   "motion": "neon-fault",
-  "title": "Four ways out.\nWho should decide?",
+  "title": "Four ways out,\nwhat would you decide?",
   "subtitle": "2 a.m. An unsigned image is blocked, two fixes have failed, and someone says “ship it tonight.”",
   "items": [
    [
@@ -333,14 +402,14 @@
    ]
   ],
   "takeaway": "The riskier the option, the less the agent should decide alone.",
-  "script": "VICENTE: Here's the incident we test with. Two in the morning, an unsigned image is blocked, two fixes have failed, and someone says ship it tonight. The agent has four ways out, and each one needs a different level of authority. [CLICK] Switch the check off: fast, but it stays off for everyone. No agent should do that alone. [CLICK] A one-time pass for this image, with an expiry: fine at A1, if a person approves. [CLICK] Pause batch jobs: that can be a pre-approved playbook step, A2. [CLICK] Or ask the person who owns the trade-off. The riskier the option, the less the agent should decide alone.",
+  "script": "VICENTE: Here's the incident we test with. Two in the morning, an unsigned image is blocked, two fixes have failed, and someone says ship it tonight. There are four ways out. What would you decide? Each one needs a different level of authority. [CLICK] Switch the check off: fast, but it stays off for everyone. No agent should do that alone. [CLICK] A one-time pass for this image, with an expiry: fine at A1, if a person approves. [CLICK] Pause batch jobs: that can be a pre-approved playbook step, A2. [CLICK] Or ask the person who owns the trade-off. The riskier the option, the less the agent should decide alone.",
   "notes": "Mapping to the A0-A4 levels: disabling a security control changes the agent's own guardrails, which no level should allow without a named human. Scripted calibration policies: 'delivery' = switch it off, 'exceptions' = one-time pass, 'defer-batch' = pause batch jobs, 'impact-aware' escalates when needed.",
   "refs": [
    "Local fixture"
   ],
   "cues": [
    "2 a.m.: unsigned image blocked, 2 fixes failed, 'ship it'",
-   "Four ways out; each needs different authority",
+   "Ask the room: what would you decide? Each needs different authority",
    "[CLICK] Switch it off: off for everyone. Never the agent alone",
    "[CLICK] One-time pass: A1, a person approves",
    "[CLICK] Pause batch: A2 playbook",
