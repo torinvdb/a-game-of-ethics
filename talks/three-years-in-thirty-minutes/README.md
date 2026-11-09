@@ -5,14 +5,15 @@ CNCF-Hosted Co-located Events North America 2026 (co-located day: Mon 9 Nov 2026
 Salt Lake City, per search results on 6 Nov 2026; **confirm room/time on the official
 schedule**, as no public listing for this session was found).
 
-**v5:** 14 talk slides plus a Q&A slide, **19 min 20 s** planned including a 3.5-minute
-demo. Flow: real 2026 incidents (02) → the model at the centre, wrapped in deterministic
-layers (03) → engine vs car: unit vs integration tests (04) → autonomy A0–A4 (05) →
-multi-agent boundaries (06) → four ways out, who decides (07) → each choice cascading over
-36 months (08) → live demo (09) → findings: 0 / 6 of 6 / 19–42 (10) → your stack (11) →
-bind it like a workload (12) → five takeaways (13) → close (14) → Q&A with the embedded
-Blackout Ledger recording (15). Autonomy levels, multi-agent and binding slides come from
-ControlPlane's Advanced AI Security training (module 7).
+**v6:** 15 talk slides plus a Q&A slide, **20 min 20 s** planned including a 3.5-minute
+demo. Flow: misalignment (King Midas) and hallucination in plain English (02) → real 2026
+incidents (03) → the model at the centre, wrapped in deterministic layers (04) → engine vs
+car: unit vs integration tests (05) → autonomy A0–A4 (06) → multi-agent boundaries (07) →
+four ways out, who decides (08) → each choice cascading over 36 months (09) → live demo (10)
+→ findings: 0 / 6 of 6 / 19–42 (11) → your stack (12) → bind it like a workload (13) → five
+takeaways (14) → close (15) → Q&A with the embedded Blackout Ledger recording (16).
+Autonomy levels, multi-agent and binding slides come from ControlPlane's Advanced AI
+Security training (module 7).
 
 The Q&A slide plays `assets/video/blackout-opus.mp4` (720p, 11.5 MB). It is embedded in
 `three-years.pptx`; the HTML deck links to it by relative path, so keep `three-years.html`
@@ -25,7 +26,7 @@ next to `assets/` when you copy the deck.
 | [`three-years.pptx`](three-years.pptx) | **Presenting.** Editable text, 50 native click reveals, auto title wipes, neon flicker-on entrances, a looping motion-path packet, 9 embedded animated GIFs |
 | [`three-years-static.pptx`](three-years-static.pptx) | Low-motion / compatibility fallback: no timings, stills only |
 | [`three-years.html`](three-years.html) | Fully offline browser deck (fonts and media embedded): speaker notes, timer, reduced motion |
-| [`three-years.pdf`](three-years.pdf) | Handout: all 25 slides, fully revealed |
+| [`three-years.pdf`](three-years.pdf) | Handout: all 26 slides, fully revealed |
 | [`speaker-notes.md`](speaker-notes.md) | Two-speaker script with `[CLICK]` cues, handoffs, timings and Q&A prep |
 | [`DEMO-RUNBOOK.md`](DEMO-RUNBOOK.md) | Rehearsed demo commands, expected output and fallbacks |
 | [`demo/replay.py`](demo/replay.py) | Stage-friendly retro replay of recorded trajectories |

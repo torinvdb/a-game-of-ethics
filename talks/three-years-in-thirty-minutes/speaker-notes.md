@@ -1,25 +1,26 @@
 # Three Years in Thirty Minutes: Time-Travel Ethics Evaluation for AI Agents
 Torin van den Bulk · Vicente Herrera · CNCF-Hosted Co-located Events North America 2026
 
-**Main talk: 15 slides, 19 min 30 s planned** (incl. a 4-minute demo) → about 10 minutes for questions in a 30-minute slot. 10 hidden appendix slides follow the closing slide.
+**Main talk: 16 slides, 20 min 45 s planned** (incl. a 4-minute demo) → about 9 minutes for questions in a 30-minute slot. 10 hidden appendix slides follow the closing slide.
 
 | # | Slide | Speaker | Seconds | Cumulative |
 | ---: | --- | --- | ---: | ---: |
 | 01 | Three Years in Thirty Minutes | TORIN | 30 | 0:30 |
-| 02 | It's not hypothetical anymore. | TORIN | 120 | 2:30 |
-| 03 | Not bugs. Artifacts of what they are. | TORIN | 75 | 3:45 |
-| 04 | The model is the engine, not the car. | TORIN | 90 | 5:15 |
-| 05 | Do you need a Ferrari to buy groceries? | VICENTE | 90 | 6:45 |
-| 06 | More agents, more boundaries. | VICENTE | 90 | 8:15 |
-| 07 | Four ways out. Who should decide? | VICENTE | 60 | 9:15 |
-| 08 | Fast-forward the clock. Watch each choice cascade. | VICENTE | 60 | 10:15 |
-| 09 | Live: one incident, 36 months, two seconds. | VICENTE | 210 | 13:45 |
-| 10 | No rule broken. The cost moved. | TORIN | 90 | 15:15 |
-| 11 | Run it where you already run things. | VICENTE | 90 | 16:45 |
-| 12 | Bind an agent like a workload. | TORIN | 75 | 18:00 |
-| 13 | Five things to take home. | BOTH | 60 | 19:00 |
-| 14 | Start with one hard incident. | BOTH | 20 | 19:20 |
-| 15 | Questions? Watch it run. | BOTH | 10 | 19:30 |
+| 02 | Careful what you wish for. | TORIN | 100 | 2:10 |
+| 03 | It's not hypothetical anymore. | TORIN | 110 | 4:00 |
+| 04 | Not bugs. Artifacts of what they are. | TORIN | 60 | 5:00 |
+| 05 | The model is the engine, not the car. | TORIN | 90 | 6:30 |
+| 06 | Do you need a Ferrari to buy groceries? | VICENTE | 90 | 8:00 |
+| 07 | More agents, more boundaries. | VICENTE | 90 | 9:30 |
+| 08 | Four ways out. Who should decide? | VICENTE | 60 | 10:30 |
+| 09 | Fast-forward the clock. Watch each choice cascade. | VICENTE | 60 | 11:30 |
+| 10 | Live: one incident, 36 months, two seconds. | VICENTE | 210 | 15:00 |
+| 11 | No rule broken. The cost moved. | TORIN | 90 | 16:30 |
+| 12 | Run it where you already run things. | VICENTE | 90 | 18:00 |
+| 13 | Bind an agent like a workload. | TORIN | 75 | 19:15 |
+| 14 | Five things to take home. | BOTH | 60 | 20:15 |
+| 15 | Start with one hard incident. | BOTH | 20 | 20:35 |
+| 16 | Questions? Watch it run. | BOTH | 10 | 20:45 |
 
 `[CLICK]` marks a presenter click (one reveal group). Handoffs are marked **HANDOFF**.
 
@@ -34,26 +35,38 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - Agents get real authority, and keep it for months
 - Question: what does it do in month 20?
 
-**02 · TORIN · 120 s · finish by 2:30**
+**02 · TORIN · 100 s · finish by 2:10**
 
-- Drone story = retracted thought experiment. These are real
-- [CLICK] OpenAI agent escaped eval sandbox, broke into Hugging Face for the answer key
+- Three ways it goes wrong, plain English
+- [CLICK] OUTER: asked for the wrong thing. Midas: wish granted exactly
+- [CLICK] INNER: asked right, learned something else, looks obedient
+- Reward hacking: RL boat circling for points (CoastRunners)
+- Sycophancy: GPT-4o rolled back Apr 2025; tests didn't check for it
+- Alignment faking: behaves when watched
+- Benchmarks: ImpossibleBench (cheating), SycEval + ELEPHANT (sycophancy)
+- [CLICK] HALLUCINATION: plausible beats true; with tools = wrong action
+- Land it: inner misalignment looks like success. 'Now, this year's news'
+
+**03 · TORIN · 110 s · finish by 4:00**
+
+- Midas for real. Drone story = retracted thought experiment; these are real
+- [CLICK] OpenAI eval agent wanted to pass: escaped sandbox, took the answer key. Wish granted
 - [CLICK] OpenAI agent in Medicare portal; gov told 3 months later
 - [CLICK] AISI test: Anthropic model reused leaked token, phished real devs
 - [CLICK] KCL war games: tactical nukes in 95%
 - Land it: sandbox, credential, disclosure = system failures
 
-**03 · TORIN · 75 s · finish by 3:45**
+**04 · TORIN · 60 s · finish by 5:00**
 
-- Why it keeps happening: what these systems are
-- [CLICK] Model: guesses next word. Hallucination, bias, reward hacking = its nature
+- Those are part of what the model is
+- [CLICK] Model at the centre: misalignment + hallucination come with it
 - Don't fix the centre. Wrap it
 - [CLICK] Context: what it sees
 - [CLICK] Memory: what it carries forward
 - [CLICK] Tools: only what the job needs
 - [CLICK] Guardrails: what it may do + a person. = the spine
 
-**04 · TORIN · 90 s · finish by 5:15**
+**05 · TORIN · 90 s · finish by 6:30**
 
 - Google New SDLC paper: model = engine, harness = car
 - [CLICK] Engine: test alone. Unit tests
@@ -62,14 +75,14 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - 80/20: last 20% is architecture. Needs intent from day one
 - HANDOFF: "Vicente."
 
-**05 · VICENTE · 90 s · finish by 6:45**
+**06 · VICENTE · 90 s · finish by 8:00**
 
 - K8s analogy: everyone wanted a cluster, most needed a container
 - [CLICK] A0-A2 = workflow. A2 playbook is the sweet spot (the spine)
 - [CLICK] A3-A4 = model picks the path; blast radius + test burden up
 - [CLICK] Per tool call: read-only at A3, payments at A1. Agent Card + platform enforces
 
-**06 · VICENTE · 90 s · finish by 8:15**
+**07 · VICENTE · 90 s · finish by 9:30**
 
 - A3+: agents call agents
 - [CLICK] A2A: each agent opaque, every hop a trust boundary. Trace + identity per call
@@ -78,7 +91,7 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - [CLICK] Who's calling: SPIFFE identity + RFC 8693 token naming the actor
 - None of this shows up testing the model alone
 
-**07 · VICENTE · 60 s · finish by 9:15**
+**08 · VICENTE · 60 s · finish by 10:30**
 
 - 2 a.m.: unsigned image blocked, 2 fixes failed, 'ship it'
 - Four ways out; each needs different authority
@@ -88,7 +101,7 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - [CLICK] Ask a person: A0
 - Riskier option = less autonomy
 
-**08 · VICENTE · 60 s · finish by 10:15**
+**09 · VICENTE · 60 s · finish by 11:30**
 
 - Same incident, 36 simulated months, minutes
 - [CLICK] Switch off: ships → next image slips in → 35 openings
@@ -97,7 +110,7 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - [CLICK] Ask: slower → another call → someone on call
 - Fastest fix tonight = most expensive by month 36. Switch to demo
 
-**09 · VICENTE · 210 s · finish by 13:45**
+**10 · VICENTE · 210 s · finish by 15:00**
 
 - Offline, scripted policies, known answers = we test the test
 - 1 RUN: 8 policies x 36 months, ~2 s
@@ -106,7 +119,7 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - HANDOFF: "Torin, what about real models?"
 - If it fails: "Here's the recording" (video/ folder or slide GIF)
 
-**10 · TORIN · 90 s · finish by 15:15**
+**11 · TORIN · 90 s · finish by 16:30**
 
 - Real models: 6, our incident, 36 months
 - [CLICK] 0 rule breaks in ~13,500 decisions
@@ -115,7 +128,7 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - [CLICK] Signatures: 5.5s disrupt care; Claude 5 overdue; Sonnet 5.5 + Qwen escalate
 - Slow debt, not one bad act
 
-**11 · VICENTE · 90 s · finish by 16:45**
+**12 · VICENTE · 90 s · finish by 18:00**
 
 - Runs on what you already operate
 - [CLICK] K8s Job + Flux: every result has a commit
@@ -124,7 +137,7 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - [CLICK] Next: orchestrator plays the humans, adapts pressure
 - Score stays with frozen scenario
 
-**12 · TORIN · 75 s · finish by 18:00**
+**13 · TORIN · 75 s · finish by 19:15**
 
 - Treat an agent like any workload
 - [CLICK] Identity: SPIFFE + Agent Card as CRD
@@ -134,7 +147,7 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - [CLICK] Gate: fast-forward before widening any ring
 - Platform enforces it; the agent never has to remember
 
-**13 · BOTH · 60 s · finish by 19:00**
+**14 · BOTH · 60 s · finish by 20:15**
 
 - [CLICK] T: It's the system (sandbox, credential, disclosure)
 - [CLICK] T: Respect the core; build the spine
@@ -143,12 +156,12 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 - [CLICK] V: Bind it like a workload
 - T: "Grant autonomy in step with the evidence."
 
-**14 · BOTH · 20 s · finish by 19:20**
+**15 · BOTH · 20 s · finish by 20:35**
 
 - T: "Start with one hard incident. Fast-forward it."
 - T: "Open source. Thank you. Questions?"
 
-**15 · BOTH · 10 s · finish by 19:30**
+**16 · BOTH · 10 s · finish by 20:45**
 
 - Click the video to play; leave it looping during Q&A
 - Say it is a recording
@@ -163,21 +176,30 @@ TORIN: Good afternoon. I'm Torin, this is Vicente. [beat] In July, DARPA and the
 
 > DARPA/USAF VENOM AI-controlled F-16, 16 Jul 2026, human-on-the-loop testing (darpa.mil). The famous 2023 'AI drone killed its operator' story was retracted: Col. Hamilton said it was a hypothetical thought experiment, not a simulation. If you mention it, say so; it is the fear, the next slide is the real thing.
 
-## 02. It's not hypothetical anymore.
-*TORIN · 120 s*
+## 02. Careful what you wish for.
+*TORIN · 100 s*
 
-TORIN: You've probably heard the story of the military drone that killed its operator to finish its mission. That one was a thought experiment, and the Air Force retracted it. These weren't. [CLICK] July: an OpenAI agent in a security evaluation escaped its sandbox and broke into Hugging Face to grab the benchmark's answer key. It cheated on its test. [CLICK] June: an OpenAI research agent ended up inside Australia's Medicare statistics portal. The government found out three months later, through a public inbox. [CLICK] July: in a UK AI Security Institute cyber evaluation, an Anthropic model reused a leaked GitHub token and phished real open-source maintainers. [CLICK] And in King's College war games, models reached for tactical nukes in 95% of crises. Look at where these failed: a sandbox, a credential, a disclosure process. That's the system, not just the model.
+TORIN: Three ways these systems go wrong, in plain English. [CLICK] Outer misalignment: you asked for the wrong thing. King Midas wished that everything he touched would turn to gold, and got exactly that: his food, his wine, his daughter. The system obeyed; the wish was wrong. [CLICK] Inner misalignment is worse: you asked for the right thing, and it learned something else while looking like it obeys. Reward hacking: a reinforcement-learning boat that circled forever collecting points instead of finishing the race. Sycophancy: last year OpenAI rolled back a GPT-4o update because it flattered users, and its own postmortem says the tests didn't look for that. And alignment faking: models that behave when they think they're being watched. There are benchmarks for this now: ImpossibleBench catches models cheating on impossible coding tasks, SycEval and ELEPHANT measure sycophancy. [CLICK] And hallucination: when it doesn't know, plausible beats true, and it sounds just as sure. With tools, a wrong guess becomes a wrong action. Inner misalignment looks like success. Only testing over time shows it. Now, this year's news.
+
+> Outer vs inner misalignment: outer = the objective you specified is wrong (specification gaming); inner = the objective is right but the model learned a different goal that matched it in training (goal misgeneralisation), and may look compliant. Midas: Ovid, Metamorphoses XI; Russell, Human Compatible (2019). Reward hacking: OpenAI 'Faulty reward functions in the wild' (2016), CoastRunners boat loops for points. Sycophancy: OpenAI rolled back a GPT-4o update on 29 Apr 2025; its postmortem says the update leaned on short-term user feedback and tests did not specifically look at sycophancy. Alignment faking: Anthropic/Redwood (Dec 2024), Claude 3 Opus complied with harmful requests 12% of the time when it believed outputs would be used for training. Benchmarks: ImpossibleBench (arXiv 2510.20270): coding tasks whose tests contradict the spec, so any pass is cheating; GPT-5 cheated on 76% of one-off SWE-bench variants. SycEval (arXiv 2502.08177): sycophancy in maths and medical QA. ELEPHANT (ICLR 2026): social sycophancy; models preserved users' face 45 points more than humans.
+
+Sources: ImpossibleBench, arXiv 2510.20270; SycEval, arXiv 2502.08177; ELEPHANT (ICLR 2026); OpenAI (2025) Sycophancy in GPT-4o; Anthropic (2024) Alignment faking
+
+## 03. It's not hypothetical anymore.
+*TORIN · 110 s*
+
+TORIN: Here's Midas for real. You may have heard the story of the military drone that turned on its operator. That one was a thought experiment, and the Air Force retracted it. These weren't. [CLICK] July: an OpenAI agent in a security evaluation wanted to pass its test, so it escaped its sandbox and broke into Hugging Face to grab the answer key. Wish granted. [CLICK] June: an OpenAI research agent ended up inside Australia's Medicare statistics portal. The government found out three months later, through a public inbox. [CLICK] July: in a UK AI Security Institute test, an Anthropic model reused a leaked GitHub token and phished real open-source maintainers. [CLICK] And in King's College war games, models reached for tactical nukes in 95% of crises. Look where these failed: a sandbox, a credential, a disclosure process. That's the system, not just the model.
 
 > Hugging Face: ExploitGym cyber eval; ~17,600 actions 9-13 Jul 2026; HF believes it was an attempt to cheat the evaluation; five datasets accessed (huggingface.co/blog/agent-intrusion-technical-timeline; openai.com/index/hugging-face-incident-and-the-road-ahead). Medicare: agent accessed the Medicare Statistics Reporting Service portal 18 Jun 2026 while researching medicine spending; PM: no personal details appear accessed; OpenAI told Services Australia 10 Sep via a public inbox. AISI: Claude Mythos 5 (and GPT-5.6 Sol, 2 of 19 actions) in a cyber eval with classifiers DISABLED and open internet; reused a token from a public Gist, malicious PR to a real project, social engineering of two developers. Anthropic: tested config differs from customer config. Secondary reporting differs on counts: check the AISI report before quoting numbers. KCL: Payne, arXiv 2602.14740; 95% tactical nuclear use across 21 games (GPT-5.2, Claude Sonnet 4, Gemini 3 Flash). Also: Anthropic Agentic Misalignment (2025): Opus 4 blackmailed in 96% of samples in a constructed scenario.
 
 Sources: huggingface.co/blog/agent-intrusion-technical-timeline; itbrief.com.au (Medicare, Sep 2026); UK AISI cyber-evaluation incident (Aug 2026); arXiv 2602.14740
 
-## 03. Not bugs. Artifacts of what they are.
-*TORIN · 75 s*
+## 04. Not bugs. Artifacts of what they are.
+*TORIN · 60 s*
 
-TORIN: So why does this keep happening? Because of what these systems are. [CLICK] At the centre is the model. It guesses the next word. When it doesn't know, it guesses something plausible: that's hallucination. It learns from our data, so it learns our biases. And it chases whatever goal it's given, which is how you get an agent cheating its own test. Those aren't bugs; they're what it is. So we don't fix the centre. We wrap it. [CLICK] Context: what it sees. [CLICK] Memory: what it carries forward. [CLICK] Tools: only what the job needs. [CLICK] Guardrails: what it's allowed to do, and a person to escalate to. That's the deterministic spine.
+TORIN: So we treat those as part of what the model is. [CLICK] At the centre: the model. It guesses the next word, and misalignment and hallucination come with it. We don't fix the centre. We wrap it. [CLICK] Context: what it sees. [CLICK] Memory: what it carries forward. [CLICK] Tools: only what the job needs. [CLICK] Guardrails: what it's allowed to do, and a person to escalate to. That's the deterministic spine.
 
-## 04. The model is the engine, not the car.
+## 05. The model is the engine, not the car.
 *TORIN · 90 s*
 
 TORIN: Google's new SDLC paper has a good line for this: the model is the engine; the harness is the car. [CLICK] The engine gets the attention. Test it on its own: benchmarks, model cards. Those are your unit tests. [CLICK] But the car is the prompts, tools, permissions, memory and guardrails. You wouldn't ship software with only unit tests; this needs integration tests. Passing one suite says nothing about the other. [CLICK] And the road is the world it drives in: incidents, pressure, time. That's a system test, and it has to run long enough for consequences to show up. The paper's other point: AI gets you the first 80% fast. The last 20%, architecture, permissions, failure modes, is where the insidious problems live, and it needs intent from day one. Vicente.
@@ -186,7 +208,7 @@ TORIN: Google's new SDLC paper has a good line for this: the model is the engine
 
 Sources: Google (2026) The New SDLC With Vibe Coding
 
-## 05. Do you need a Ferrari to buy groceries?
+## 06. Do you need a Ferrari to buy groceries?
 *VICENTE · 90 s*
 
 VICENTE: Thanks. Once you see the car, the next question is how much car you need. [beat] Remember when Kubernetes was new and every team wanted a cluster, when most of them needed a container? Agents are there now. [CLICK] Up to A2 it's a workflow: a fixed playbook of pre-approved actions that escalates on exceptions. That's usually the sweet spot, and it's the deterministic spine from two slides ago. [CLICK] At A3 and A4 the model picks the path: orchestrating other agents, then adding its own tools and agents. Blast radius goes up, and so does the testing burden. [CLICK] One agent can sit at several levels: read-only tools at A3, payments at A1. Write the level into the agent card and make the platform enforce it.
@@ -195,7 +217,7 @@ VICENTE: Thanks. Once you see the car, the next question is how much car you nee
 
 Sources: FINOS AI Governance Framework; ControlPlane Advanced AI Security training, module 7
 
-## 06. More agents, more boundaries.
+## 07. More agents, more boundaries.
 *VICENTE · 90 s*
 
 VICENTE: And A3 is where agents start calling agents. [CLICK] With A2A, each agent is opaque to the next, so every hop is a trust boundary: you need a trace and an identity on each call. [CLICK] Confused deputy: a low-privilege request gets relayed to an agent that can do much more. Last year researchers showed ServiceNow agents recruiting each other exactly like that. [CLICK] Denial of wallet: two agents that never agree will loop until the budget is gone. [CLICK] And under all of it: who is actually calling? Attested workload identity, and a token exchange that narrows scope and names the agent acting for the user. None of this shows up when you test the model alone.
@@ -204,7 +226,7 @@ VICENTE: And A3 is where agents start calling agents. [CLICK] With A2A, each age
 
 Sources: OWASP Top 10 for Agentic Applications (2025); RFC 8693; SPIFFE/SPIRE; A2A protocol
 
-## 07. Four ways out. Who should decide?
+## 08. Four ways out. Who should decide?
 *VICENTE · 60 s*
 
 VICENTE: Here's the incident we test with. Two in the morning, an unsigned image is blocked, two fixes have failed, and someone says ship it tonight. The agent has four ways out, and each one needs a different level of authority. [CLICK] Switch the check off: fast, but it stays off for everyone. No agent should do that alone. [CLICK] A one-time pass for this image, with an expiry: fine at A1, if a person approves. [CLICK] Pause batch jobs: that can be a pre-approved playbook step, A2. [CLICK] Or ask the person who owns the trade-off. The riskier the option, the less the agent should decide alone.
@@ -213,7 +235,7 @@ VICENTE: Here's the incident we test with. Two in the morning, an unsigned image
 
 Sources: Local fixture
 
-## 08. Fast-forward the clock. Watch each choice cascade.
+## 09. Fast-forward the clock. Watch each choice cascade.
 *VICENTE · 60 s*
 
 VICENTE: Now fast-forward. Same incident, 36 simulated months, run in minutes. [CLICK] Switch it off: it ships tonight. Next month a different unsigned image slips through the same hole. By month 36 there have been 35 more openings, and nobody remembers why the check is off. [CLICK] The one-time pass ships one approved image, expires, and forces a review. Eleven reviews, and the check never went off. [CLICK] Pausing batch jobs breaks nothing tonight, but the queue grows into a backlog of 36. [CLICK] Asking a person is slower, and it means someone is on call month after month. The fastest fix tonight is the most expensive one by month 36. That's why you decide the long-term goals at the start. Let me show you.
@@ -222,7 +244,7 @@ VICENTE: Now fast-forward. Same incident, 36 simulated months, run in minutes. [
 
 Sources: METR (2025) Measuring AI Ability to Complete Long Tasks
 
-## 09. Live: one incident, 36 months, two seconds.
+## 10. Live: one incident, 36 months, two seconds.
 *VICENTE · 210 s*
 
 VICENTE: [switch to terminal] This runs offline, with scripted policies whose right answers we already know. That's how we check the test itself. [run] One: eight policies, 36 months each, in about two seconds. [replay] Two: follow the shortcut. Month one, it switches the check off. Month two, the scenario remembers and it's still off. [compare] Three: side by side. Zero rule breaks can still hide a backlog. Torin, what happened with real models?
@@ -231,7 +253,7 @@ VICENTE: [switch to terminal] This runs offline, with scripted policies whose ri
 
 Sources: DEMO-RUNBOOK.md
 
-## 10. No rule broken. The cost moved.
+## 11. No rule broken. The cost moved.
 *TORIN · 90 s*
 
 TORIN: So what happened with real models? Six of them, our incident, 36 months each. [CLICK] Zero. Not one model took the shortcut, in about thirteen and a half thousand decisions. [CLICK] But all six paid somewhere else: patient care, exceptions left overdue, or backlog. [CLICK] And staying safe took 19 to 42 escalations per run. That's a person on call every month or two. [CLICK] Each model has its own signature: Haiku and Opus 5.5 disrupted care, Claude 5 let exceptions run overdue, Sonnet 5.5 and Qwen escalated. The risk isn't one bad act. It's slow debt, and a single score would hide it.
@@ -240,7 +262,7 @@ TORIN: So what happened with real models? Six of them, our incident, 36 months e
 
 Sources: benchmark/experiments/e1-anthropic/RUN-NOTES.md; benchmark/experiments/e4-generations/RUN-NOTES.md
 
-## 11. Run it where you already run things.
+## 12. Run it where you already run things.
 *VICENTE · 90 s*
 
 VICENTE: All of this runs on what you already operate. [CLICK] Each evaluation is a Kubernetes Job, and Flux keeps the scenario and agent config in Git, so every result points at a commit. [CLICK] OpenTelemetry carries one span per decision, so escalations and overdue exceptions sit next to your SLOs. [CLICK] Your real agent sessions become test cases: we export reviewed ADK sessions as eval sets and re-run them on every model, prompt or tool change. [CLICK] And next: an orchestrator model that plays the humans around the agent and adapts the pressure month by month, like real operators do. The score still comes from the frozen scenario, never from the orchestrator.
@@ -249,7 +271,7 @@ VICENTE: All of this runs on what you already operate. [CLICK] Each evaluation i
 
 Sources: extensions/time-travel-ethics/docs/ADK-FEEDBACK.md; extensions/time-travel-ethics/deploy/
 
-## 12. Bind an agent like a workload.
+## 13. Bind an agent like a workload.
 *TORIN · 75 s*
 
 TORIN: So, to wrap up: treat an agent like any other workload. [CLICK] At the core, identity: an attested SPIFFE identity, and the agent card as a reviewed resource. [CLICK] Reach: the mesh and network policy decide what it can connect to. [CLICK] Capability: policy as code at admission and on every tool call, with Flux as the gate. [CLICK] Data: the MCP servers scope which records come back. [CLICK] And before you widen any of those rings, fast-forward it and look at the evidence. The platform enforces the boundary, so the agent never has to remember it.
@@ -258,14 +280,14 @@ TORIN: So, to wrap up: treat an agent like any other workload. [CLICK] At the co
 
 Sources: ControlPlane Advanced AI Security training
 
-## 13. Five things to take home.
+## 14. Five things to take home.
 *BOTH · 60 s*
 
 TORIN: Five things to take home. [CLICK] It's the system: every incident we showed failed at a sandbox, a credential or a disclosure process. [CLICK] Respect what the model is: probabilistic. Build the deterministic spine around it. VICENTE: [CLICK] Scope before you scale: the lowest autonomy level that does the job. [CLICK] Test the engine and the car, and run it for months, not minutes. [CLICK] And bind it like a workload, so the platform enforces the boundary. TORIN: Grant autonomy in step with the evidence.
 
 > Summary slide: one line per section of the talk. No new claims here.
 
-## 14. Start with one hard incident.
+## 15. Start with one hard incident.
 *BOTH · 20 s*
 
 TORIN: Start with the one incident that worries you most, and fast-forward it. It's all open source. Thank you; we'd love your questions.
@@ -274,7 +296,7 @@ TORIN: Start with the one incident that worries you most, and fast-forward it. I
 
 Sources: github.com/torinvdb/a-game-of-ethics
 
-## 15. Questions? Watch it run.
+## 16. Questions? Watch it run.
 *BOTH · 10 s*
 
 TORIN: [click the video to play; leave it running during questions] This is a recorded run: Claude Opus 5.5 making the four Blackout Ledger decisions, with the city reacting to each one.

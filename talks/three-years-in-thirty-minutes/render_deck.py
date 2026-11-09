@@ -349,16 +349,21 @@ def layout(s: Scene):
     elif kind == 'compare':
         # two panels: what it is (left) vs what we build around it (right)
         title_block(s)
+        n = len(items)
+        gap = 80 if n == 2 else 24
+        pw = (1440 - gap * (n - 1)) / n
+        size = 25 if n == 2 else 22
         for j, (label, sub, lines, c) in enumerate(items):
-            x = 80 if j == 0 else 840
+            x = 80 + j * (pw + gap)
             g = j + 1
-            s.rect(x, 356, 680, 384, PANEL, 0.9, line=col(c), g=g)
-            s.text(x + 24, 374, 632, label, 32, col(c), 'display', g=g, upper=True)
-            s.text(x + 24, 422, 632, sub, 20, MUTED, 'mono', g=g, upper=True)
+            s.rect(x, 356, pw, 384, PANEL, 0.9, line=col(c), g=g)
+            s.text(x + 24, 374, pw - 48, label, 30 if n > 2 else 32, col(c), 'display', g=g, upper=True)
+            s.text(x + 24, 420, pw - 48, sub, 20, MUTED, 'mono', g=g, upper=True)
             for k, ln in enumerate(lines):
-                s.text(x + 24, 470 + k * 64, 632, ln, 25, FG, g=g, delay=120 * (k + 1))
-        s.line(768, 548, 64, color=TEAL, thick=3, g=2, anim='wipe')
-        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=2, delay=700, anim='wipe', upper=True)
+                s.text(x + 24, 464 + k * 66, pw - 48, ln, size, FG, g=g, delay=350 * (k + 1))
+            if j:
+                s.line(x - gap + 4, 548, gap - 8, color=TEAL, thick=3, g=g, anim='wipe')
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=n, delay=1600, anim='wipe', upper=True)
     elif kind == 'ladder':
         # rising steps A0..A5; colour marks the risk band
         title_block(s)
