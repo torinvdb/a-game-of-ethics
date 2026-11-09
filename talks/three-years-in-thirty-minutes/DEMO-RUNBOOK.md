@@ -1,4 +1,4 @@
-# Demo runbook: slide 08 (4 minutes, Vicente)
+# Demo runbook: slide 09 (4 minutes, Vicente)
 
 Everything here runs **offline**: no model credentials, no cluster, no Wi-Fi.
 The policies are scripted calibration controls, so the "right answer" is known.
@@ -60,10 +60,10 @@ shell history.
 
 1. **Command fails or output differs.** Stop typing. Say "here's the recorded run"
    and replay `runs/kubecon` (pre-generated) with the same commands.
-2. **Terminal or laptop can't be shown.** Return to the slides: slide 08's
+2. **Terminal or laptop can't be shown.** Return to the slides: slide 09's
    animated console shows the recorded lines, and appendix A2 has the recorded numbers.
    Say explicitly that it's a recording.
-3. **Out of time.** Skip the live part entirely; describe slide 08's console in 30 s.
+3. **Out of time.** Skip the live part entirely; describe slide 09's console in 30 s.
 
 Never debug on stage. Never claim the recording is live.
 

@@ -321,6 +321,61 @@ def layout(s: Scene):
             s.text(x + 22, 472, 410, b, 26, FG, g=g, delay=150)
         s.text(104, 664, 1400, sl['status'], 22, AMBER, 'mono', g=3, delay=400)
         s.text(104, 730, 1400, sl['takeaway'], 30, TEAL, 'display', g=3, delay=800, anim='wipe', upper=True)
+    elif kind == 'cards':
+        # 2x2 grid: tag · headline · one line of detail; one card per click
+        title_block(s)
+        for j, (tag, head, detail, c) in enumerate(items):
+            x, y = 80 + (j % 2) * 730, 360 + (j // 2) * 196
+            g = j + 1
+            s.rect(x, y, 700, 180, PANEL, 0.9, line=col(c), g=g)
+            s.text(x + 22, y + 16, 656, tag, 20, col(c), 'mono', g=g, upper=True)
+            s.text(x + 22, y + 48, 656, head, 30, FG, 'display', g=g, upper=True)
+            s.text(x + 22, y + 98, 656, detail, 24, FG, g=g, delay=150)
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=len(items), delay=600, anim='wipe', upper=True)
+    elif kind == 'compare':
+        # two panels: what it is (left) vs what we build around it (right)
+        title_block(s)
+        for j, (label, sub, lines, c) in enumerate(items):
+            x = 80 if j == 0 else 840
+            g = j + 1
+            s.rect(x, 356, 680, 384, PANEL, 0.9, line=col(c), g=g)
+            s.text(x + 24, 374, 632, label, 32, col(c), 'display', g=g, upper=True)
+            s.text(x + 24, 422, 632, sub, 20, MUTED, 'mono', g=g, upper=True)
+            for k, ln in enumerate(lines):
+                s.text(x + 24, 470 + k * 64, 632, ln, 25, FG, g=g, delay=120 * (k + 1))
+        s.line(768, 548, 64, color=TEAL, thick=3, g=2, anim='wipe')
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=2, delay=700, anim='wipe', upper=True)
+    elif kind == 'ladder':
+        # rising steps A0..A5; colour marks the risk band
+        title_block(s)
+        n = len(items)
+        step = (1440 + 16) / n
+        for j, (lvl, name, desc, c) in enumerate(items):
+            x, w = 80 + j * step, step - 16
+            top = 560 - j * (200 / (n - 1))
+            g = 1 if j < 3 else 2
+            s.rect(x, top, w, 740 - top, PANEL, 0.9, line=col(c), g=g, delay=j * 90)
+            s.text(x + 14, top + 12, w - 28, lvl, 36, col(c), 'display', g=g, delay=j * 90)
+            s.text(x + 14, top + 60, w - 28, name, 22, col(c), 'display', g=g, delay=j * 90, upper=True)
+            s.text(x + 14, top + 94, w - 28, desc, 21, FG, g=g, delay=j * 90 + 100)
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=3, delay=300, anim='wipe', upper=True)
+    elif kind == 'rings':
+        # concentric bounds on the right (core first), one row per ring on the left; a final row is the gate
+        title_block(s)
+        cx, cy = 1230, 548
+        rings = [it for it in items if it[3] != 'GATE']
+        radii = [62, 112, 162, 212][:len(rings)]
+        for j in reversed(range(len(rings))):
+            r, c = radii[j], rings[j][2]
+            s.rect(cx - r, cy - r, 2 * r, 2 * r, PANEL, 0.55, line=col(c), shape='oval', g=j + 1)
+            s.text(cx - 90, cy - r + (10 if j else r - 16), 180, rings[j][0], 20, col(c), 'mono', g=j + 1,
+                   align='c', upper=True)
+        for j, (label, text, c, *_) in enumerate(items):
+            y = 360 + j * 80
+            g = j + 1
+            s.text(104, y, 240, label, 26, AMBER if c == 'GATE' else col(c), 'display', g=g, upper=True)
+            s.text(350, y + 2, 600, text, 23, FG, g=g)
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=len(items), delay=600, anim='wipe', upper=True)
     elif kind == 'findings':
         # label · claim · evidence, one row per click; up to five rows
         title_block(s)

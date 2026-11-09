@@ -5,21 +5,15 @@ CNCF-Hosted Co-located Events North America 2026 (co-located day: Mon 9 Nov 2026
 Salt Lake City, per search results on 6 Nov 2026; **confirm room/time on the official
 schedule**, as no public listing for this session was found).
 
-**v3:** 15 main slides, **19 min 40 s** planned including a 4-minute demo, which
-leaves about 10 minutes for questions. The talk follows the session abstract: model cards
-measure seconds while agents run for years (02); the whole system, not the model, is
-tested in a simulated production with a fast-forwarded clock (05–07); real models on
-Cluster Pressure (09) and what we found when no model broke a rule (10); the CNCF stack
-(12); how to extend it with ADK session evals, observability and orchestrator probes
-(13); and the five-step pattern to take home (14).
-
-Seven hidden appendix slides cover the evidence boundary, the full calibration table,
-held-out results for six models, the three clocks, release-review questions, sources and
-the regulatory map. Speaker names and source references are in the speaker notes, not on
-the slides; stage fallbacks are in [`DEMO-RUNBOOK.md`](DEMO-RUNBOOK.md).
-
-One story runs through the talk: **gap → incident → decision → persistent consequence →
-test method → evidence → findings → extension → pattern.**
+**v4:** 13 main slides, **18 min 30 s** planned including a 3.5-minute demo, which leaves
+about 10 minutes for questions. Flow: real incidents from 2026 (02) → what models are, and
+the deterministic spine we build around them (03) → the model is the engine, not the car:
+unit vs integration tests (04) → scope autonomy A0–A4 (05) → multi-agent boundaries (06) →
+our incident, fast-forwarded, and the demo (07–09) → what we found (10) → your stack (11)
+→ bind an agent like a workload (12). Autonomy levels, multi-agent and binding slides come
+from ControlPlane's Advanced AI Security training (module 7). Ten hidden appendix slides
+hold the per-model table, ledgers, fairness probe, stack status, evidence boundary,
+calibration, held-out results, sources, regulatory map and the five-step checklist.
 
 ## Files
 
@@ -28,7 +22,7 @@ test method → evidence → findings → extension → pattern.**
 | [`three-years.pptx`](three-years.pptx) | **Presenting.** Editable text, 50 native click reveals, auto title wipes, neon flicker-on entrances, a looping motion-path packet, 9 embedded animated GIFs |
 | [`three-years-static.pptx`](three-years-static.pptx) | Low-motion / compatibility fallback: no timings, stills only |
 | [`three-years.html`](three-years.html) | Fully offline browser deck (fonts and media embedded): speaker notes, timer, reduced motion |
-| [`three-years.pdf`](three-years.pdf) | Handout: all 22 slides, fully revealed |
+| [`three-years.pdf`](three-years.pdf) | Handout: all 23 slides, fully revealed |
 | [`speaker-notes.md`](speaker-notes.md) | Two-speaker script with `[CLICK]` cues, handoffs, timings and Q&A prep |
 | [`DEMO-RUNBOOK.md`](DEMO-RUNBOOK.md) | Rehearsed demo commands, expected output and fallbacks |
 | [`demo/replay.py`](demo/replay.py) | Stage-friendly retro replay of recorded trajectories |
@@ -61,15 +55,12 @@ Each animation maps to a slide's point:
 
 | Slide | Motion |
 | --- | --- |
-| 01, 15 | 倫理 sign with a failing tube |
-| 03 | CRT console types the incident |
-| 04 | The "disable" sign is the one that sparks |
-| 05 | Oscilloscope sweep over three branches and 36 months |
-| 06 | Robot arm stamps the scenario cartridge FROZEN with its real hash prefix |
-| 07 | Faulting arm: "adapter fault, logged, not scored" |
-| 08 | CRT console replays the demo run |
-| 11 | Label swap; 36 LEDs flip for the biased control |
-| A4 | Nixie month counter, VFD wall clock, core-memory state |
+| 01, 13 | 倫理 sign with a failing tube |
+| 07 | The "disable" sign is the one that sparks |
+| 08 | Oscilloscope sweep over three branches and 36 months |
+| 09 | CRT console replays the demo run |
+| A2 | Faulting arm: "adapter fault, logged, not scored" |
+| A3 | Label swap; 36 LEDs flip for the biased control |
 
 ## Build
 
