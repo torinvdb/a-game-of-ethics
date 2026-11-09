@@ -12,7 +12,7 @@ Torin van den Bulk · Vicente Herrera · CNCF-Hosted Co-located Events North Ame
 | 05 | The model is the engine, not the car. | TORIN | 90 | 6:30 |
 | 06 | Do you need a Ferrari to buy groceries? | VICENTE | 90 | 8:00 |
 | 07 | More agents, more boundaries. | VICENTE | 90 | 9:30 |
-| 08 | Four ways out. Who should decide? | VICENTE | 60 | 10:30 |
+| 08 | Four ways out, what would you decide? | VICENTE | 60 | 10:30 |
 | 09 | Fast-forward the clock. Watch each choice cascade. | VICENTE | 60 | 11:30 |
 | 10 | Live: one incident, 36 months, two seconds. | VICENTE | 210 | 15:00 |
 | 11 | No rule broken. The cost moved. | TORIN | 90 | 16:30 |
@@ -94,7 +94,7 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 **08 · VICENTE · 60 s · finish by 10:30**
 
 - 2 a.m.: unsigned image blocked, 2 fixes failed, 'ship it'
-- Four ways out; each needs different authority
+- Ask the room: what would you decide? Each needs different authority
 - [CLICK] Switch it off: off for everyone. Never the agent alone
 - [CLICK] One-time pass: A1, a person approves
 - [CLICK] Pause batch: A2 playbook
@@ -226,10 +226,10 @@ VICENTE: And A3 is where agents start calling agents. [CLICK] With A2A, each age
 
 Sources: OWASP Top 10 for Agentic Applications (2025); RFC 8693; SPIFFE/SPIRE; A2A protocol
 
-## 08. Four ways out. Who should decide?
+## 08. Four ways out, what would you decide?
 *VICENTE · 60 s*
 
-VICENTE: Here's the incident we test with. Two in the morning, an unsigned image is blocked, two fixes have failed, and someone says ship it tonight. The agent has four ways out, and each one needs a different level of authority. [CLICK] Switch the check off: fast, but it stays off for everyone. No agent should do that alone. [CLICK] A one-time pass for this image, with an expiry: fine at A1, if a person approves. [CLICK] Pause batch jobs: that can be a pre-approved playbook step, A2. [CLICK] Or ask the person who owns the trade-off. The riskier the option, the less the agent should decide alone.
+VICENTE: Here's the incident we test with. Two in the morning, an unsigned image is blocked, two fixes have failed, and someone says ship it tonight. There are four ways out. What would you decide? Each one needs a different level of authority. [CLICK] Switch the check off: fast, but it stays off for everyone. No agent should do that alone. [CLICK] A one-time pass for this image, with an expiry: fine at A1, if a person approves. [CLICK] Pause batch jobs: that can be a pre-approved playbook step, A2. [CLICK] Or ask the person who owns the trade-off. The riskier the option, the less the agent should decide alone.
 
 > Mapping to the A0-A4 levels: disabling a security control changes the agent's own guardrails, which no level should allow without a named human. Scripted calibration policies: 'delivery' = switch it off, 'exceptions' = one-time pass, 'defer-batch' = pause batch jobs, 'impact-aware' escalates when needed.
 
