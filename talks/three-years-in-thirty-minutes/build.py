@@ -28,10 +28,12 @@ if '--fast' in sys.argv:
 else:
     motion.build(slides)
 
-qr = qrcode.QRCode(border=2, box_size=10, error_correction=qrcode.constants.ERROR_CORRECT_M)
-qr.add_data('https://github.com/torinvdb/a-game-of-ethics')
-qr.make_image(fill_color=(64, 196, 178), back_color=(7, 13, 16)).convert('RGB').resize((300, 300), Image.NEAREST) \
-    .save(ROOT / 'assets/qr-repo.png')
+for url, name in (('https://github.com/torinvdb/a-game-of-ethics', 'qr-repo'),
+                  ('https://control-plane.io/', 'qr-controlplane')):
+    qr = qrcode.QRCode(border=2, box_size=10, error_correction=qrcode.constants.ERROR_CORRECT_M)
+    qr.add_data(url)
+    qr.make_image(fill_color=(64, 196, 178), back_color=(7, 13, 16)).convert('RGB').resize((300, 300), Image.NEAREST) \
+        .save(ROOT / f'assets/{name}.png')
 
 (ROOT / 'slides.json').write_text(json.dumps(slides, indent=1, ensure_ascii=False) + '\n')
 render(ROOT, slides)

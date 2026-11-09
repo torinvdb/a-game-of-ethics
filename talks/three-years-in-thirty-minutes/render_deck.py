@@ -171,9 +171,16 @@ def layout(s: Scene):
             s.text(100, y, 920, SPEAKERS, 32, TEAL, 'body', delay=600)
             s.text(100, y + 50, 920, EVENT, 21, MUTED, 'mono', delay=700)
         else:
-            s.text(100, y, 920, sl['takeaway'], 32, TEAL, 'body', g=1)
-            s.text(100, y + 56, 700, 'github.com/torinvdb/a-game-of-ethics', 24, AMBER, 'mono', g=1)
-            s.image(820, y - 10, 150, 150, 'assets/qr-repo.png', g=1, alt='QR code to the repository')
+            s.text(100, y, 920, sl['takeaway'], 32, TEAL, 'body', delay=500)
+            y0 = y + 62
+            # two scan targets, visible without a click: the project and ControlPlane
+            s.image(100, y0, 150, 150, 'assets/qr-repo.png', delay=700, alt='QR code: github.com/torinvdb/a-game-of-ethics')
+            s.text(266, y0 + 14, 300, 'A Game of Ethics', 26, TEAL, 'display', delay=700, upper=True)
+            s.text(266, y0 + 60, 300, 'github.com/torinvdb/\na-game-of-ethics', 20, AMBER, 'mono', delay=700)
+            s.image(600, y0, 150, 150, 'assets/qr-controlplane.png', delay=900, alt='QR code: control-plane.io')
+            s.image(766, y0 + 18, 220, round(220 * 391 / 1778), 'assets/logos/controlplane.png', delay=900,
+                    alt='ControlPlane logo')
+            s.text(766, y0 + 84, 230, 'control-plane.io', 20, AMBER, 'mono', delay=900)
         return
     if kind == 'appendix':
         title_block(s, size=60)
@@ -419,6 +426,11 @@ def layout(s: Scene):
         s.text(106, 160, 1400, sl['subtitle'], 24, MUTED)
         s.rect(276, 206, 1048, 590, '000000', 1.0, line=TEAL)
         s.video(280, 210, 1040, 585, sl['video'], sl['poster'], alt=sl.get('alt', ''))
+        # scan targets in the margins while the recording plays during Q&A
+        s.image(98, 300, 160, 160, 'assets/qr-repo.png', alt='QR code: github.com/torinvdb/a-game-of-ethics')
+        s.text(84, 470, 190, 'A Game of Ethics', 22, TEAL, 'display', upper=True, align='c')
+        s.image(1342, 300, 160, 160, 'assets/qr-controlplane.png', alt='QR code: control-plane.io')
+        s.image(1336, 474, 172, round(172 * 391 / 1778), 'assets/logos/controlplane.png', alt='ControlPlane logo')
         s.text(104, 806, 1400, sl['takeaway'], 20, AMBER, 'mono')
     elif kind == 'stats':
         # three big-number callouts, then a strip of per-model "where the cost went" chips
