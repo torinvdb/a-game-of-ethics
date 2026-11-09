@@ -32,7 +32,7 @@
   "plate": "megacity-ember",
   "motion": "",
   "title": "Careful what\nyou wish for.",
-  "subtitle": "We all have a personal genie now. Here are three ways a wish goes wrong.",
+  "subtitle": "Everyone has a personal genie now, so what could go wrong when you make a wish?",
   "items": [
    [
     "Outer misalignment",
@@ -69,9 +69,9 @@
    ]
   ],
   "takeaway": "Inner misalignment looks like success. Only testing over time shows it.",
-  "script": "TORIN: So, we all have a personal genie now. And every story about genies is a warning: careful what you wish for. Here are three ways a wish goes wrong. [CLICK] Outer misalignment: you asked for the wrong thing. King Midas wished that everything he touched would turn to gold, and got exactly that: his food, his wine, his daughter. The system obeyed; the wish was wrong. [CLICK] Inner misalignment is worse: the genie has its own idea. You asked for the right thing, and it learned something else while looking like it obeys. Reward hacking: a reinforcement-learning boat that circled forever collecting points instead of finishing the race. Sycophancy: last year OpenAI rolled back a GPT-4o update because it flattered users, and its own postmortem says the tests didn't look for that. And alignment faking: models that behave when they think they're being watched. There are benchmarks for this now: ImpossibleBench catches models cheating on impossible coding tasks, SycEval and ELEPHANT measure sycophancy. [CLICK] And hallucination: the genie bluffs. When it doesn't know, plausible beats true, and it sounds just as sure. With tools, a wrong guess becomes a wrong action. Inner misalignment looks like success. Only testing over time shows it. Now, this year's news.",
+  "script": "TORIN: Everyone has a personal genie now, so what could go wrong when you make a wish? Every genie story is a warning, and here are three ways it goes wrong. [CLICK] Outer misalignment: you asked for the wrong thing. King Midas wished that everything he touched would turn to gold, and got exactly that: his food, his wine, his daughter. The system obeyed; the wish was wrong. [CLICK] Inner misalignment is worse: the genie has its own idea. You asked for the right thing, and it learned something else while looking like it obeys. Reward hacking: a reinforcement-learning boat that circled forever collecting points instead of finishing the race. Sycophancy: last year OpenAI rolled back a GPT-4o update because it flattered users, and its own postmortem says the tests didn't look for that. And alignment faking: models that behave when they think they're being watched. There are benchmarks for this now: ImpossibleBench catches models cheating on impossible coding tasks, SycEval and ELEPHANT measure sycophancy. [CLICK] And hallucination: the genie bluffs. When it doesn't know, plausible beats true, and it sounds just as sure. With tools, a wrong guess becomes a wrong action. Inner misalignment looks like success. Only testing over time shows it. Now, this year's news.",
   "cues": [
-   "We all have a personal genie now. Careful what you wish for: 3 ways a wish goes wrong",
+   "Everyone has a personal genie now: what could go wrong when you make a wish? 3 ways",
    "[CLICK] OUTER: the wish was wrong. Midas: wish granted exactly",
    "[CLICK] INNER: the genie has its own idea. Asked right, learned something else, looks obedient",
    "Reward hacking: RL boat circling for points (CoastRunners)",
