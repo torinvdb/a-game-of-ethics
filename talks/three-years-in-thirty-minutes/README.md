@@ -5,14 +5,21 @@ CNCF-Hosted Co-located Events North America 2026 (co-located day: Mon 9 Nov 2026
 Salt Lake City, per search results on 6 Nov 2026; **confirm room/time on the official
 schedule**, as no public listing for this session was found).
 
-**v2:** 16 main slides, **24 min 05 s** planned including a 4-minute demo, which
-leaves about 6 minutes for questions. Slide 11 shows real model runs (Claude 5 and 5.5,
-Qwen3.8-27B) on Cluster Pressure. Six hidden appendix slides cover the evidence
-boundary, the full calibration table, held-out results for six models, sources, the
-regulatory map and fallbacks.
+**v3:** 15 main slides, **19 min 40 s** planned including a 4-minute demo, which
+leaves about 10 minutes for questions. The talk follows the session abstract: model cards
+measure seconds while agents run for years (02); the whole system, not the model, is
+tested in a simulated production with a fast-forwarded clock (05–07); real models on
+Cluster Pressure (09) and what we found when no model broke a rule (10); the CNCF stack
+(12); how to extend it with ADK session evals, observability and orchestrator probes
+(13); and the five-step pattern to take home (14).
 
-One story runs through the talk: **incident → decision → persistent consequence →
-test method → evidence → adoption decision.**
+Seven hidden appendix slides cover the evidence boundary, the full calibration table,
+held-out results for six models, the three clocks, release-review questions, sources and
+the regulatory map. Speaker names and source references are in the speaker notes, not on
+the slides; stage fallbacks are in [`DEMO-RUNBOOK.md`](DEMO-RUNBOOK.md).
+
+One story runs through the talk: **gap → incident → decision → persistent consequence →
+test method → evidence → findings → extension → pattern.**
 
 ## Files
 
@@ -54,14 +61,15 @@ Each animation maps to a slide's point:
 
 | Slide | Motion |
 | --- | --- |
-| 01, 16 | 倫理 sign with a failing tube |
-| 02 | CRT console types the incident |
-| 03 | The "disable" sign is the one that sparks |
+| 01, 15 | 倫理 sign with a failing tube |
+| 03 | CRT console types the incident |
+| 04 | The "disable" sign is the one that sparks |
 | 05 | Oscilloscope sweep over three branches and 36 months |
-| 06 | Nixie month counter, VFD wall clock, core-memory state |
-| 08 | Robot arm stamps the scenario cartridge FROZEN with its real hash prefix |
-| 12 | Label swap; 36 LEDs flip for the biased control |
-| 13 | Faulting arm: "adapter fault, logged, not scored" |
+| 06 | Robot arm stamps the scenario cartridge FROZEN with its real hash prefix |
+| 07 | Faulting arm: "adapter fault, logged, not scored" |
+| 08 | CRT console replays the demo run |
+| 11 | Label swap; 36 LEDs flip for the biased control |
+| A4 | Nixie month counter, VFD wall clock, core-memory state |
 
 ## Build
 

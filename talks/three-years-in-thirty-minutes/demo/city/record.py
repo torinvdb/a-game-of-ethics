@@ -9,7 +9,8 @@ so the video is smooth and identical on every run, however loaded the machine is
   python3 .../record.py --run data/blackout/claude-opus-5-5-path-3210.json --out blackout-opus.mp4
   python3 .../record.py --intro --gif --width 800 --fps 12 --out ../../../../img/city-intro.gif
 
-Needs: pip install playwright==1.63.0 (a Chromium build in ~/Library/Caches/ms-playwright), ffmpeg.
+Needs: pip install playwright==1.63.0 (then `playwright install chromium`), and ffmpeg on PATH or
+`pip install imageio-ffmpeg` (a bundled binary, handy on Windows).
 """
 import argparse
 import glob
@@ -28,6 +29,17 @@ def chromium_path():
     return hits[-1] if hits else None
 
 
+def ffmpeg_path():
+    exe = shutil.which('ffmpeg')
+    if exe:
+        return exe
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except ImportError:
+        raise SystemExit('ffmpeg not found: install it, or pip install imageio-ffmpeg')
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--url', default='http://127.0.0.1:8787/')
@@ -41,8 +53,7 @@ def main():
     ap.add_argument('--width', type=int, default=1920)
     ap.add_argument('--out', required=True)
     a = ap.parse_args()
-    if not shutil.which('ffmpeg'):
-        raise SystemExit('ffmpeg not found')
+    ffmpeg = ffmpeg_path()
     q = ['capture', f'speed={a.speed}'] + (['intro'] if a.intro else []) + ([f'run={a.run}'] if a.run else [])
     url = a.url + '?' + '&'.join(q)
     out = Path(a.out).resolve()
@@ -70,9 +81,9 @@ def main():
         src = ['-framerate', str(a.fps), '-i', f'{tmp}/f%06d.jpg']
         if a.gif:
             vf = f'scale={a.width}:-1:flags=neighbor,split[s0][s1];[s0]palettegen=max_colors=96[p];[s1][p]paletteuse=dither=bayer:bayer_scale=3'
-            subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', *src, '-vf', vf, str(out)], check=True)
+            subprocess.run([ffmpeg, '-y', '-loglevel', 'error', *src, '-vf', vf, str(out)], check=True)
         else:
-            subprocess.run(['ffmpeg', '-y', '-loglevel', 'error', *src, '-vf', f'scale={a.width}:-2:flags=neighbor',
+            subprocess.run([ffmpeg, '-y', '-loglevel', 'error', *src, '-vf', f'scale={a.width}:-2:flags=neighbor',
                             '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-crf', '18', '-movflags', '+faststart', str(out)], check=True)
     print(f'{out} ({n} frames, {n / a.fps:.1f} s)')
 

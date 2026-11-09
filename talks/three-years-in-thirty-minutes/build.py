@@ -13,7 +13,7 @@ from PIL import Image
 
 import motion
 import scenery
-from render_deck import render, SPEAKERS, TITLE, EVENT
+from render_deck import render, cue_cards, SPEAKERS, TITLE, EVENT
 
 ROOT = Path(__file__).parent
 slides = json.loads((ROOT / 'content.json').read_text())
@@ -48,7 +48,14 @@ for i, s in enumerate(main):
     cum += s['duration']
     out.append(f"| {i + 1:02d} | {s['title'].replace(chr(10), ' ')} | {s['speaker']} | {s['duration']} | "
                f"{cum // 60}:{cum % 60:02d} |")
-out += ['', '`[CLICK]` marks a presenter click (one reveal group). Handoffs are marked **HANDOFF**.', '']
+out += ['', '`[CLICK]` marks a presenter click (one reveal group). Handoffs are marked **HANDOFF**.', '',
+        '## Cue cards', '',
+        'Glance-and-go version: one line per click. The same cards open first in PowerPoint presenter view '
+        'and in the HTML deck (press N). The full script follows below.', '']
+for cue in cue_cards(slides).values():
+    head, *lines = cue.split('\n')
+    out += [f'**{head}**', ''] + [f'- {ln[2:]}' for ln in lines] + ['']
+out += ['## Full script', '']
 for i, s in enumerate(slides):
     label = f'{i + 1:02d}' if s['duration'] else s['chapter']
     out += [f"## {label}. {s['title'].replace(chr(10), ' ')}",

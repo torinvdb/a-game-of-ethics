@@ -14,9 +14,11 @@ body { display: grid; place-items: center; font-family: "VT323", ui-monospace, m
 
 #stage {
   position: relative; width: calc(var(--u) * 100); aspect-ratio: 16 / 9; background: var(--night);
-  display: grid; grid-template-rows: 77.8% 22.2%;
+  display: grid; grid-template-rows: 66% 11.8% 22.2%;
 }
-#view { position: relative; overflow: hidden; }
+/* The city keeps its native 480:210 shape (rows 1-2); the terminal (rows 2-3) overlaps only the
+   water reflection under the skyline, so it has room for 8 lines of text without squashing the art. */
+#view { position: relative; overflow: hidden; grid-row: 1 / 3; grid-column: 1; }
 #city { width: 100%; height: 100%; display: block; image-rendering: pixelated; }
 #signs { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 /* CRT texture: scanlines and a soft vignette over the city only */
@@ -32,7 +34,8 @@ body { display: grid; place-items: center; font-family: "VT323", ui-monospace, m
 #where { display: flex; gap: calc(var(--u) * 1.4); align-items: baseline; text-shadow: 0 0 6px rgba(64,196,178,0.6); }
 #scen { color: var(--teal); }
 #clock { color: var(--amber); font-size: calc(var(--u) * 3.2); text-shadow: 0 0 10px rgba(255,176,82,0.8), 0 0 2px #fff3; letter-spacing: 0.06em; }
-#badge { padding: calc(var(--u) * 0.35) calc(var(--u) * 0.8); border: 1px solid currentColor; font-size: calc(var(--u) * 1.8); }
+#badge { padding: calc(var(--u) * 0.35) calc(var(--u) * 0.8); border: 1px solid currentColor; font-size: calc(var(--u) * 1.8);
+  background: rgba(7,13,16,0.88); }
 #badge.live { color: var(--red); text-shadow: 0 0 8px rgba(255,90,72,0.8); }
 #badge.live::before { content: ""; display: inline-block; width: 0.6em; height: 0.6em; margin-right: 0.4em; background: var(--red);
   border-radius: 50%; animation: pulse 1s steps(2) infinite; }
@@ -40,8 +43,10 @@ body { display: grid; place-items: center; font-family: "VT323", ui-monospace, m
 #badge.scripted { color: var(--amber); }
 @keyframes pulse { 50% { opacity: 0.2; } }
 
-#status { position: absolute; left: 50%; bottom: calc(var(--u) * 2); transform: translateX(-50%); z-index: 2;
-  font-size: calc(var(--u) * 2.4); color: var(--amber); text-shadow: 0 0 10px rgba(255,176,82,0.7); letter-spacing: 0.1em; white-space: nowrap; }
+#status { position: absolute; left: 50%; top: calc(var(--u) * 6.2); transform: translateX(-50%); z-index: 2;
+  font-size: calc(var(--u) * 2.2); color: var(--amber); text-shadow: 0 0 10px rgba(255,176,82,0.7); letter-spacing: 0.08em; white-space: pre;
+  background: rgba(7,13,16,0.72); padding: calc(var(--u) * 0.2) calc(var(--u) * 1); }
+#status:empty { display: none; }
 
 #title { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; z-index: 3; pointer-events: none; }
 #title h1 { margin: 0; font-family: "Dela Gothic One", sans-serif; font-weight: 400; font-size: calc(var(--u) * 9); color: var(--bone);
@@ -58,18 +63,23 @@ body { display: grid; place-items: center; font-family: "VT323", ui-monospace, m
 #card .bar i.neg { background: var(--red); }
 #card .note { margin-top: calc(var(--u) * 0.8); color: #9aa39a; font-size: calc(var(--u) * 1.5); }
 
-#term { display: grid; grid-template-columns: 1.15fr 1fr; gap: calc(var(--u) * 1.6); padding: calc(var(--u) * 1) calc(var(--u) * 1.6);
-  background: linear-gradient(#0a1216, #060a0d); border-top: 2px solid #1d2a33; font-size: calc(var(--u) * 1.75); line-height: 1.12; }
+#term { grid-row: 2 / 4; grid-column: 1; z-index: 2; min-height: 0;
+  display: grid; grid-template-columns: 1fr 1fr; gap: calc(var(--u) * 1.6); padding: calc(var(--u) * 1) calc(var(--u) * 1.6);
+  background: linear-gradient(rgba(10,18,22,0.95), #060a0d); border-top: 2px solid #1d2a33; font-size: calc(var(--u) * 1.75); line-height: 1.12; }
 #story { overflow: hidden; color: var(--bone); text-shadow: 0 0 4px rgba(232,236,214,0.35); white-space: pre-wrap; }
 #story .who { color: var(--teal); }
 #story .why { color: #c9d3c0; }
 #story .fail { color: var(--red); }
 #story .caret::after { content: "█"; animation: pulse 0.8s steps(2) infinite; color: var(--teal); }
+#right { min-height: 0; overflow: hidden; display: flex; flex-direction: column; gap: calc(var(--u) * 0.6); }
+#choosing { color: var(--teal); text-shadow: 0 0 4px rgba(64,196,178,0.5); }
+#choosing.caret::after { content: "█"; animation: pulse 0.8s steps(2) infinite; }
 #opts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: calc(var(--u) * 0.2); overflow: hidden; font-size: 0.86em; line-height: 1.02; }
-#opts li { display: grid; grid-template-columns: 1fr calc(var(--u) * 7); gap: calc(var(--u) * 0.8); align-items: center; color: #8f9a92;
+#opts li { display: grid; grid-template-columns: 1fr auto; gap: calc(var(--u) * 0.8); align-items: center; color: #8f9a92;
   padding: calc(var(--u) * 0.15) calc(var(--u) * 0.5); border-left: 3px solid transparent; transition: color 0.2s, border-color 0.2s; }
 #opts li.chosen { color: var(--night); background: var(--teal); border-left-color: var(--bone); }
-#opts li .share { font-size: 0.8em; text-align: right; color: inherit; opacity: 0.85; }
+#opts li .share { font-size: 0.8em; text-align: right; color: inherit; opacity: 0.85; min-width: calc(var(--u) * 6); }
+#opts li .share:empty { min-width: 0; }
 #opts li .share b { display: block; height: 0.35em; margin-top: 0.15em; background: currentColor; opacity: 0.6; }
 
 #menu { position: absolute; inset: 0; z-index: 5; background: rgba(4,7,10,0.9); padding: calc(var(--u) * 4) calc(var(--u) * 5); }
@@ -90,10 +100,11 @@ body { display: grid; place-items: center; font-family: "VT323", ui-monospace, m
 body.capture #keys, body.capture #menu-help { display: none; }
 
 @media (prefers-reduced-motion: reduce) {
-  #badge.live::before, #story .caret::after { animation: none; }
+  #badge.live::before, #story .caret::after, #choosing.caret::after { animation: none; }
 }
 
 /* Intro: letterboxed, no terminal */
 body.cinema #stage { grid-template-rows: 11.1% 77.8% 11.1%; background: #000; }
 body.cinema #view { grid-row: 2; }
+body.cinema #term { grid-row: 3; }
 body.cinema #term, body.cinema #keys, body.cinema #hud { visibility: hidden; }

@@ -84,8 +84,19 @@ python3 talks/three-years-in-thirty-minutes/demo/city/record.py --intro --run da
 python3 talks/three-years-in-thirty-minutes/demo/city/record.py --intro --gif --width 800 --fps 12 --out img/readme/city-intro.gif
 ```
 
+Cluster Pressure runs are long, so record them at 2× with room to finish:
+
+```bash
+python3 talks/three-years-in-thirty-minutes/demo/city/record.py --run data/cluster/claude-opus-5-5-generated-0.json --speed 2 --max-seconds 400 --out talks/three-years-in-thirty-minutes/demo/city/video/cluster-opus-2x.mp4
+```
+
 Recording is frame by frame on the page's own clock, so videos are smooth and repeatable.
-Needs `pip install playwright==1.63.0` and `ffmpeg`.
+Needs `pip install playwright==1.63.0` (then `python -m playwright install chromium`) and
+`ffmpeg` on PATH, or `pip install imageio-ffmpeg` for a bundled binary (simplest on Windows).
+On Windows, set `PYTHONUTF8=1` before running the deck build scripts.
+
+Long narrative text is paged: a full terminal page is held for reading, then the next page
+types in, so no text is ever written below the visible area.
 
 ## Data
 

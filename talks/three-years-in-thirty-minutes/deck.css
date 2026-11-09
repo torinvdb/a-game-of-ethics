@@ -28,6 +28,8 @@ body.still .slide.current .shown{animation:none!important}
  padding:18px 22px;overflow:auto;font:17px/1.45 Rajdhani,sans-serif;white-space:pre-wrap;display:none;z-index:60}
 #notes.open{display:block}
 #notes h2{font:600 15px ShareTechMono,monospace;color:var(--amber);margin:0 0 8px;letter-spacing:.08em}
+#notes .cue{font:600 21px/1.4 Rajdhani,sans-serif;color:#e8ecd6;margin:0 0 18px;padding:0 0 14px;border-bottom:1px solid #24393a}
+#notes .cue:empty{display:none}
 #controls{position:fixed;left:0;right:0;bottom:0;height:44px;display:flex;gap:6px;align-items:center;padding:0 10px;
  background:rgba(0,0,0,.6);opacity:0;transition:opacity .3s;z-index:70}
 #controls:hover,#controls:focus-within,body.show-controls #controls{opacity:1}

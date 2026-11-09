@@ -120,9 +120,7 @@ def chrome(s: Scene):
     s.text(80, 52, 900, tag, 20, TEAL, 'mono', anim='flicker')
     page = f'{i + 1:02d} / {s.total}' if not appendix else f"{sl['chapter']} / APPENDIX"
     s.text(1340, 52, 180, page, 20, MUTED, 'mono', align='r')
-    if sl.get('speaker'):
-        s.rect(1120, 54, 12, 12, RED, 1.0, shape='oval', anim='flicker')
-        s.text(1140, 52, 160, sl['speaker'], 20, AMBER, 'mono')
+    # speaker names and source refs live in the speaker notes, not on the slide
     # chapter rail
     if not appendix:
         s.line(80, 870, 1440, color='24393A', thick=2)
@@ -132,9 +130,6 @@ def chrome(s: Scene):
             on = k <= cur
             s.rect(x - 4, 866, 8, 8, AMBER if k == cur else (TEAL if on else '2C4444'), 1.0)
         s.line(80, 870, 1440 * cur / (len(CHAPTERS) - 1), color=TEAL, thick=2)
-    refs = ' · '.join(sl.get('refs', []))
-    if refs:
-        s.text(80, 812, 1300, refs, 16, DIM, 'mono')
 
 
 def title_block(s: Scene, w=1400, size=74):
@@ -326,6 +321,19 @@ def layout(s: Scene):
             s.text(x + 22, 472, 410, b, 26, FG, g=g, delay=150)
         s.text(104, 664, 1400, sl['status'], 22, AMBER, 'mono', g=3, delay=400)
         s.text(104, 730, 1400, sl['takeaway'], 30, TEAL, 'display', g=3, delay=800, anim='wipe', upper=True)
+    elif kind == 'findings':
+        # label · claim · evidence, one row per click; up to five rows
+        title_block(s)
+        n = len(items)
+        step = 78 if n >= 5 else 96
+        for j, (a, b, c) in enumerate(items):
+            y = 376 + j * step
+            g = j + 1
+            s.line(104, y - 10, 1410, color='24393A', thick=1, g=g)
+            s.text(104, y, 290, a, 26, TEAL, 'display', g=g, upper=True)
+            s.text(410, y, 720, b, 24, FG, g=g)
+            s.text(1150, y + 2, 370, c, 20, AMBER, 'mono', g=g, delay=250)
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=n, delay=700, anim='wipe', upper=True)
     elif kind == 'checklist':
         title_block(s)
         for j, (a, b) in enumerate(items):
@@ -372,7 +380,20 @@ def glow_text(run_font, color):
     fill.addnext(eff)
 
 
+def cue_cards(slides):
+    """Presenter cue card per slide: speaker, length, target clock time, one line per click."""
+    out, cum = {}, 0
+    for i, s in enumerate(slides):
+        if not s['duration']:
+            continue
+        cum += s['duration']
+        head = f"{i + 1:02d} · {s.get('speaker') or ''} · {s['duration']} s · finish by {cum // 60}:{cum % 60:02d}"
+        out[s['id']] = head + ''.join(f"\n• {c}" for c in s.get('cues', []))
+    return out
+
+
 def to_pptx(slides, scenes, animated, path):
+    cues = cue_cards(slides)
     prs = Presentation()
     prs.slide_width, prs.slide_height = Inches(16), Inches(9)
     cp = prs.core_properties
@@ -449,8 +470,10 @@ def to_pptx(slides, scenes, animated, path):
             ordered += [steps[k] for k in sorted(k for k in steps if k[0] == 'click')]
             add_timeline(slide, ordered, first_auto=auto)
         notes = []
+        if content['id'] in cues:
+            notes.append('CUE CARD\n' + cues[content['id']])
         if content.get('script'):
-            notes.append('SCRIPT\n' + content['script'])
+            notes.append('FULL SCRIPT\n' + content['script'])
         if content.get('notes'):
             notes.append('NOTES\n' + content['notes'])
         if content.get('refs'):
@@ -519,7 +542,8 @@ def to_html(slides, scenes, path):
     fonts = ''.join(f'@font-face{{font-family:{v[3]};src:url("{data_uri(ROOT / "assets/fonts" / v[0])}")}}'
                     for v in FACES.values())
     css = fonts + (ROOT / 'deck.css').read_text()
-    meta = [dict(title=s['title'], speaker=s.get('speaker', ''), duration=s['duration'],
+    cues = cue_cards(slides)
+    meta = [dict(title=s['title'], speaker=s.get('speaker', ''), duration=s['duration'], cue=cues.get(s['id'], ''),
                  script=s.get('script', ''), notes=s.get('notes', ''), main=bool(s['duration'])) for s in slides]
     js = ('const SLIDES=' + json.dumps(meta).replace('</', '<\\/') + ';const ASSETS=' +
           json.dumps({v: data_uri(Path(k)) for k, v in assets.items()}) + ';' + (ROOT / 'deck.js').read_text())

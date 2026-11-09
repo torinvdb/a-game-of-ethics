@@ -19,13 +19,14 @@
 
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
 import { execFileSync } from 'node:child_process';
 import { loadStory, readVariables } from '../../src/lib/ink.js';
 import { AXES } from '../../src/lib/scoring.js';
 import { makeProvider, RunError } from './providers.mjs';
 
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const argv = process.argv.slice(2);
 const arg = (k, d) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : d);
 const flag = (k) => argv.includes(k);

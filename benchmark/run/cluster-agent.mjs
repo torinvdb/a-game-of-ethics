@@ -20,13 +20,14 @@
 import fs from 'node:fs';
 import http from 'node:http';
 import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import crypto from 'node:crypto';
 import { spawn } from 'node:child_process';
 import { makeProvider, RunError } from './providers.mjs';
 
-const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..', '..');
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const EXT = path.join(ROOT, 'extensions/time-travel-ethics');
-const SHIM = path.join(path.dirname(new URL(import.meta.url).pathname), 'cluster-bridge-shim.mjs');
+const SHIM = path.join(path.dirname(fileURLToPath(import.meta.url)), 'cluster-bridge-shim.mjs');
 const argv = process.argv.slice(2);
 const arg = (k, d) => (argv.includes(k) ? argv[argv.indexOf(k) + 1] : d);
 const flag = (k) => argv.includes(k);
@@ -159,4 +160,4 @@ async function main() {
     system_sha256: sha256(CLUSTER_SYSTEM), runs: results }, null, 1) + '\n');
 }
 
-if (process.argv[1] === new URL(import.meta.url).pathname) main().catch((e) => { console.error(e.message); process.exit(1); });
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) main().catch((e) => { console.error(e.message); process.exit(1); });
