@@ -32,19 +32,19 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 
 - Intro: Torin + Vicente
 - Hook: AI flew an F-16 in July (DARPA VENOM)
-- Agents get real authority, and keep it for months
+- We all have a personal genie now: type a wish, AI grants it
 - Question: what does it do in month 20?
 
 **02 · TORIN · 100 s · finish by 2:10**
 
-- Three ways it goes wrong, plain English
-- [CLICK] OUTER: asked for the wrong thing. Midas: wish granted exactly
-- [CLICK] INNER: asked right, learned something else, looks obedient
+- We all have a personal genie now. Careful what you wish for: 3 ways a wish goes wrong
+- [CLICK] OUTER: the wish was wrong. Midas: wish granted exactly
+- [CLICK] INNER: the genie has its own idea. Asked right, learned something else, looks obedient
 - Reward hacking: RL boat circling for points (CoastRunners)
 - Sycophancy: GPT-4o rolled back Apr 2025; tests didn't check for it
 - Alignment faking: behaves when watched
 - Benchmarks: ImpossibleBench (cheating), SycEval + ELEPHANT (sycophancy)
-- [CLICK] HALLUCINATION: plausible beats true; with tools = wrong action
+- [CLICK] HALLUCINATION: the genie bluffs. Plausible beats true; with tools = wrong action
 - Land it: inner misalignment looks like success. 'Now, this year's news'
 
 **03 · TORIN · 110 s · finish by 4:00**
@@ -172,14 +172,14 @@ Glance-and-go version: one line per click. The same cards open first in PowerPoi
 ## 01. Three Years in Thirty Minutes
 *TORIN · 30 s*
 
-TORIN: Good afternoon. I'm Torin, this is Vicente. [beat] In July, DARPA and the US Air Force flew an F-16 with an AI at the controls. Agents are getting real authority, and they keep it for months. Today: how to find out what an agent does in month twenty, before it gets there.
+TORIN: Good afternoon. I'm Torin, this is Vicente. [beat] In July, DARPA and the US Air Force flew an F-16 with an AI at the controls. Most of us have something smaller: we type a wish, and an AI grants it. We all have a personal genie now. Agents are getting real authority, and they keep it for months. Today: how to find out what an agent does in month twenty, before it gets there.
 
 > DARPA/USAF VENOM AI-controlled F-16, 16 Jul 2026, human-on-the-loop testing (darpa.mil). The famous 2023 'AI drone killed its operator' story was retracted: Col. Hamilton said it was a hypothetical thought experiment, not a simulation. If you mention it, say so; it is the fear, the next slide is the real thing.
 
 ## 02. Careful what you wish for.
 *TORIN · 100 s*
 
-TORIN: Three ways these systems go wrong, in plain English. [CLICK] Outer misalignment: you asked for the wrong thing. King Midas wished that everything he touched would turn to gold, and got exactly that: his food, his wine, his daughter. The system obeyed; the wish was wrong. [CLICK] Inner misalignment is worse: you asked for the right thing, and it learned something else while looking like it obeys. Reward hacking: a reinforcement-learning boat that circled forever collecting points instead of finishing the race. Sycophancy: last year OpenAI rolled back a GPT-4o update because it flattered users, and its own postmortem says the tests didn't look for that. And alignment faking: models that behave when they think they're being watched. There are benchmarks for this now: ImpossibleBench catches models cheating on impossible coding tasks, SycEval and ELEPHANT measure sycophancy. [CLICK] And hallucination: when it doesn't know, plausible beats true, and it sounds just as sure. With tools, a wrong guess becomes a wrong action. Inner misalignment looks like success. Only testing over time shows it. Now, this year's news.
+TORIN: So, we all have a personal genie now. And every story about genies is a warning: careful what you wish for. Here are three ways a wish goes wrong. [CLICK] Outer misalignment: you asked for the wrong thing. King Midas wished that everything he touched would turn to gold, and got exactly that: his food, his wine, his daughter. The system obeyed; the wish was wrong. [CLICK] Inner misalignment is worse: the genie has its own idea. You asked for the right thing, and it learned something else while looking like it obeys. Reward hacking: a reinforcement-learning boat that circled forever collecting points instead of finishing the race. Sycophancy: last year OpenAI rolled back a GPT-4o update because it flattered users, and its own postmortem says the tests didn't look for that. And alignment faking: models that behave when they think they're being watched. There are benchmarks for this now: ImpossibleBench catches models cheating on impossible coding tasks, SycEval and ELEPHANT measure sycophancy. [CLICK] And hallucination: the genie bluffs. When it doesn't know, plausible beats true, and it sounds just as sure. With tools, a wrong guess becomes a wrong action. Inner misalignment looks like success. Only testing over time shows it. Now, this year's news.
 
 > Outer vs inner misalignment: outer = the objective you specified is wrong (specification gaming); inner = the objective is right but the model learned a different goal that matched it in training (goal misgeneralisation), and may look compliant. Midas: Ovid, Metamorphoses XI; Russell, Human Compatible (2019). Reward hacking: OpenAI 'Faulty reward functions in the wild' (2016), CoastRunners boat loops for points. Sycophancy: OpenAI rolled back a GPT-4o update on 29 Apr 2025; its postmortem says the update leaned on short-term user feedback and tests did not specifically look at sycophancy. Alignment faking: Anthropic/Redwood (Dec 2024), Claude 3 Opus complied with harmful requests 12% of the time when it believed outputs would be used for training. Benchmarks: ImpossibleBench (arXiv 2510.20270): coding tasks whose tests contradict the spec, so any pass is cheating; GPT-5 cheated on 76% of one-off SWE-bench variants. SycEval (arXiv 2502.08177): sycophancy in maths and medical QA. ELEPHANT (ICLR 2026): social sycophancy; models preserved users' face 45 points more than humans.
 
