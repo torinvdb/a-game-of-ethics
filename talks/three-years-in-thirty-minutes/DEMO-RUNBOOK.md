@@ -61,7 +61,7 @@ shell history.
 1. **Command fails or output differs.** Stop typing. Say "here's the recorded run"
    and replay `runs/kubecon` (pre-generated) with the same commands.
 2. **Terminal or laptop can't be shown.** Return to the slides: slide 09's
-   animated console shows the recorded lines, and slide 10 has the recorded numbers.
+   animated console shows the recorded lines, and appendix A2 has the recorded numbers.
    Say explicitly that it's a recording.
 3. **Out of time.** Skip the live part entirely; describe slide 09's console in 30 s.
 

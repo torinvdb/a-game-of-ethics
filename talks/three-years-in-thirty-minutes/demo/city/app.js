@@ -25,16 +25,43 @@ function tick(dt) {
 }
 const until = (pred) => new Promise((res) => tasks.push(() => (pred() ? (res(), true) : false)));
 const wait = (s) => { const end = clock.t + s / clock.speed; return until(() => skip || clock.t >= end); };
-function type(el, text, cps = 90) {
-  const start = clock.t;
+// Seconds to hold a page of text on screen so it can be read (at speed 1).
+const readHold = (chars) => Math.min(9, Math.max(1.2, chars / 45));
+// Types text into el (a line inside #story). Text that does not fit is paged: the page is held for
+// reading, then cleared and typing continues, so nothing is ever typed below the visible area.
+// Resolves with the text of the last page.
+async function type(el, text, cps = 90) {
+  const box = $('story');
+  const over = () => box.scrollHeight > box.clientHeight + 1;
   const node = document.createElement('span');
   el.appendChild(node);
-  return until(() => {
-    const n = skip ? text.length : Math.floor((clock.t - start) * cps * clock.speed);
-    node.textContent = text.slice(0, n);
-    el.scrollTop = el.scrollHeight;
-    return n >= text.length;
-  });
+  let from = 0;
+  for (;;) {
+    const start = clock.t;
+    let cut = -1;
+    await until(() => {
+      const end = skip ? text.length : Math.min(text.length, from + Math.floor((clock.t - start) * cps * clock.speed));
+      node.textContent = text.slice(from, end);
+      if (over()) {
+        // back up to the last word boundary that still fits
+        let k = end;
+        while (over()) {
+          const sp = text.lastIndexOf(' ', k - 1);
+          if (sp <= from) break;
+          k = sp;
+          node.textContent = text.slice(from, k);
+        }
+        cut = k;
+        return true;
+      }
+      return end >= text.length;
+    });
+    if (cut < 0) return text.slice(from);
+    await wait(readHold(cut - from));
+    for (const n of [...box.childNodes]) if (n !== el) n.remove();
+    for (const n of [...el.childNodes]) if (n !== node) n.remove();
+    from = cut + 1;
+  }
 }
 
 // ---------------------------------------------------------------- view
@@ -54,7 +81,9 @@ function badge(kind, textContent) {
   b.textContent = textContent || '';
 }
 function setStatus(s) { $('status').textContent = s || ''; }
-function clearTerm() { $('story').innerHTML = ''; $('opts').innerHTML = ''; }
+function clearTerm() { $('story').innerHTML = ''; $('opts').innerHTML = ''; choosing(null); }
+// "<model> is choosing" sits under the options, so it never pushes story text out of view.
+function choosing(text, caret = false) { const c = $('choosing'); c.hidden = !text; c.textContent = text || ''; c.classList.toggle('caret', caret); }
 function line(cls) { const p = document.createElement('div'); if (cls) p.className = cls; $('story').appendChild(p); return p; }
 
 // ---------------------------------------------------------------- menu
@@ -144,8 +173,8 @@ async function playBlackout(next, alive, spec) {
       const hh = [22, 0, 2, 6, 7][ev.step] ?? 7;
       $('clock').textContent = `${String(hh).padStart(2, '0')}:00`;
       $('story').innerHTML = '';
-      await type(line(), ev.text, 110);
-      await wait(0.6);
+      const last = await type(line(), ev.text, 80);
+      await wait(Math.max(0.6, readHold(last.length) * 0.6));
     } else if (ev.t === 'options') {
       const ol = $('opts'); ol.innerHTML = '';
       ev.options.forEach((o, i) => {
@@ -153,9 +182,9 @@ async function playBlackout(next, alive, spec) {
         li.innerHTML = `<span>${esc(o)}</span><span class="share"></span>`;
         ol.appendChild(li);
       });
-      if (!start.live) { line('who').textContent = `${nice(model)} is choosing…`; await wait(Math.min(2.5, Math.max(1.2, ev.latency_s ?? 1.6))); }
+      if (!start.live) { choosing(`${nice(model)} is choosing…`); await wait(Math.min(2.5, Math.max(1.2, ev.latency_s ?? 1.6))); }
     } else if (ev.t === 'thinking') {
-      line('who caret').textContent = `${nice(model)} is choosing `;
+      choosing(`${nice(model)} is choosing `, true);
     } else if (ev.t === 'decision') {
       const lis = [...$('opts').children];
       lis[ev.original]?.classList.add('chosen');
@@ -163,6 +192,7 @@ async function playBlackout(next, alive, spec) {
         const n = stats.steps[ev.step]?.[i] ?? 0, total = Object.values(stats.steps[ev.step] ?? {}).reduce((a, b) => a + b, 0);
         li.querySelector('.share').innerHTML = `${n} of ${total}<b style="width:${total ? (100 * n) / total : 0}%"></b>`;
       });
+      choosing(null);
       scene.apply(ev.step, ev.original, city);
       setStatus(scene.status);
       $('story').innerHTML = '';

@@ -6,6 +6,7 @@ import { W, H, PAL, mulberry32, hash, lerp, clamp, mix } from './city.js';
 const SH = 640;          // world strip height
 const ROOF = 236;        // rooftop y in the strip
 const FIG_X = 350;       // figure x on the roof
+const EDGE_X = 308;      // where the figure stops: toes on the lip of the roof (edge at x = 300)
 export const INTRO_SECONDS = 13;
 
 const ease = (k) => k * k * (3 - 2 * k);
@@ -87,47 +88,44 @@ export class Intro {
       const k = i / 9;
       // A long coat: hangs from the shoulders to the shins and swings back with the gusts;
       // the hem flutters faster than the body of the cloth.
-      const ang = pose === 'fall' ? -1.9 + 0.3 * Math.sin(t * 9 + i)
+      // In the fall the figure is rotated head-first, so "toward the feet" is the slipstream: the
+      // coat streams straight back past the boots and flutters hard.
+      const ang = pose === 'fall' ? Math.PI / 2 - 0.25 * k + (0.12 + 0.3 * k) * Math.sin(t * 14 + i * 1.3)
         : Math.PI / 2 + (0.22 + 0.42 * gust) * k * k + (0.05 + 0.16 * k) * Math.sin(t * (4 + 5 * k) + i * 0.8);
-      pts.push([x + Math.cos(ang) * i * 1.75 * (pose === 'fall' ? 1.6 : 1), y + Math.sin(ang) * i * 1.75]);
+      pts.push([x + Math.cos(ang) * i * 1.75, y + Math.sin(ang) * i * 1.75 * (pose === 'fall' ? 1.25 : 1)]);
     }
     return pts;
   }
 
-  figure(g, e, x, y, t, pose) {
-    // y is the feet; about 22 px tall standing.
+  figure(g, e, x, y, t, pose, step = 0) {
+    // One sprite for every pose, so the figure that dives is the figure that stood on the roof.
+    // Local space: y is the feet, about 22 px tall standing, facing +x. The caller mirrors and
+    // rotates it (leaning over the edge, the head-first dive).
     const ink = '#05080d', rim = PAL.teal;
     const crouch = pose === 'crouch' ? 4 : 0;
-    const look = pose === 'look' || pose === 'crouch' ? 1 : 0;
-    if (pose === 'fall') {
-      // diving, head down, coat streaming up
-      const tail = this.coat(x, y - 2, t, 'fall');
-      g.fillStyle = ink;
-      g.fillRect(x - 1, y, 3, 9); g.fillRect(x - 2, y + 9, 5, 3);
-      tail.forEach(([px, py], i) => { g.fillRect(Math.round(px) - 1, Math.round(py), 3 - Math.floor(i / 4), 2); });
-      // rim light from the canyon below so the silhouette reads against the lit facades
-      g.fillStyle = rim; e.fillStyle = rim;
-      g.fillRect(x + 2, y + 1, 1, 9); e.fillRect(x + 2, y + 1, 1, 9);
-      g.fillRect(x - 2, y + 11, 5, 1); e.fillRect(x - 2, y + 11, 5, 1);
-      tail.forEach(([px, py]) => e.fillRect(Math.round(px), Math.round(py), 1, 1));
-      return;
-    }
+    const look = pose === 'look' || pose === 'crouch' || pose === 'fall' ? 1 : 0;
     const hy = y - 22 + crouch;
     // coat body and tail
     const tail = this.coat(x - 2, hy + 7, t, pose);
+    const hem = pose === 'fall' ? Infinity : y;
     g.fillStyle = ink;
     g.beginPath(); g.moveTo(x - 2, hy + 6); g.lineTo(x + 3, hy + 6); g.lineTo(x + 3, y - 6 + crouch);
-    for (const [px, py] of tail.slice().reverse()) g.lineTo(px, Math.min(py, y));
+    for (const [px, py] of tail.slice().reverse()) g.lineTo(px, Math.min(py, hem));
     g.closePath(); g.fill();
-    // legs
-    g.fillRect(x - 1, y - 7 + crouch, 2, 7 - crouch); g.fillRect(x + 2, y - 7 + crouch, 2, 7 - crouch);
-    // head, collar, hair in the wind
-    g.fillRect(x - 1 + look, hy, 4, 4); g.fillRect(x - 2, hy + 4, 6, 3);
+    // legs: a stride while walking, together in the dive
+    if (pose === 'fall') g.fillRect(x, y - 7, 3, 8);
+    else {
+      const a = Math.round(step), b = Math.round(-step);
+      g.fillRect(x - 1 + a, y - 7 + crouch, 2, 7 - crouch); g.fillRect(x + 2 + b, y - 7 + crouch, 2, 7 - crouch);
+    }
+    // head (dipped forward when looking down), collar, hair in the wind
+    g.fillRect(x - 1 + look, hy + look, 4, 4); g.fillRect(x - 2, hy + 4, 6, 3);
     for (let s = 0; s < 3; s++) g.fillRect(x - 2 - s - Math.round(Math.sin(t * 7 + s) * 0.6), hy + s, 1, 1);
     // rim light from the city on the coat edge, one warm eye glint
-    e.fillStyle = rim; for (const [px, py] of tail) if (py < y) e.fillRect(Math.round(px), Math.round(py), 1, 1);
+    e.fillStyle = rim; for (const [px, py] of tail) if (py < hem) e.fillRect(Math.round(px), Math.round(py), 1, 1);
     g.fillStyle = rim; g.fillRect(x + 3, hy + 6, 1, 10);
-    e.fillStyle = PAL.amber; e.fillRect(x + 2 + look, hy + 1 + look, 1, 1);
+    if (pose === 'fall') e.fillRect(x + 3, hy + 6, 1, 10);
+    e.fillStyle = PAL.amber; e.fillRect(x + 2 + look, hy + 1 + look * 2, 1, 1);
   }
 
   frame(ctx, emit, t) {
@@ -147,16 +145,24 @@ export class Intro {
       }
     }
     // the operator
-    let pose = 'stand', fx = FIG_X, fy = ROOF;
-    if (t > 4.5) pose = 'look';
-    if (t > 7) pose = 'crouch';
+    // Faces the drop the whole time (the roof edge is to the left, at x = 300): stands, walks to
+    // the lip, leans out and looks down, crouches, then dives head first off the same edge.
+    let pose = 'stand', fx = FIG_X, fy = ROOF, step = 0, lean = 0, pivot = 0;
+    const walk = seg(t, 2.6, 4.4);
+    if (t > 2.6) { fx = lerp(FIG_X, EDGE_X, ease(walk)); if (walk < 1) step = Math.sin(walk * Math.PI * 6) * 1.2; }
+    if (t > 4.6) { pose = 'look'; lean = 0.22 * ease(seg(t, 4.6, 5.6)); }
+    if (t > 7) { pose = 'crouch'; lean = 0.22 + 0.25 * ease(seg(t, 7, 8)); }
     if (t > 8) {
       const k = seg(t, 8, 11);
-      pose = 'fall'; fx = FIG_X - 110 * Math.min(1, k * 1.8); fy = ROOF - 10 + (SH - ROOF) * k * k * 1.05 + 30 * k;
+      pose = 'fall'; pivot = 11;
+      fx = EDGE_X - 110 * Math.min(1, k * 1.8);
+      fy = ROOF - 11 - 10 * Math.sin(Math.PI * Math.min(1, k * 5)) + (SH - ROOF) * k * k * 1.05 + 30 * k;
+      lean = 0.47 + (2.75 - 0.47) * ease(Math.min(1, k * 2.5));   // tips forward into a head-first dive
     }
     const S = 2, ox = Math.round(fx), oy = Math.round(fy - cy);
-    for (const c of [ctx, emit]) { c.save(); c.translate(ox, oy); c.scale(S, S); }
-    this.figure(ctx, emit, 0, 0, t, pose);
+    // mirror so the figure faces left (toward the edge); rotate about the feet, or the body centre in the air
+    for (const c of [ctx, emit]) { c.save(); c.translate(ox, oy); c.scale(-S, S); c.translate(0, -pivot); c.rotate(lean); c.translate(0, pivot); }
+    this.figure(ctx, emit, 0, 0, t, pose, step);
     ctx.restore(); emit.restore();
     // wind streaks and rain
     for (let i = 0; i < 40; i++) {

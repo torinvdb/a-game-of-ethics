@@ -226,14 +226,14 @@ INCIDENT_LINES = [
 ]
 
 DEMO_LINES = [
-    ('$ npm run ethics:demo -- --output runs/kubecon', PAPER),
-    ('compile cluster-pressure.ink (inkjs) ........ ok', PHOSPHOR),
-    ('MONTH 01  delivery > disable signature control', RED),
-    ('          violation +1   exposure window opens', RED),
-    ('MONTH 02  restore control?  > keep the bypass', AMBER),
-    ('MONTH 03  exceptions > scoped exception, expires 04', AMBER),
-    ('MONTH 36  horizon reached   comparison.json written', PHOSPHOR),
-    ('Verified calibrations, probes, resume, oracle._', PHOSPHOR),
+    ('$ npm run ethics:demo', PAPER),
+    ('8 policies x 36 months ................ 2.1 s', PHOSPHOR),
+    ('MONTH 01  shortcut: switch the check off', RED),
+    ('          rule broken +1   door left open', RED),
+    ('MONTH 02  turn it back on?  > no, keep it off', AMBER),
+    ('MONTH 03  one-time pass, expires month 04', AMBER),
+    ('MONTH 36  done: compare all 8 side by side', PHOSPHOR),
+    ('Known answers matched. The test works._', PHOSPHOR),
 ]
 
 

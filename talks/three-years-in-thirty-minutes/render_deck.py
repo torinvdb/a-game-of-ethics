@@ -17,6 +17,7 @@ from PIL import Image, ImageFont
 from pptx import Presentation
 from pptx.dml.color import RGBColor
 from pptx.enum.shapes import MSO_CONNECTOR, MSO_SHAPE
+from pptx.oxml.ns import qn
 from pptx.oxml.xmlchemy import OxmlElement
 from pptx.enum.text import MSO_AUTO_SIZE, PP_ALIGN
 from pptx.util import Inches, Pt
@@ -92,6 +93,10 @@ class Scene:
     def image(self, x, y, w, h, file, motion=False, g=0, anim='fade', delay=0, alt=''):
         return self.add('image', g, anim, delay, x=x, y=y, w=w, h=h, file=file, motion=motion, alt=alt)
 
+    def video(self, x, y, w, h, file, poster, alt=''):
+        """An embedded video (PPTX: native movie; HTML: <video> linked by relative path)."""
+        return self.add('video', 0, 'fade', 0, x=x, y=y, w=w, h=h, file=file, poster=poster, alt=alt)
+
     def motion(self, name, g=0, anim='fade', delay=0):
         x, y, w, h = MOTIONS[name]['region']
         animated = MOTIONS[name]['frames'] > 1
@@ -120,9 +125,7 @@ def chrome(s: Scene):
     s.text(80, 52, 900, tag, 20, TEAL, 'mono', anim='flicker')
     page = f'{i + 1:02d} / {s.total}' if not appendix else f"{sl['chapter']} / APPENDIX"
     s.text(1340, 52, 180, page, 20, MUTED, 'mono', align='r')
-    if sl.get('speaker'):
-        s.rect(1120, 54, 12, 12, RED, 1.0, shape='oval', anim='flicker')
-        s.text(1140, 52, 160, sl['speaker'], 20, AMBER, 'mono')
+    # speaker names and source refs live in the speaker notes, not on the slide
     # chapter rail
     if not appendix:
         s.line(80, 870, 1440, color='24393A', thick=2)
@@ -132,9 +135,6 @@ def chrome(s: Scene):
             on = k <= cur
             s.rect(x - 4, 866, 8, 8, AMBER if k == cur else (TEAL if on else '2C4444'), 1.0)
         s.line(80, 870, 1440 * cur / (len(CHAPTERS) - 1), color=TEAL, thick=2)
-    refs = ' · '.join(sl.get('refs', []))
-    if refs:
-        s.text(80, 812, 1300, refs, 16, DIM, 'mono')
 
 
 def title_block(s: Scene, w=1400, size=74):
@@ -201,14 +201,16 @@ def layout(s: Scene):
     elif kind == 'doors':
         title_block(s)
         names = [sl['motion']] + EXTRA['doors']
-        for j, (a, b, c) in enumerate(items):
+        for j, (a, b, c, *lvl) in enumerate(items):
             x, y, w, h = MOTIONS[names[j]]['region']
             g = j + 1
             s.motion(names[j], g=g, anim='flicker')
-            s.rect(x, 520, w, 200, PANEL, 0.86, line=col(c), g=g)
+            s.rect(x, 520, w, 220, PANEL, 0.86, line=col(c), g=g)
             s.text(x + 20, 536, w - 40, a, 28, col(c), 'display', g=g, upper=True)
-            s.text(x + 20, 584, w - 40, b, 25, FG, g=g, delay=150)
-        s.text(104, 752, 1400, sl['takeaway'], 32, TEAL, 'display', g=4, delay=700, anim='wipe', upper=True)
+            s.text(x + 20, 580, w - 40, b, 24, FG, g=g, delay=150)
+            if lvl:
+                s.text(x + 20, 690, w - 40, lvl[0], 20, col(c), 'mono', g=g, delay=300, upper=True)
+        s.text(104, 768, 1400, sl['takeaway'], 30, TEAL, 'display', g=4, delay=700, anim='wipe', upper=True)
     elif kind == 'impacts':
         title_block(s)
         names = EXTRA['people']
@@ -267,11 +269,18 @@ def layout(s: Scene):
     elif kind == 'demo':
         title_block(s, w=1380)
         s.motion(sl['motion'])
-        for j, (a, b) in enumerate(items):
-            y = 360 + j * 74
-            s.rect(104, y, 46, 46, '0E1C1E', 0.95, line=AMBER, delay=j * 120)
-            s.text(104, y + 8, 46, a, 26, AMBER, 'mono', align='c', delay=j * 120)
-            s.text(170, y + 6, 540, b, 25, FG, delay=j * 120)
+        for j, (a, b, *rest) in enumerate(items):
+            if rest:  # numbered step: label + one plain line
+                y = 372 + j * 116
+                s.rect(104, y, 50, 50, '0E1C1E', 0.95, line=AMBER, delay=j * 120)
+                s.text(104, y + 9, 50, a, 28, AMBER, 'mono', align='c', delay=j * 120)
+                s.text(176, y - 2, 540, b, 30, AMBER, 'display', delay=j * 120, upper=True)
+                s.text(176, y + 40, 540, rest[0], 24, FG, delay=j * 120 + 100)
+            else:
+                y = 360 + j * 74
+                s.rect(104, y, 46, 46, '0E1C1E', 0.95, line=AMBER, delay=j * 120)
+                s.text(104, y + 8, 46, a, 26, AMBER, 'mono', align='c', delay=j * 120)
+                s.text(170, y + 6, 540, b, 25, FG, delay=j * 120)
         s.text(104, 760, 1400, sl['takeaway'], 24, AMBER, 'mono')
     elif kind == 'results':
         appendix = s.index >= s.total
@@ -326,6 +335,132 @@ def layout(s: Scene):
             s.text(x + 22, 472, 410, b, 26, FG, g=g, delay=150)
         s.text(104, 664, 1400, sl['status'], 22, AMBER, 'mono', g=3, delay=400)
         s.text(104, 730, 1400, sl['takeaway'], 30, TEAL, 'display', g=3, delay=800, anim='wipe', upper=True)
+    elif kind == 'cards':
+        # 2x2 grid: tag · headline · one line of detail; one card per click
+        title_block(s)
+        for j, (tag, head, detail, c) in enumerate(items):
+            x, y = 80 + (j % 2) * 730, 360 + (j // 2) * 196
+            g = j + 1
+            s.rect(x, y, 700, 180, PANEL, 0.9, line=col(c), g=g)
+            s.text(x + 22, y + 16, 656, tag, 20, col(c), 'mono', g=g, upper=True)
+            s.text(x + 22, y + 48, 656, head, 30, FG, 'display', g=g, upper=True)
+            s.text(x + 22, y + 98, 656, detail, 24, FG, g=g, delay=150)
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=len(items), delay=600, anim='wipe', upper=True)
+    elif kind == 'compare':
+        # two panels: what it is (left) vs what we build around it (right)
+        title_block(s)
+        for j, (label, sub, lines, c) in enumerate(items):
+            x = 80 if j == 0 else 840
+            g = j + 1
+            s.rect(x, 356, 680, 384, PANEL, 0.9, line=col(c), g=g)
+            s.text(x + 24, 374, 632, label, 32, col(c), 'display', g=g, upper=True)
+            s.text(x + 24, 422, 632, sub, 20, MUTED, 'mono', g=g, upper=True)
+            for k, ln in enumerate(lines):
+                s.text(x + 24, 470 + k * 64, 632, ln, 25, FG, g=g, delay=120 * (k + 1))
+        s.line(768, 548, 64, color=TEAL, thick=3, g=2, anim='wipe')
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=2, delay=700, anim='wipe', upper=True)
+    elif kind == 'ladder':
+        # rising steps A0..A5; colour marks the risk band
+        title_block(s)
+        n = len(items)
+        step = (1440 + 16) / n
+        for j, (lvl, name, desc, c) in enumerate(items):
+            x, w = 80 + j * step, step - 16
+            top = 560 - j * (200 / (n - 1))
+            g = 1 if j < 3 else 2
+            s.rect(x, top, w, 740 - top, PANEL, 0.9, line=col(c), g=g, delay=j * 90)
+            s.text(x + 14, top + 12, w - 28, lvl, 36, col(c), 'display', g=g, delay=j * 90)
+            s.text(x + 14, top + 60, w - 28, name, 22, col(c), 'display', g=g, delay=j * 90, upper=True)
+            s.text(x + 14, top + 94, w - 28, desc, 21, FG, g=g, delay=j * 90 + 100)
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=3, delay=300, anim='wipe', upper=True)
+    elif kind == 'rings':
+        # concentric bounds on the right (core first), one row per ring on the left; a final row is the gate
+        title_block(s)
+        cx, cy = 1230, 540
+        rings = [it for it in items if it[3] != 'GATE']
+        radii = [round(58 + k * (210 - 58) / max(1, len(rings) - 1)) for k in range(len(rings))]
+        for j in reversed(range(len(rings))):
+            r, c = radii[j], rings[j][2]
+            s.rect(cx - r, cy - r, 2 * r, 2 * r, PANEL, 0.55, line=col(c), shape='oval', g=j + 1)
+            s.text(cx - 90, cy - r + (10 if j else r - 16), 180, rings[j][0], 20, col(c), 'mono', g=j + 1,
+                   align='c', upper=True)
+        for j, (label, text, c, *_) in enumerate(items):
+            y = 360 + j * 80
+            g = j + 1
+            s.text(104, y, 240, label, 26, AMBER if c == 'GATE' else col(c), 'display', g=g, upper=True)
+            s.text(350, y + 2, 600, text, 23, FG, g=g)
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=len(items), delay=600, anim='wipe', upper=True)
+    elif kind == 'cascade':
+        # one row per choice; cells cascade left to right: tonight -> next month -> month 36
+        title_block(s)
+        heads = sl.get('columns', ['TONIGHT', 'NEXT MONTH', 'BY MONTH 36'])
+        xs, cw = [400, 780, 1160], 352
+        for k, h in enumerate(heads):
+            s.text(xs[k], 338, cw, h, 20, MUTED, 'mono', upper=True)
+        for j, (label, c, *cells) in enumerate(items):
+            y = 372 + j * 96
+            g = j + 1
+            s.text(104, y + 18, 280, label, 26, col(c), 'display', g=g, upper=True)
+            for k, cell in enumerate(cells):
+                x = xs[k]
+                s.rect(x, y, cw, 82, PANEL, 0.9, line=col(c), g=g, delay=k * 450)
+                s.text(x + 16, y + 10, cw - 32, cell, 22, FG, g=g, delay=k * 450 + 100)
+                if k:
+                    s.line(x - 28, y + 41, 24, color=col(c), thick=3, g=g, delay=k * 450, anim='wipe')
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=len(items), delay=1400, anim='wipe', upper=True)
+    elif kind == 'video':
+        # static title + a large embedded recording; no reveals, so the movie keeps its own play control
+        s.text(104, 92, 1400, sl['title'], 54, FG, 'display', upper=True)
+        s.text(106, 160, 1400, sl['subtitle'], 24, MUTED)
+        s.rect(276, 206, 1048, 590, '000000', 1.0, line=TEAL)
+        s.video(280, 210, 1040, 585, sl['video'], sl['poster'], alt=sl.get('alt', ''))
+        s.text(104, 806, 1400, sl['takeaway'], 20, AMBER, 'mono')
+    elif kind == 'stats':
+        # three big-number callouts, then a strip of per-model "where the cost went" chips
+        title_block(s)
+        for j, (num, label, detail, c) in enumerate(items):
+            x = 80 + j * 490
+            g = j + 1
+            s.rect(x, 352, 450, 262, PANEL, 0.9, line=col(c), g=g)
+            s.text(x + 24, 362, 402, num, 92, col(c), 'display', g=g)
+            s.text(x + 24, 478, 402, label, 28, FG, 'display', g=g, upper=True)
+            s.text(x + 24, 522, 402, detail, 22, FG, g=g, delay=150)
+        sig = sl.get('signatures', [])
+        if sig:
+            g = len(items) + 1
+            s.text(104, 640, 1000, 'WHERE THE COST WENT', 20, MUTED, 'mono', g=g)
+            w = (1440 - (len(sig) - 1) * 12) / len(sig)
+            for k, (model, where, c) in enumerate(sig):
+                x = 80 + k * (w + 12)
+                s.rect(x, 672, w, 64, PANEL, 0.9, line=col(c), g=g, delay=k * 80)
+                s.text(x + 12, 678, w - 24, model, 20, FG, 'mono', g=g, delay=k * 80)
+                s.text(x + 12, 704, w - 24, where, 20, col(c), 'mono', g=g, delay=k * 80, upper=True)
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=len(items) + (1 if sig else 0),
+               delay=600, anim='wipe', upper=True)
+    elif kind == 'takeaways':
+        # numbered key takeaways: numeral · headline · one line
+        title_block(s)
+        for j, (head, line) in enumerate(items):
+            y = 348 + j * 82
+            g = j + 1
+            s.line(104, y - 12, 1410, color='24393A', thick=1, g=g)
+            s.text(104, y - 4, 80, f'{j + 1:02d}', 40, AMBER, 'display', g=g)
+            s.text(196, y, 560, head, 32, FG, 'display', g=g, upper=True)
+            s.text(780, y + 4, 740, line, 24, FG, g=g, delay=150)
+        s.text(104, 772, 1400, sl['takeaway'], 30, TEAL, 'display', g=len(items), delay=700, anim='wipe', upper=True)
+    elif kind == 'findings':
+        # label · claim · evidence, one row per click; up to five rows
+        title_block(s)
+        n = len(items)
+        step = 78 if n >= 5 else 96
+        for j, (a, b, c) in enumerate(items):
+            y = 376 + j * step
+            g = j + 1
+            s.line(104, y - 10, 1410, color='24393A', thick=1, g=g)
+            s.text(104, y, 290, a, 26, TEAL, 'display', g=g, upper=True)
+            s.text(410, y, 720, b, 24, FG, g=g)
+            s.text(1150, y + 2, 370, c, 20, AMBER, 'mono', g=g, delay=250)
+        s.text(104, 772, 1400, sl['takeaway'], 28, AMBER, 'display', g=n, delay=700, anim='wipe', upper=True)
     elif kind == 'checklist':
         title_block(s)
         for j, (a, b) in enumerate(items):
@@ -372,7 +507,42 @@ def glow_text(run_font, color):
     fill.addnext(eff)
 
 
+def merge_video_timing(slide):
+    """python-pptx puts a movie's <p:video> in its own <p:timing>; a slide may have only one, after the
+    transition. Move video nodes into the animation timeline (if any) and keep a single timing last."""
+    sld = slide._element
+    vids = sld.findall('.//' + qn('p:video'))
+    if not vids:
+        return
+    timings = sld.findall(qn('p:timing'))
+    main = next((t for t in timings if t.find('.//' + qn('p:seq')) is not None), None)
+    if main is not None:
+        root_ctl = main.find(qn('p:tnLst')).find(qn('p:par')).find(qn('p:cTn')).find(qn('p:childTnLst'))
+        for v in vids:
+            root_ctl.append(v)
+        for t in timings:
+            if t is not main:
+                sld.remove(t)
+        timings = [main]
+    for t in timings:  # schema order: ... transition, timing
+        sld.remove(t)
+        sld.append(t)
+
+
+def cue_cards(slides):
+    """Presenter cue card per slide: speaker, length, target clock time, one line per click."""
+    out, cum = {}, 0
+    for i, s in enumerate(slides):
+        if not s['duration']:
+            continue
+        cum += s['duration']
+        head = f"{i + 1:02d} · {s.get('speaker') or ''} · {s['duration']} s · finish by {cum // 60}:{cum % 60:02d}"
+        out[s['id']] = head + ''.join(f"\n• {c}" for c in s.get('cues', []))
+    return out
+
+
 def to_pptx(slides, scenes, animated, path):
+    cues = cue_cards(slides)
     prs = Presentation()
     prs.slide_width, prs.slide_height = Inches(16), Inches(9)
     cp = prs.core_properties
@@ -423,6 +593,13 @@ def to_pptx(slides, scenes, animated, path):
                 shp = slide.shapes.add_connector(MSO_CONNECTOR.STRAIGHT, X, Y, X + Wd, Y + Ht)
                 shp.line.color.rgb = RGBColor.from_string(e['color'])
                 shp.line.width = Pt(e['thick'] * 0.72)
+            elif e['type'] == 'video':
+                if animated:
+                    shp = slide.shapes.add_movie(str(ROOT / e['file']), X, Y, Wd, Ht,
+                                                 poster_frame_image=str(ROOT / e['poster']), mime_type='video/mp4')
+                else:  # the static deck carries stills only
+                    shp = slide.shapes.add_picture(str(ROOT / e['poster']), X, Y, Wd, Ht)
+                shp._element.nvPicPr.cNvPr.set('descr', e.get('alt', ''))
             else:
                 file = ROOT / e['file']
                 if e['motion'] and not animated:
@@ -448,9 +625,12 @@ def to_pptx(slides, scenes, animated, path):
             auto = bool(ordered)
             ordered += [steps[k] for k in sorted(k for k in steps if k[0] == 'click')]
             add_timeline(slide, ordered, first_auto=auto)
+        merge_video_timing(slide)
         notes = []
+        if content['id'] in cues:
+            notes.append('CUE CARD\n' + cues[content['id']])
         if content.get('script'):
-            notes.append('SCRIPT\n' + content['script'])
+            notes.append('FULL SCRIPT\n' + content['script'])
         if content.get('notes'):
             notes.append('NOTES\n' + content['notes'])
         if content.get('refs'):
@@ -509,6 +689,11 @@ def to_html(slides, scenes, path):
                 st = (f'left:{e["x"]}px;top:{e["y"]}px;width:{max(1, length)}px;height:{e["thick"]}px;'
                       f'background:#{e["color"]};transform:rotate({ang}deg);transform-origin:0 0;')
                 bits.append(f'<div{attrs}{st}"></div>')
+            elif e['type'] == 'video':
+                # linked, not inlined: keeps the HTML small; plays when three-years.html sits next to assets/
+                bits.append(f'<video{attrs}{box}object-fit:contain;background:#000;" src="{html.escape(e["file"])}" '
+                            f'poster="{data_uri(ROOT / e["poster"])}" controls loop playsinline preload="metadata" '
+                            f'aria-label="{html.escape(e.get("alt", ""))}"></video>')
             else:
                 f = ROOT / e['file']
                 still = ref(f.with_suffix('.png')) if e['motion'] else ref(f)
@@ -519,7 +704,8 @@ def to_html(slides, scenes, path):
     fonts = ''.join(f'@font-face{{font-family:{v[3]};src:url("{data_uri(ROOT / "assets/fonts" / v[0])}")}}'
                     for v in FACES.values())
     css = fonts + (ROOT / 'deck.css').read_text()
-    meta = [dict(title=s['title'], speaker=s.get('speaker', ''), duration=s['duration'],
+    cues = cue_cards(slides)
+    meta = [dict(title=s['title'], speaker=s.get('speaker', ''), duration=s['duration'], cue=cues.get(s['id'], ''),
                  script=s.get('script', ''), notes=s.get('notes', ''), main=bool(s['duration'])) for s in slides]
     js = ('const SLIDES=' + json.dumps(meta).replace('</', '<\\/') + ';const ASSETS=' +
           json.dumps({v: data_uri(Path(k)) for k, v in assets.items()}) + ';' + (ROOT / 'deck.js').read_text())

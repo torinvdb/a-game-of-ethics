@@ -10,9 +10,10 @@
 // Output: data/library.json, data/blackout/*.json, data/cluster/*.json
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 import { loadStory, readVariables } from '../../../../src/lib/ink.js';
 
-const HERE = path.dirname(new URL(import.meta.url).pathname);
+const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.resolve(HERE, '../../../..');
 const E1 = path.join(ROOT, 'benchmark/experiments/e1-anthropic/runs');
 const OUT = path.join(HERE, 'data');
@@ -141,7 +142,7 @@ function bakeCluster(library) {
   }
 }
 
-if (import.meta.url === `file://${process.argv[1]}`) {
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
   const library = { baked: new Date().toISOString(), blackout: [], cluster: [] };
   bakeBlackout(library);
   bakeCluster(library);

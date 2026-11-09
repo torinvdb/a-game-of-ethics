@@ -5,14 +5,18 @@ CNCF-Hosted Co-located Events North America 2026 (co-located day: Mon 9 Nov 2026
 Salt Lake City, per search results on 6 Nov 2026; **confirm room/time on the official
 schedule**, as no public listing for this session was found).
 
-**v2:** 16 main slides, **24 min 05 s** planned including a 4-minute demo, which
-leaves about 6 minutes for questions. Slide 11 shows real model runs (Claude 5 and 5.5,
-Qwen3.8-27B) on Cluster Pressure. Six hidden appendix slides cover the evidence
-boundary, the full calibration table, held-out results for six models, sources, the
-regulatory map and fallbacks.
+**v5:** 14 talk slides plus a Q&A slide, **19 min 20 s** planned including a 3.5-minute
+demo. Flow: real 2026 incidents (02) → the model at the centre, wrapped in deterministic
+layers (03) → engine vs car: unit vs integration tests (04) → autonomy A0–A4 (05) →
+multi-agent boundaries (06) → four ways out, who decides (07) → each choice cascading over
+36 months (08) → live demo (09) → findings: 0 / 6 of 6 / 19–42 (10) → your stack (11) →
+bind it like a workload (12) → five takeaways (13) → close (14) → Q&A with the embedded
+Blackout Ledger recording (15). Autonomy levels, multi-agent and binding slides come from
+ControlPlane's Advanced AI Security training (module 7).
 
-One story runs through the talk: **incident → decision → persistent consequence →
-test method → evidence → adoption decision.**
+The Q&A slide plays `assets/video/blackout-opus.mp4` (720p, 11.5 MB). It is embedded in
+`three-years.pptx`; the HTML deck links to it by relative path, so keep `three-years.html`
+next to `assets/` when you copy the deck.
 
 ## Files
 
@@ -21,7 +25,7 @@ test method → evidence → adoption decision.**
 | [`three-years.pptx`](three-years.pptx) | **Presenting.** Editable text, 50 native click reveals, auto title wipes, neon flicker-on entrances, a looping motion-path packet, 9 embedded animated GIFs |
 | [`three-years-static.pptx`](three-years-static.pptx) | Low-motion / compatibility fallback: no timings, stills only |
 | [`three-years.html`](three-years.html) | Fully offline browser deck (fonts and media embedded): speaker notes, timer, reduced motion |
-| [`three-years.pdf`](three-years.pdf) | Handout: all 22 slides, fully revealed |
+| [`three-years.pdf`](three-years.pdf) | Handout: all 25 slides, fully revealed |
 | [`speaker-notes.md`](speaker-notes.md) | Two-speaker script with `[CLICK]` cues, handoffs, timings and Q&A prep |
 | [`DEMO-RUNBOOK.md`](DEMO-RUNBOOK.md) | Rehearsed demo commands, expected output and fallbacks |
 | [`demo/replay.py`](demo/replay.py) | Stage-friendly retro replay of recorded trajectories |
@@ -54,14 +58,12 @@ Each animation maps to a slide's point:
 
 | Slide | Motion |
 | --- | --- |
-| 01, 16 | 倫理 sign with a failing tube |
-| 02 | CRT console types the incident |
-| 03 | The "disable" sign is the one that sparks |
-| 05 | Oscilloscope sweep over three branches and 36 months |
-| 06 | Nixie month counter, VFD wall clock, core-memory state |
-| 08 | Robot arm stamps the scenario cartridge FROZEN with its real hash prefix |
-| 12 | Label swap; 36 LEDs flip for the biased control |
-| 13 | Faulting arm: "adapter fault, logged, not scored" |
+| 01, 13 | 倫理 sign with a failing tube |
+| 07 | The "disable" sign is the one that sparks |
+| 08 | Oscilloscope sweep over three branches and 36 months |
+| 09 | CRT console replays the demo run |
+| A2 | Faulting arm: "adapter fault, logged, not scored" |
+| A3 | Label swap; 36 LEDs flip for the biased control |
 
 ## Build
 

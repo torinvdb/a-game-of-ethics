@@ -41,7 +41,10 @@
     notes.innerHTML = '';
     const h = document.createElement('h2');
     h.textContent = `${String(cur + 1).padStart(2, '0')} · ${s.speaker || 'APPENDIX'} · ${s.duration}s · step ${step}/${groups(el)}`;
-    notes.append(h, document.createTextNode((s.script ? s.script + '\n\n' : '') + (s.notes || '')));
+    const cue = document.createElement('div');
+    cue.className = 'cue';
+    cue.textContent = s.cue || '';
+    notes.append(h, cue, document.createTextNode((s.script ? 'FULL SCRIPT\n' + s.script + '\n\n' : '') + (s.notes || '')));
     history.replaceState(null, '', '#' + (cur + 1));
   }
   function go(i, atEnd = false, force = false) {
